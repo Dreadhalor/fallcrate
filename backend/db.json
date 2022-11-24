@@ -1,28 +1,226 @@
 {
   "files": [
     {
-      "name": "jfytjfyt",
-      "id": 12
-    },
-    {
-      "name": "afwefe",
-      "id": 14
-    },
-    {
-      "name": "wafewf",
-      "id": 15
-    },
-    {
-      "name": "ewafwef, but cooler",
-      "id": 16
-    },
-    {
-      "name": "fawefa",
-      "id": 17
-    },
-    {
       "name": "afweff, but cooler",
-      "id": 18
+      "id": 18,
+      "type": "file",
+      "parent": null
+    },
+    {
+      "name": "aaaa",
+      "type": "directory",
+      "parent": null,
+      "id": 19
+    },
+    {
+      "name": "fawef",
+      "type": "file",
+      "parent": null,
+      "id": 22
+    },
+    {
+      "name": "wfaewfwa",
+      "type": "file",
+      "parent": null,
+      "id": 24
+    },
+    {
+      "name": "wfawefewf",
+      "type": "file",
+      "parent": null,
+      "id": 25
+    },
+    {
+      "name": "mnm",
+      "type": "directory",
+      "parent": null,
+      "id": 26
+    },
+    {
+      "name": "m,m,m,",
+      "type": "file",
+      "parent": null,
+      "id": 27
+    },
+    {
+      "name": "wafwfe",
+      "type": "directory",
+      "parent": null,
+      "id": 28
+    },
+    {
+      "name": "aaamaa aa",
+      "type": "file",
+      "parent": null,
+      "id": 29
+    },
+    {
+      "name": "faewfawe",
+      "type": "file",
+      "parent": null,
+      "id": 31
+    },
+    {
+      "name": "weafewf",
+      "type": "file",
+      "parent": null,
+      "id": 32
+    },
+    {
+      "name": "fawefewaf",
+      "type": "file",
+      "parent": null,
+      "id": 33
+    },
+    {
+      "name": "fawefweaf",
+      "type": "file",
+      "parent": null,
+      "id": 34
+    },
+    {
+      "name": "fdgsdfgg",
+      "type": "file",
+      "parent": null,
+      "id": 35
+    },
+    {
+      "name": "wefawefe",
+      "type": "file",
+      "parent": null,
+      "id": 36
+    },
+    {
+      "name": "rtehtrhtrhh",
+      "type": "file",
+      "parent": null,
+      "id": 37
+    },
+    {
+      "name": "tessst",
+      "type": "directory",
+      "parent": 30,
+      "id": 38
+    },
+    {
+      "name": "jknkjn",
+      "type": "file",
+      "parent": 30,
+      "id": 39
+    },
+    {
+      "name": "TEST AGAIN YO",
+      "type": "directory",
+      "parent": 38,
+      "id": 40
+    },
+    {
+      "name": "aa",
+      "type": "directory",
+      "parent": 19,
+      "id": 41
+    },
+    {
+      "name": "klmlkm",
+      "type": "directory",
+      "parent": 19,
+      "id": 42
+    },
+    {
+      "name": "kjnk",
+      "type": "file",
+      "parent": 19,
+      "id": 43
+    },
+    {
+      "name": "kjnkjn",
+      "type": "file",
+      "parent": 19,
+      "id": 44
+    },
+    {
+      "name": "sdfasfsfasf",
+      "type": "directory",
+      "parent": 41,
+      "id": 45
+    },
+    {
+      "name": "afwef",
+      "type": "file",
+      "parent": null,
+      "id": 46
+    },
+    {
+      "name": "ddd",
+      "type": "directory",
+      "parent": null,
+      "id": 47
+    },
+    {
+      "name": "a213",
+      "type": "directory",
+      "parent": null,
+      "id": 48
+    },
+    {
+      "name": "afew",
+      "type": "directory",
+      "parent": 19,
+      "id": 49
+    },
+    {
+      "name": "ewaf",
+      "type": "directory",
+      "parent": null,
+      "id": 50
+    },
+    {
+      "name": "ew",
+      "type": "directory",
+      "parent": null,
+      "id": 51
+    },
+    {
+      "name": "weafw",
+      "type": "directory",
+      "parent": null,
+      "id": 52
+    },
+    {
+      "name": "fe",
+      "type": "directory",
+      "parent": null,
+      "id": 53
+    },
+    {
+      "name": "ewf",
+      "type": "directory",
+      "parent": null,
+      "id": 54
+    },
+    {
+      "name": "ewaf",
+      "type": "directory",
+      "parent": null,
+      "id": 55
+    },
+    {
+      "name": "test 1",
+      "type": "directory",
+      "parent": 54,
+      "id": 56
+    },
+    {
+      "name": "test 2",
+      "type": "directory",
+      "parent": 53,
+      "id": 57
+    },
+    {
+      "name": "fawf",
+      "type": "file",
+      "parent": null,
+      "id": 58
     }
   ]
 }
