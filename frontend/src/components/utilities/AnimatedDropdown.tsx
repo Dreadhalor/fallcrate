@@ -16,7 +16,7 @@ const AnimatedDropdown = forwardRef(
   ) => {
     const [dragover, setDragover] = useState(false);
 
-    const default_max_height = '250px';
+    const default_max_height = '500px';
     const max_height = maxHeight ?? default_max_height;
 
     const size_ref = useRef<HTMLDivElement>(null);
