@@ -1,4 +1,4 @@
-# fallcrate
+# Fallcrate
 
 To run:
 * Install json-server using `npm i -g json-server`
