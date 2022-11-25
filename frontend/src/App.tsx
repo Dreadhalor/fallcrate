@@ -6,7 +6,6 @@ import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
 import db from './db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
 import BrowserHeader from './components/BrowserItem/BrowserHeader';
-import Modal from './components/Modal';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -15,7 +14,6 @@ function App() {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<File[]>(
     []
   );
-  const [moveFilesModalOpen, setMoveFilesModalOpen] = useState(false);
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
@@ -88,16 +86,6 @@ function App() {
       });
     }
   };
-  // prompt to move a file to a new directory
-  // const promptMoveFiles = (files_to_move: File[]) => {
-  //   const new_parent_id = prompt('Enter a new parent directory id');
-  //   if (new_parent_id) {
-  //     const parent = files.find((file) => file.id === new_parent_id);
-  //     if (parent && parent?.type === 'directory')
-  //       moveFiles(files_to_move, parent);
-  //   }
-  //   // setMoveFilesModalOpen(true);
-  // };
   const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
     file_ids_to_move.forEach((file_id) => {
       if (file_id == parent_id) return;
@@ -143,7 +131,6 @@ function App() {
 
   return (
     <div className='flex h-full w-full flex-col border-0 border-blue-800 bg-white'>
-      <Modal isOpen={moveFilesModalOpen}>hi</Modal>
       <div id='navbar' className='flex w-full border-b border-gray-300 p-[8px]'>
         <div
           className='flex w-fit cursor-pointer flex-row items-center gap-[6px] p-[4px]'

@@ -22,16 +22,16 @@ const Breadcrumb = ({
   const hover = is_current_directory ? '' : 'hover:underline';
   const underline = dragover ? 'underline' : '';
 
-  const allowDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const allowDrop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setDragover(true);
   };
-  const drag = (e: React.DragEvent<HTMLDivElement>) => {
+  const drag = (e: React.DragEvent<HTMLButtonElement>) => {
     if (file_id) {
       e.dataTransfer.setData('file_id', file_id);
     }
   };
-  const drop = (e: React.DragEvent<HTMLDivElement>) => {
+  const drop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const child_file_id = e.dataTransfer.getData('file_id');
     moveFiles([child_file_id], file_id);
