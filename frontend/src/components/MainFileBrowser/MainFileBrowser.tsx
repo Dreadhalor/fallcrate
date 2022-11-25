@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { File } from '../helpers';
-import BrowserHeader from './BrowserItem/BrowserHeader';
-import BrowserItem from './BrowserItem/BrowserItem';
+import { File } from '../../helpers';
+import BrowserHeader from './BrowserHeader';
+import BrowserItem from './BrowserItem';
 
 type Props = {
   currentDirectory: string | null;

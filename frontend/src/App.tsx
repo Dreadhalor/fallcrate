@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { FaFile, FaFolder } from 'react-icons/fa';
 import Breadcrumb from './components/Breadcrumb';
-import BrowserItem from './components/BrowserItem/BrowserItem';
 import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
 import db from './db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
-import BrowserHeader from './components/BrowserItem/BrowserHeader';
-import MainFileBrowser from './components/MainFileBrowser';
+import MainFileBrowser from './components/MainFileBrowser/MainFileBrowser';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -15,7 +13,6 @@ function App() {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<File[]>(
     []
   );
-  const [stopDropPropagation, setStopDropPropagation] = useState(false);
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
