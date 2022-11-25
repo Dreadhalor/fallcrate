@@ -36,21 +36,6 @@ const AllFilesMenuItem = ({
         />
         {title}
       </div>
-      {/* <div
-        className='cursor-default overflow-hidden transition-all duration-300'
-        style={{ maxHeight: isOpen ? '250px' : '0' }}
-      >
-        <div
-          className='overflow-auto border-y border-gray-300'
-          style={{ maxHeight: '250px' }}
-        >
-          <SidebarBrowser
-            files={files}
-            openDirectory={openDirectory}
-            currentDirectory={currentDirectory}
-          />
-        </div>
-      </div> */}
       <AnimatedDropdown
         isOpen={isOpen}
         maxHeight='250px'
