@@ -25,7 +25,7 @@ const MainFileBrowser = ({
 }: Props) => {
   const [dragover, setDragover] = useState(false);
   return (
-    <div className='relative flex flex-1 overflow-hidden border-[6px]'>
+    <div className='relative flex flex-1 overflow-hidden'>
       <div
         className='pointer-events-none absolute inset-[1px] z-20 overflow-hidden'
         style={{ border: dragover ? '2px dashed blue' : 'none' }}
