@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { File } from '../helpers';
 import BrowserHeader from './BrowserItem/BrowserHeader';
 import BrowserItem from './BrowserItem/BrowserItem';
 
 type Props = {
+  currentDirectory: string | null;
   currentDirectoryFiles: File[];
   selectedFiles: string[];
   selectFile: (file_id: string) => void;
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const MainFileBrowser = ({
+  currentDirectory,
   currentDirectoryFiles,
   selectedFiles,
   selectFile,
@@ -24,6 +26,8 @@ const MainFileBrowser = ({
   moveFiles,
 }: Props) => {
   const [dragover, setDragover] = useState(false);
+  const drop_ref = useRef<HTMLDivElement>(null);
+
   return (
     <div className='relative flex flex-1 overflow-hidden'>
       <div
@@ -33,6 +37,7 @@ const MainFileBrowser = ({
       <div
         id='content-browser'
         className='relative flex flex-1 flex-col overflow-auto'
+        ref={drop_ref}
         onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           setDragover(true);
@@ -41,11 +46,16 @@ const MainFileBrowser = ({
         onDrop={(e: React.DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           setDragover(false);
+          // drop file into current directory
+          const file_id = e.dataTransfer.getData('file_id');
+          console.log('target', e.target);
+          if (file_id && e.target === drop_ref.current)
+            moveFiles([file_id], currentDirectory);
         }}
       >
         {currentDirectoryFiles.length > 0 && (
           <>
-            <div className='flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
+            <div className='pointer-events-none flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
               Here is a random spacer to demonstrate that the column header is
               sticky
             </div>

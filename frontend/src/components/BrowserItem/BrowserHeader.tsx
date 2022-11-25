@@ -17,7 +17,7 @@ const BrowserHeader = ({
   const some_files_selected = selectedFiles.length > 0 && !all_files_selected;
 
   return (
-    <div className='group sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
+    <div className='group pointer-events-none sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
       <div className='p-[10px]'>
         <div
           className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${

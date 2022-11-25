@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { File } from '../helpers';
 
 type Props = {
@@ -34,7 +34,9 @@ const Breadcrumb = ({
   const drop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const child_file_id = e.dataTransfer.getData('file_id');
-    moveFiles([child_file_id], file_id);
+    if (child_file_id) {
+      moveFiles([child_file_id], file_id);
+    }
     setDragover(false);
   };
 

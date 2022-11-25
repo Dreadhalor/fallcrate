@@ -54,7 +54,7 @@ const SidebarBrowserItem = ({
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file_id = e.dataTransfer.getData('file_id');
-    moveFiles([file_id], file.id);
+    if (file_id) moveFiles([file_id], file.id);
     setDragover(false);
   };
 

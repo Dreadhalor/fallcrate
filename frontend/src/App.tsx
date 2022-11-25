@@ -15,6 +15,7 @@ function App() {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<File[]>(
     []
   );
+  const [stopDropPropagation, setStopDropPropagation] = useState(false);
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
@@ -205,6 +206,7 @@ function App() {
             )}
           </div>
           <MainFileBrowser
+            currentDirectory={currentDirectory}
             currentDirectoryFiles={currentDirectoryFiles}
             selectedFiles={selectedFiles}
             selectFile={selectFile}
