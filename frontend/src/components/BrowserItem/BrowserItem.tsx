@@ -67,7 +67,6 @@ const BrowserItem = ({
         className={`flex h-full flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${selected_class}`}
         onClick={() => openFile(file.id)}
       >
-        {/* <span className='text-gray-400'>{file.id}</span> */}
         {file.type === 'directory' ? <FaFolder /> : <FaFile />}
         {file.name}
       </div>

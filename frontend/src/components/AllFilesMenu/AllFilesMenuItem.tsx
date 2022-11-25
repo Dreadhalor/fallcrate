@@ -55,6 +55,7 @@ const AllFilesMenuItem = ({
         isOpen={isOpen}
         maxHeight='250px'
         border='border-y border-gray-300'
+        dragOutline={true}
       >
         <SidebarBrowser
           files={files}

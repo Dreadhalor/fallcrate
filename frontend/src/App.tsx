@@ -101,12 +101,32 @@ function App() {
   const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
     file_ids_to_move.forEach((file_id) => {
       if (file_id == parent_id) return;
-      db.moveFile(file_id, parent_id).then((data) => {
-        setFiles((prev) =>
-          prev.map((file) => (file.id === data.id ? data : file))
-        );
-      });
+      const parent = files.find((file) => file.id === parent_id);
+      if (
+        parent &&
+        parent?.type === 'directory' &&
+        !checkForCircularReference(file_id, parent_id)
+      ) {
+        db.moveFile(file_id, parent_id).then((data) => {
+          setFiles((prev) =>
+            prev.map((file) => (file.id === data.id ? data : file))
+          );
+        });
+      }
     });
+  };
+  const checkForCircularReference = (
+    file_id: string,
+    parent_id: string | null
+  ): boolean => {
+    if (file_id === parent_id) {
+      console.log('Circular reference detected');
+      return true;
+    }
+    if (parent_id === null) return false;
+    const parent = files.find((file) => file.id === parent_id);
+    if (parent) return checkForCircularReference(file_id, parent.parent);
+    return false;
   };
 
   useEffect(() => {
