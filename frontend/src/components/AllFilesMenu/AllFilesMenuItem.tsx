@@ -36,7 +36,6 @@ const AllFilesMenuItem = ({
           }}
         />
         {title}
-        <HiChevronDoubleDown size={14} className='ml-auto' />
       </div>
       <AnimatedDropdown
         isOpen={isOpen}

@@ -70,6 +70,9 @@ const BrowserItem = ({
         setDragover(false);
       }}
       onDrop={drop}
+      onDragEnd={() => {
+        setDragging(false);
+      }}
     >
       <div className='p-[10px]'>
         <div

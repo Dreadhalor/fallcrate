@@ -19,8 +19,7 @@ const Breadcrumb = ({
   const file_id = file?.id ?? null;
   const is_current_directory = (file?.id ?? null) === currentDirectory;
   const color = is_current_directory ? 'text-black' : 'text-gray-500';
-  const hover = is_current_directory ? '' : 'hover:underline';
-  const underline = dragover ? 'underline' : '';
+  const underline = is_current_directory ? '' : 'hover:underline';
 
   const allowDrop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -41,20 +40,27 @@ const Breadcrumb = ({
   };
 
   return (
-    <div>
-      <button
-        draggable={file_id !== null}
-        onDragStart={drag}
-        onDrop={drop}
-        onDragOver={allowDrop}
-        onDragLeave={() => setDragover(false)}
-        disabled={is_current_directory}
-        className={`${hover} ${color} ${underline}`}
-        onClick={() => openDirectory(file?.id ?? null)}
-      >
-        {file?.name ?? 'Fallcrate'}
-      </button>
-      {!is_current_directory && <span className={color}>&nbsp;/&nbsp;</span>}
+    <div className='flex items-center'>
+      <div className='relative mx-[4px] py-[2px] px-[4px]'>
+        <div
+          className='pointer-events-none absolute inset-[1px] z-20'
+          style={{ border: dragover ? '2px solid blue' : 'none' }}
+        ></div>
+        <button
+          draggable={file_id !== null}
+          onDragStart={drag}
+          onDrop={drop}
+          onDragOver={allowDrop}
+          onDragLeave={() => setDragover(false)}
+          disabled={is_current_directory}
+          className={`${underline} ${color}`}
+          onClick={() => openDirectory(file?.id ?? null)}
+        >
+          {file?.name ?? 'Fallcrate'}
+        </button>
+      </div>
+
+      {!is_current_directory && <span className={color}>/</span>}
     </div>
   );
 };

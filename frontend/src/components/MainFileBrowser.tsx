@@ -31,7 +31,7 @@ const MainFileBrowser = ({
   return (
     <div className='relative flex flex-1 overflow-hidden'>
       <div
-        className='pointer-events-none absolute inset-[1px] z-20 overflow-hidden'
+        className='pointer-events-none absolute inset-[1px] z-20'
         style={{ border: dragover ? '2px dashed blue' : 'none' }}
       ></div>
       <div
