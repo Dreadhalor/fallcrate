@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
+import { HiChevronDoubleDown } from 'react-icons/hi';
 import { File } from '../../helpers';
 import AnimatedDropdown from '../utilities/AnimatedDropdown';
 import SidebarBrowser from './SidebarBrowser';
@@ -35,6 +36,7 @@ const AllFilesMenuItem = ({
           }}
         />
         {title}
+        <HiChevronDoubleDown size={14} className='ml-auto' />
       </div>
       <AnimatedDropdown
         isOpen={isOpen}

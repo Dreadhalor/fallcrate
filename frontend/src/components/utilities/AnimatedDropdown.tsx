@@ -28,7 +28,7 @@ const AnimatedDropdown = forwardRef(
       >
         {dragOutline && (
           <div
-            className='pointer-events-none absolute inset-0 z-10 h-full w-full'
+            className='pointer-events-none absolute inset-[1px] z-10'
             style={{ border: dragover ? '2px dashed blue' : 'none' }}
           ></div>
         )}

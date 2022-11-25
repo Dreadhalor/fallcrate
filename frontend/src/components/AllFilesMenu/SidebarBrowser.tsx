@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { File } from '../../helpers';
 import SidebarBrowserItem from './SidebarBrowserItem';
 
+export type FileAndCollapsed = [File, boolean];
+
 type Props = {
   files: File[];
   currentDirectory: string | null;
@@ -14,6 +16,16 @@ const SidebarBrowser = ({
   openDirectory,
   moveFiles,
 }: Props) => {
+  const [folders, setFolders] = useState<FileAndCollapsed[]>([]);
+
+  useEffect(() => {
+    setFolders(
+      files
+        .filter((file) => file.type === 'directory')
+        .map((file) => [file, false])
+    );
+  }, [files]);
+
   const top_level_folders = files.filter(
     (file) => file.parent === null && file.type === 'directory'
   );
@@ -25,6 +37,7 @@ const SidebarBrowser = ({
           <SidebarBrowserItem
             file={file}
             files={files}
+            folders={folders}
             indentLevel={0}
             key={file.id}
             openDirectory={openDirectory}

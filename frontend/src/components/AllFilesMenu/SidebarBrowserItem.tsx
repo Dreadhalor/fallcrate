@@ -7,6 +7,7 @@ import AnimatedDropdown from '../utilities/AnimatedDropdown';
 type Props = {
   file: File;
   files: File[];
+  folders: [File, boolean][];
   indentLevel?: number;
   currentDirectory: string | null;
   openDirectory: (file_id: string | null) => void;
@@ -16,6 +17,7 @@ type Props = {
 const SidebarBrowserItem = ({
   file,
   files,
+  folders,
   indentLevel = 0,
   currentDirectory,
   openDirectory,
@@ -100,6 +102,7 @@ const SidebarBrowserItem = ({
           <SidebarBrowserItem
             file={child}
             files={files}
+            folders={folders}
             key={child.id}
             indentLevel={indentLevel + 1}
             currentDirectory={currentDirectory}
