@@ -48,7 +48,6 @@ const MainFileBrowser = ({
           setDragover(false);
           // drop file into current directory
           const file_id = e.dataTransfer.getData('file_id');
-          console.log('target', e.target);
           if (file_id && e.target === drop_ref.current)
             moveFiles([file_id], currentDirectory);
         }}
