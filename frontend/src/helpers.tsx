@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 export interface File {
   id: string;
   name: string;
@@ -13,6 +14,7 @@ export const buildNewFolder = ({
   parent?: string | null;
 }) => {
   return {
+    id: uuid(),
     name,
     type: 'directory',
     parent: parent ?? null,
@@ -27,6 +29,7 @@ export const buildNewFile = ({
   parent?: string | null;
 }) => {
   return {
+    id: uuid(),
     name,
     type: 'file',
     parent: parent ?? null,

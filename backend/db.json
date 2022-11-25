@@ -1,226 +1,58 @@
 {
   "files": [
     {
-      "name": "afweff, but cooler",
-      "id": 18,
-      "type": "file",
+      "id": "051019c7-d37e-491a-b7e4-f67938f2bcb0",
+      "name": "awefwf",
+      "type": "directory",
+      "parent": "ee8ecf48-201d-443e-ac7d-6650852673eb"
+    },
+    {
+      "id": "6a41700a-8e26-4d4b-9c9d-37e47538dc85",
+      "name": "111",
+      "type": "directory",
       "parent": null
     },
     {
-      "name": "aaaa",
+      "id": "dab2f2eb-1402-448f-9544-81a34916384d",
+      "name": "222",
       "type": "directory",
-      "parent": null,
-      "id": 19
+      "parent": "0dda2626-5554-44a3-a89e-a564e2348281"
     },
     {
-      "name": "fawef",
-      "type": "file",
-      "parent": null,
-      "id": 22
-    },
-    {
-      "name": "wfaewfwa",
-      "type": "file",
-      "parent": null,
-      "id": 24
-    },
-    {
-      "name": "wfawefewf",
-      "type": "file",
-      "parent": null,
-      "id": 25
-    },
-    {
-      "name": "mnm",
+      "id": "ee8ecf48-201d-443e-ac7d-6650852673eb",
+      "name": "3333",
       "type": "directory",
-      "parent": null,
-      "id": 26
+      "parent": "eefab588-6d4d-4bac-968c-57f9d15c2429"
     },
     {
-      "name": "m,m,m,",
-      "type": "file",
-      "parent": null,
-      "id": 27
-    },
-    {
-      "name": "wafwfe",
+      "id": "0dda2626-5554-44a3-a89e-a564e2348281",
+      "name": "ababab",
       "type": "directory",
-      "parent": null,
-      "id": 28
+      "parent": "8667cbb0-8d62-4970-bf35-fd61260bfc3c"
     },
     {
-      "name": "aaamaa aa",
-      "type": "file",
-      "parent": null,
-      "id": 29
-    },
-    {
-      "name": "faewfawe",
-      "type": "file",
-      "parent": null,
-      "id": 31
-    },
-    {
-      "name": "weafewf",
-      "type": "file",
-      "parent": null,
-      "id": 32
-    },
-    {
-      "name": "fawefewaf",
-      "type": "file",
-      "parent": null,
-      "id": 33
-    },
-    {
-      "name": "fawefweaf",
-      "type": "file",
-      "parent": null,
-      "id": 34
-    },
-    {
-      "name": "fdgsdfgg",
-      "type": "file",
-      "parent": null,
-      "id": 35
-    },
-    {
-      "name": "wefawefe",
-      "type": "file",
-      "parent": null,
-      "id": 36
-    },
-    {
-      "name": "rtehtrhtrhh",
-      "type": "file",
-      "parent": null,
-      "id": 37
-    },
-    {
-      "name": "tessst",
+      "id": "641743f9-5164-4e50-b6cd-03b3ddec2077",
+      "name": "32323",
       "type": "directory",
-      "parent": 30,
-      "id": 38
+      "parent": "051019c7-d37e-491a-b7e4-f67938f2bcb0"
     },
     {
-      "name": "jknkjn",
-      "type": "file",
-      "parent": 30,
-      "id": 39
-    },
-    {
-      "name": "TEST AGAIN YO",
-      "type": "directory",
-      "parent": 38,
-      "id": 40
-    },
-    {
-      "name": "aa",
-      "type": "directory",
-      "parent": 19,
-      "id": 41
-    },
-    {
-      "name": "klmlkm",
-      "type": "directory",
-      "parent": 19,
-      "id": 42
-    },
-    {
-      "name": "kjnk",
-      "type": "file",
-      "parent": 19,
-      "id": 43
-    },
-    {
-      "name": "kjnkjn",
-      "type": "file",
-      "parent": 19,
-      "id": 44
-    },
-    {
-      "name": "sdfasfsfasf",
-      "type": "directory",
-      "parent": 41,
-      "id": 45
-    },
-    {
-      "name": "afwef",
-      "type": "file",
-      "parent": null,
-      "id": 46
-    },
-    {
-      "name": "ddd",
-      "type": "directory",
-      "parent": null,
-      "id": 47
-    },
-    {
-      "name": "a213",
-      "type": "directory",
-      "parent": null,
-      "id": 48
-    },
-    {
-      "name": "afew",
-      "type": "directory",
-      "parent": 19,
-      "id": 49
-    },
-    {
-      "name": "ewaf",
-      "type": "directory",
-      "parent": null,
-      "id": 50
-    },
-    {
-      "name": "ew",
-      "type": "directory",
-      "parent": null,
-      "id": 51
-    },
-    {
-      "name": "weafw",
-      "type": "directory",
-      "parent": null,
-      "id": 52
-    },
-    {
-      "name": "fe",
-      "type": "directory",
-      "parent": null,
-      "id": 53
-    },
-    {
-      "name": "ewf",
-      "type": "directory",
-      "parent": null,
-      "id": 54
-    },
-    {
-      "name": "ewaf",
-      "type": "directory",
-      "parent": null,
-      "id": 55
-    },
-    {
+      "id": "8667cbb0-8d62-4970-bf35-fd61260bfc3c",
       "name": "test 1",
       "type": "directory",
-      "parent": 54,
-      "id": 56
+      "parent": "6687b71e-3afb-4544-ad26-2bcf773d27e3"
     },
     {
+      "id": "eefab588-6d4d-4bac-968c-57f9d15c2429",
       "name": "test 2",
       "type": "directory",
-      "parent": 53,
-      "id": 57
+      "parent": null
     },
     {
-      "name": "fawf",
-      "type": "file",
-      "parent": null,
-      "id": 58
+      "id": "6687b71e-3afb-4544-ad26-2bcf773d27e3",
+      "name": "test 3",
+      "type": "directory",
+      "parent": null
     }
   ]
 }

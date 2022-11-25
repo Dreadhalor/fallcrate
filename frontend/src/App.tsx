@@ -6,6 +6,7 @@ import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
 import db from './db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
 import BrowserHeader from './components/BrowserItem/BrowserHeader';
+import Modal from './components/Modal';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -14,6 +15,7 @@ function App() {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<File[]>(
     []
   );
+  const [moveFilesModalOpen, setMoveFilesModalOpen] = useState(false);
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
@@ -86,16 +88,42 @@ function App() {
       });
     }
   };
+  // prompt to move a file to a new directory
+  // const promptMoveFiles = (files_to_move: File[]) => {
+  //   const new_parent_id = prompt('Enter a new parent directory id');
+  //   if (new_parent_id) {
+  //     const parent = files.find((file) => file.id === new_parent_id);
+  //     if (parent && parent?.type === 'directory')
+  //       moveFiles(files_to_move, parent);
+  //   }
+  //   // setMoveFilesModalOpen(true);
+  // };
+  const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
+    file_ids_to_move.forEach((file_id) => {
+      if (file_id == parent_id) return;
+      db.moveFile(file_id, parent_id).then((data) => {
+        setFiles((prev) =>
+          prev.map((file) => (file.id === data.id ? data : file))
+        );
+      });
+    });
+  };
 
   useEffect(() => {
     db.fetchFiles().then((data) => setFiles(data));
   }, []);
   useEffect(() => {
+    files.forEach((file) => {
+      if (file.parent === file.id) {
+        moveFiles([file.id], null);
+      }
+    });
     openDirectory(currentDirectory);
   }, [files]);
 
   return (
     <div className='flex h-full w-full flex-col border-0 border-blue-800 bg-white'>
+      <Modal isOpen={moveFilesModalOpen}>hi</Modal>
       <div id='navbar' className='flex w-full border-b border-gray-300 p-[8px]'>
         <div
           className='flex w-fit cursor-pointer flex-row items-center gap-[6px] p-[4px]'
@@ -118,6 +146,7 @@ function App() {
             files={files.sort(sortFiles)}
             currentDirectory={currentDirectory}
             openDirectory={openDirectory}
+            moveFiles={moveFiles}
           />
         </div>
         <div
@@ -131,6 +160,7 @@ function App() {
                 file={file}
                 currentDirectory={currentDirectory}
                 openDirectory={openDirectory}
+                moveFiles={moveFiles}
               />
             ))}
           </div>
@@ -154,6 +184,18 @@ function App() {
             </button>
             {selectedFiles.length > 0 && (
               <>
+                {/* <button
+                  className='min-w-[120px] border py-[5px] px-[15px] hover:bg-gray-200'
+                  onClick={() =>
+                    promptMoveFiles(
+                      selectedFiles.map(
+                        (id) => files.find((file) => file.id === id)!
+                      )
+                    )
+                  }
+                >
+                  Move
+                </button> */}
                 {selectedFiles.length === 1 && (
                   <button
                     className='min-w-[120px] border py-[5px] px-[15px] hover:bg-gray-200'
@@ -195,6 +237,7 @@ function App() {
                 selectedFiles={selectedFiles}
                 selectFile={selectFile}
                 openFile={openFile}
+                moveFiles={moveFiles}
               />
             ))}
             {currentDirectoryFiles.length === 0 && (

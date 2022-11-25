@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { File } from '../../helpers';
+import AnimatedDropdown from '../utilities/AnimatedDropdown';
 import SidebarBrowser from './SidebarBrowser';
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
   files: File[];
   currentDirectory: string | null;
   openDirectory: (file_id: string | null) => void;
+  moveFiles: (file_ids: string[], destination_id: string | null) => void;
 };
 
 const AllFilesMenuItem = ({
@@ -15,6 +17,7 @@ const AllFilesMenuItem = ({
   files,
   currentDirectory,
   openDirectory,
+  moveFiles,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -33,7 +36,7 @@ const AllFilesMenuItem = ({
         />
         {title}
       </div>
-      <div
+      {/* <div
         className='cursor-default overflow-hidden transition-all duration-300'
         style={{ maxHeight: isOpen ? '250px' : '0' }}
       >
@@ -47,7 +50,19 @@ const AllFilesMenuItem = ({
             currentDirectory={currentDirectory}
           />
         </div>
-      </div>
+      </div> */}
+      <AnimatedDropdown
+        isOpen={isOpen}
+        maxHeight='250px'
+        border='border-y border-gray-300'
+      >
+        <SidebarBrowser
+          files={files}
+          openDirectory={openDirectory}
+          currentDirectory={currentDirectory}
+          moveFiles={moveFiles}
+        />
+      </AnimatedDropdown>
     </div>
   );
 };

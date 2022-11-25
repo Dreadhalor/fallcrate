@@ -6,8 +6,14 @@ type Props = {
   files: File[];
   currentDirectory: string | null;
   openDirectory: (file_id: string | null) => void;
+  moveFiles: (file_ids: string[], destination_id: string | null) => void;
 };
-const SidebarBrowser = ({ files, currentDirectory, openDirectory }: Props) => {
+const SidebarBrowser = ({
+  files,
+  currentDirectory,
+  openDirectory,
+  moveFiles,
+}: Props) => {
   const top_level_folders = files.filter(
     (file) => file.parent === null && file.type === 'directory'
   );
@@ -19,9 +25,11 @@ const SidebarBrowser = ({ files, currentDirectory, openDirectory }: Props) => {
           <SidebarBrowserItem
             file={file}
             files={files}
+            indentLevel={0}
             key={file.id}
             openDirectory={openDirectory}
             currentDirectory={currentDirectory}
+            moveFiles={moveFiles}
           />
         ))}
       </div>{' '}
