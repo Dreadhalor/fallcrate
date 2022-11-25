@@ -191,18 +191,6 @@ function App() {
             </button>
             {selectedFiles.length > 0 && (
               <>
-                {/* <button
-                  className='min-w-[120px] border py-[5px] px-[15px] hover:bg-gray-200'
-                  onClick={() =>
-                    promptMoveFiles(
-                      selectedFiles.map(
-                        (id) => files.find((file) => file.id === id)!
-                      )
-                    )
-                  }
-                >
-                  Move
-                </button> */}
                 {selectedFiles.length === 1 && (
                   <button
                     className='min-w-[120px] border py-[5px] px-[15px] hover:bg-gray-200'
