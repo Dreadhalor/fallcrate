@@ -98,6 +98,9 @@ function App() {
           setFiles((prev) =>
             prev.map((file) => (file.id === data.id ? data : file))
           );
+          // if the file was moved to a different directory, deselect it
+          if (parent_id !== currentDirectory)
+            setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
         });
       }
     });

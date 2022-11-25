@@ -25,21 +25,14 @@ const MainFileBrowser = ({
 }: Props) => {
   const [dragover, setDragover] = useState(false);
   return (
-    <div id='content-browser' className='flex flex-1 flex-col overflow-auto'>
-      {currentDirectoryFiles.length > 0 && (
-        <>
-          <div className='flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
-            Here is a random spacer to demonstrate that the column header is
-            sticky
-          </div>
-          <BrowserHeader
-            selectedFiles={selectedFiles}
-            currentDirectoryFiles={currentDirectoryFiles}
-            massToggleSelectFiles={massToggleSelectFiles}
-          />
-        </>
-      )}
+    <div className='relative flex flex-1 overflow-hidden border-[6px]'>
       <div
+        className='pointer-events-none absolute inset-[1px] z-20 overflow-hidden'
+        style={{ border: dragover ? '2px dashed blue' : 'none' }}
+      ></div>
+      <div
+        id='content-browser'
+        className='relative flex flex-1 flex-col overflow-auto'
         onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           setDragover(true);
@@ -49,14 +42,20 @@ const MainFileBrowser = ({
           e.preventDefault();
           setDragover(false);
         }}
-        className='relative flex flex-col'
       >
-        <div
-          className='pointer-events-none absolute inset-0'
-          style={{
-            border: dragover ? '2px dashed blue' : 'none',
-          }}
-        ></div>
+        {currentDirectoryFiles.length > 0 && (
+          <>
+            <div className='flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
+              Here is a random spacer to demonstrate that the column header is
+              sticky
+            </div>
+            <BrowserHeader
+              selectedFiles={selectedFiles}
+              currentDirectoryFiles={currentDirectoryFiles}
+              massToggleSelectFiles={massToggleSelectFiles}
+            />
+          </>
+        )}
         {currentDirectoryFiles.map((file) => (
           <BrowserItem
             file={file}
@@ -67,12 +66,12 @@ const MainFileBrowser = ({
             moveFiles={moveFiles}
           />
         ))}
+        {currentDirectoryFiles.length === 0 && (
+          <div className='m-auto flex items-center justify-center pb-[100px]'>
+            <p className='m-auto text-gray-400'>No files in this folder!</p>
+          </div>
+        )}
       </div>
-      {currentDirectoryFiles.length === 0 && (
-        <div className='m-auto flex items-center justify-center pb-[100px]'>
-          <p className='m-auto text-gray-400'>No files in this folder!</p>
-        </div>
-      )}
     </div>
   );
 };

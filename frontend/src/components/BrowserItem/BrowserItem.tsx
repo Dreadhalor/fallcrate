@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
 import { File } from '../../helpers';
-import './styles.scss';
 
 type Props = {
   file: File;
@@ -19,7 +18,6 @@ const BrowserItem = ({
   moveFiles,
 }: Props) => {
   const is_selected = selectedFiles.includes(file.id);
-  const selected_class = is_selected ? 'item-selected' : 'item-unselected';
   const some_selected = selectedFiles.length > 0;
 
   const allowDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -27,6 +25,7 @@ const BrowserItem = ({
     setDragover(true);
   };
   const drag = (e: React.DragEvent<HTMLDivElement>) => {
+    setDragging(true);
     e.dataTransfer.setData('file_id', file.id);
   };
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -34,22 +33,45 @@ const BrowserItem = ({
     const file_id = e.dataTransfer.getData('file_id');
     moveFiles([file_id], file.id);
     setDragover(false);
+    setDragging(false);
   };
 
   const [dragover, setDragover] = useState(false);
+  const [dragging, setDragging] = useState(false);
+
+  const background = dragover && !dragging ? 'bg-[rgba(0,97,254,0.16)]' : '';
+
+  const item_background_colors = {
+    hover: '#f5f5f5',
+    selected: 'rgba(0,97,254,0.16)',
+  };
+
+  const item_selected = `border-l-[2px] pl-[8px]`;
+  const item_unselected = `pl-[10px]`;
+  const possible_bgs = {
+    unselected: 'group-hover:bg-[#f5f5f5]',
+    selected: 'bg-[rgba(0,97,254,0.16)]',
+    dragging: is_selected ? 'bg-[rgba(0,97,254,0.16)]' : 'bg-[#f5f5f5]',
+  };
+  const selected_class = is_selected ? item_selected : item_unselected;
+  const bg = dragging
+    ? possible_bgs.dragging
+    : is_selected
+    ? possible_bgs.selected
+    : possible_bgs.unselected;
 
   return (
     <div
-      className={`browser-item group flex w-full flex-row items-center ${
-        dragover ? 'bg-blue-400' : 'bg-white'
-      }`}
+      className={`group flex w-full flex-row items-center ${background}`}
       draggable
       onDragStart={drag}
       onDragOver={allowDrop}
-      onDragLeave={() => setDragover(false)}
+      onDragLeave={() => {
+        setDragover(false);
+      }}
       onDrop={drop}
     >
-      <div className='p-[6px]'>
+      <div className='p-[10px]'>
         <div
           className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
             some_selected && 'border'
@@ -64,7 +86,7 @@ const BrowserItem = ({
         </div>
       </div>
       <div
-        className={`flex h-full flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${selected_class}`}
+        className={`flex h-full flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${selected_class} ${bg}`}
         onClick={() => openFile(file.id)}
       >
         {file.type === 'directory' ? <FaFolder /> : <FaFile />}
