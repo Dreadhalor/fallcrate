@@ -6,6 +6,7 @@ import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
 import db from './db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
 import BrowserHeader from './components/BrowserItem/BrowserHeader';
+import MainFileBrowser from './components/MainFileBrowser';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -90,11 +91,9 @@ function App() {
     file_ids_to_move.forEach((file_id) => {
       if (file_id == parent_id) return;
       const parent = files.find((file) => file.id === parent_id);
-      if (
-        parent &&
-        parent?.type === 'directory' &&
-        !checkForCircularReference(file_id, parent_id)
-      ) {
+      const valid_parent = parent?.type === 'directory' || parent_id === null;
+      const circular_parent = checkForCircularReference(file_id, parent_id);
+      if (valid_parent && !circular_parent) {
         db.moveFile(file_id, parent_id).then((data) => {
           setFiles((prev) =>
             prev.map((file) => (file.id === data.id ? data : file))
@@ -130,7 +129,7 @@ function App() {
   }, [files]);
 
   return (
-    <div className='flex h-full w-full flex-col border-0 border-blue-800 bg-white'>
+    <div className='flex h-full w-full flex-col bg-white'>
       <div id='navbar' className='flex w-full border-b border-gray-300 p-[8px]'>
         <div
           className='flex w-fit cursor-pointer flex-row items-center gap-[6px] p-[4px]'
@@ -140,10 +139,7 @@ function App() {
           <img className='h-[20px]' src='/src/assets/Fallcrate.svg' />
         </div>
       </div>
-      <div
-        id='dashboard'
-        className='flex flex-1 flex-row overflow-hidden border-0 border-black'
-      >
+      <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
         <div
           id='sidebar'
           className='h-full w-[250px] border-r border-gray-300 bg-gray-100'
@@ -156,10 +152,7 @@ function App() {
             moveFiles={moveFiles}
           />
         </div>
-        <div
-          id='content'
-          className='flex h-full flex-1 flex-col border-0 border-green-800'
-        >
+        <div id='content' className='flex h-full flex-1 flex-col'>
           <div id='breadcrumbs' className='flex flex-row p-[20px] pb-[10px]'>
             {getDirectoryPath(currentDirectory, files).map((file) => (
               <Breadcrumb
@@ -208,39 +201,14 @@ function App() {
               </>
             )}
           </div>
-          <div
-            id='content-browser'
-            className='flex flex-1 flex-col overflow-auto border-0 border-red-700'
-          >
-            {currentDirectoryFiles.length > 0 && (
-              <>
-                <div className='flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
-                  Here is a random spacer to demonstrate that the column header
-                  is sticky
-                </div>
-                <BrowserHeader
-                  selectedFiles={selectedFiles}
-                  currentDirectoryFiles={currentDirectoryFiles}
-                  massToggleSelectFiles={massToggleSelectFiles}
-                />
-              </>
-            )}
-            {currentDirectoryFiles.map((file) => (
-              <BrowserItem
-                file={file}
-                key={file.id}
-                selectedFiles={selectedFiles}
-                selectFile={selectFile}
-                openFile={openFile}
-                moveFiles={moveFiles}
-              />
-            ))}
-            {currentDirectoryFiles.length === 0 && (
-              <div className='m-auto flex items-center justify-center pb-[100px]'>
-                <p className='m-auto text-gray-400'>No files in this folder!</p>
-              </div>
-            )}
-          </div>
+          <MainFileBrowser
+            currentDirectoryFiles={currentDirectoryFiles}
+            selectedFiles={selectedFiles}
+            selectFile={selectFile}
+            openFile={openFile}
+            moveFiles={moveFiles}
+            massToggleSelectFiles={massToggleSelectFiles}
+          />
         </div>
       </div>
     </div>

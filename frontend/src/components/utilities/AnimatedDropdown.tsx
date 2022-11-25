@@ -34,7 +34,7 @@ const AnimatedDropdown = forwardRef(
         )}
         <div
           ref={size_ref}
-          className={`relative overflow-auto ${border}`}
+          className={`overflow-auto ${border}`}
           style={{
             maxHeight: max_height,
           }}
