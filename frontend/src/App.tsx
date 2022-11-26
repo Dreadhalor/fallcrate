@@ -88,18 +88,29 @@ function App() {
   const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
     file_ids_to_move.forEach((file_id) => {
       if (file_id == parent_id) return;
+      const file = files.find((file) => file.id === file_id);
       const parent = files.find((file) => file.id === parent_id);
       const valid_parent = parent?.type === 'directory' || parent_id === null;
       const circular_parent = checkForCircularReference(file_id, parent_id);
-      if (valid_parent && !circular_parent) {
-        db.moveFile(file_id, parent_id).then((data) => {
-          setFiles((prev) =>
-            prev.map((file) => (file.id === data.id ? data : file))
+      if (valid_parent) {
+        if (!circular_parent) {
+          db.moveFile(file_id, parent_id).then((data) => {
+            setFiles((prev) =>
+              prev.map((file) => (file.id === data.id ? data : file))
+            );
+            // if the file was moved to a different directory, deselect it
+            if (parent_id !== currentDirectory)
+              setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
+          });
+        } else {
+          alert(
+            `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`
           );
-          // if the file was moved to a different directory, deselect it
-          if (parent_id !== currentDirectory)
-            setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
-        });
+        }
+      } else {
+        alert(
+          `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a file into a file!`
+        );
       }
     });
   };
@@ -107,10 +118,7 @@ function App() {
     file_id: string,
     parent_id: string | null
   ): boolean => {
-    if (file_id === parent_id) {
-      console.log('Circular reference detected');
-      return true;
-    }
+    if (file_id === parent_id) return true;
     if (parent_id === null) return false;
     const parent = files.find((file) => file.id === parent_id);
     if (parent) return checkForCircularReference(file_id, parent.parent);
