@@ -27,16 +27,25 @@ const AllFilesMenuItem = ({
   return (
     <div className='flex cursor-pointer flex-col'>
       <div
-        className='flex flex-row items-center gap-[5px] px-[20px] py-[10px]'
+        className='group flex flex-row items-center gap-[5px] py-[10px] pr-[20px] pl-[10px]'
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <FaChevronRight
-          size={10}
-          className='transition-transform'
-          style={{
-            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+        <div
+          className={`rounded-sm p-[5px] transition-colors duration-200 group-hover:bg-gray-300`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((prev) => !prev);
           }}
-        />
+        >
+          <FaChevronRight
+            size={10}
+            className='h-full transition-transform'
+            style={{
+              transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+            }}
+          />
+        </div>
+
         {title}
       </div>
       <Collapse isOpened={isOpen} initialStyle={{ height: max_height }}>

@@ -43,6 +43,7 @@ const SidebarBrowserItem = ({
     : 'hover:bg-gray-100';
   const background = dragover ? background_2 : background_1;
 
+  const top_level_left_margin = 16;
   const left_margin = 4;
 
   const allowDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -63,7 +64,11 @@ const SidebarBrowserItem = ({
     <div className='flex cursor-pointer flex-col text-xs'>
       <div
         className={`flex flex-row items-center gap-[5px] p-[4px] ${background} group`}
-        style={{ paddingLeft: `${indentLevel * 10 + left_margin}px` }}
+        style={{
+          paddingLeft: `${
+            indentLevel * 10 + left_margin + top_level_left_margin
+          }px`,
+        }}
         onClick={() => {
           if (isCurrentDirectory) setIsOpen((prev) => !prev);
           else openDirectory(file.id);
@@ -76,7 +81,7 @@ const SidebarBrowserItem = ({
       >
         {childFolders.length > 0 ? (
           <div
-            className={`p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
+            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
               isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
             }`}
             onClick={(e) => {
@@ -97,8 +102,8 @@ const SidebarBrowserItem = ({
             <BsDot size={8} />
           </div>
         )}
-        <FaFolder />
-        {file.name}
+        <FaFolder className='flex-shrink-0' />
+        <span className='truncate'>{file.name}</span>
       </div>
       <Collapse isOpened={isOpen}>
         {childFolders.map((child) => (
