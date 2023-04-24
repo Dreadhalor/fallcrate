@@ -1,18 +1,17 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 
 type Props = {
   text: string;
-  containerClassName?: string;
   truncationChange?: (isTruncated: boolean) => void;
 };
 
 const TruncatedText = ({ text, truncationChange }: Props) => {
-  const textRef = useRef<HTMLDivElement>(null);
+  const text_ref = useRef<HTMLDivElement>(null);
 
   const checkTruncation = () => {
-    if (textRef.current && truncationChange) {
+    if (text_ref.current && truncationChange) {
       truncationChange(
-        textRef.current.offsetWidth < textRef.current.scrollWidth
+        text_ref.current.offsetWidth < text_ref.current.scrollWidth
       );
     }
   };
@@ -24,15 +23,15 @@ const TruncatedText = ({ text, truncationChange }: Props) => {
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => checkTruncation());
 
-    if (textRef.current) resizeObserver.observe(textRef.current);
+    if (text_ref.current) resizeObserver.observe(text_ref.current);
 
     return () => {
-      if (textRef.current) resizeObserver.unobserve(textRef.current);
+      if (text_ref.current) resizeObserver.unobserve(text_ref.current);
     };
   }, []);
 
   return (
-    <div className='h-full truncate' ref={textRef}>
+    <div className='h-full truncate' ref={text_ref}>
       {text}
     </div>
   );
