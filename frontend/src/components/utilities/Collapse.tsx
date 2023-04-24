@@ -8,7 +8,6 @@ type Props = {
   dragOutline?: boolean;
 };
 
-// this only animates to an explicit height, not to auto
 const Collapse = ({
   maxHeight,
   isOpen,
@@ -18,14 +17,10 @@ const Collapse = ({
 }: Props) => {
   const [dragover, setDragover] = useState(false);
 
-  const default_max_height = '500px';
-  const max_height = maxHeight ?? default_max_height;
-
-  const size_ref = useRef<HTMLDivElement>(null);
   return (
     <div
-      className='relative cursor-default overflow-hidden transition-all duration-200'
-      style={{ maxHeight: isOpen ? max_height : '0' }}
+      className='relative cursor-default'
+      style={{ maxHeight: isOpen ? maxHeight : '0px' }}
     >
       {dragOutline && (
         <div
@@ -34,11 +29,8 @@ const Collapse = ({
         ></div>
       )}
       <div
-        ref={size_ref}
         className={`overflow-auto ${border}`}
-        style={{
-          maxHeight: max_height,
-        }}
+        style={{ maxHeight }}
         onDragOver={(e) => {
           e.preventDefault();
           setDragover(true);

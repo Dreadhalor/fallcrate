@@ -45,7 +45,7 @@ const SidebarBrowser = ({
             moveFiles={moveFiles}
           />
         ))}
-      </div>{' '}
+      </div>
     </div>
   );
 };
