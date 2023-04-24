@@ -76,8 +76,9 @@ function App() {
   };
   // prompt to rename a file
   const promptRenameFile = (file_id: string) => {
-    const name = prompt('Enter a new file name');
-    if (name) {
+    const file = files.find((file) => file.id === file_id);
+    const name = prompt('Enter a new file name', file?.name);
+    if (name && name !== file?.name) {
       db.renameFile(file_id, name).then((data) => {
         setFiles((prev) =>
           prev.map((file) => (file.id === file_id ? data : file))
