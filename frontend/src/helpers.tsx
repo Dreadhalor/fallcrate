@@ -55,3 +55,24 @@ export const getDirectoryPath = (
   if (!file) return [null];
   return [...getDirectoryPath(file?.parent, files), file];
 };
+
+export const createDragImage = (name: string) => {
+  const dragImage = document.createElement('div');
+  dragImage.style.position = 'absolute';
+  dragImage.style.top = '-9999px';
+  dragImage.style.left = '-9999px';
+  dragImage.style.padding = '8px';
+  dragImage.style.borderRadius = '4px';
+  dragImage.style.backgroundColor = 'rgba(0, 97, 254, 0.16)';
+  dragImage.style.color = 'black';
+  dragImage.style.fontFamily = 'Arial, sans-serif';
+  dragImage.style.fontSize = '12px';
+  dragImage.style.fontWeight = 'bold';
+  dragImage.style.whiteSpace = 'nowrap';
+  dragImage.classList.add('drag-image');
+  dragImage.innerText = name;
+
+  document.body.appendChild(dragImage);
+
+  return dragImage;
+};

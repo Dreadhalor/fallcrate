@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
-import { File } from '../../helpers';
+import { createDragImage, File } from '../../helpers';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -56,9 +56,20 @@ const SidebarBrowserItem = ({
     e.preventDefault();
     setDragover(true);
   };
+
   const drag = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData('file_id', file.id);
+    const dragImage = createDragImage(file.name);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
   };
+
+  const dragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    const dragImage = document.querySelector('.drag-image');
+    if (dragImage) {
+      document.body.removeChild(dragImage);
+    }
+  };
+
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file_id = e.dataTransfer.getData('file_id');
@@ -81,6 +92,7 @@ const SidebarBrowserItem = ({
         onDragStart={drag}
         onDragOver={allowDrop}
         onDragLeave={() => setDragover(false)}
+        onDragEnd={dragEnd}
         onDrop={drop}
       >
         {childFolders.length > 0 ? (

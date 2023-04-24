@@ -152,7 +152,7 @@ function App() {
       <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
         <div
           id='sidebar'
-          className='h-full w-[250px] border-r border-gray-300 bg-gray-100'
+          className='z-20 h-full w-[250px] border-r border-gray-300 bg-gray-100'
         >
           <AllFilesMenuItem
             title={'All Files'}
