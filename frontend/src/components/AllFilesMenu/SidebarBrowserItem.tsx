@@ -114,7 +114,11 @@ const SidebarBrowserItem = ({
           <TruncatedText text={file.name} truncationChange={setIsTruncated} />
         </div>
         {isTruncated && (
-          <Tooltip anchorSelect={`#${display_id}`} content={file.name} />
+          <Tooltip
+            anchorSelect={`#${display_id}`}
+            content={file.name}
+            positionStrategy='fixed'
+          />
         )}
       </div>
       <Collapse isOpened={isOpen}>
