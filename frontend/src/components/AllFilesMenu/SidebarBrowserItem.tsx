@@ -47,8 +47,8 @@ const SidebarBrowserItem = ({
     : 'hover:bg-gray-100';
   const background = dragover ? background_2 : background_1;
 
-  const top_level_left_margin = 16;
-  const left_margin = 4;
+  const left_margin = 20;
+  const indent_margin = 10;
 
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -71,9 +71,7 @@ const SidebarBrowserItem = ({
       <div
         className={`flex flex-row items-center gap-[5px] px-[4px] ${background} group`}
         style={{
-          paddingLeft: `${
-            indentLevel * 10 + left_margin + top_level_left_margin
-          }px`,
+          paddingLeft: `${indentLevel * indent_margin + left_margin}px`,
         }}
         onClick={() => {
           if (isCurrentDirectory) setIsOpen((prev) => !prev);
