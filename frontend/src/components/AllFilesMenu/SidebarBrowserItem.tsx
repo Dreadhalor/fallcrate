@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { File } from '../../helpers';
-import AnimatedDropdown from '../utilities/AnimatedDropdown';
+import Accordion from '../utilities/Accordion';
 
 type Props = {
   file: File;
@@ -97,7 +97,7 @@ const SidebarBrowserItem = ({
         <FaFolder />
         {file.name}
       </div>
-      <AnimatedDropdown isOpen={isOpen}>
+      <Accordion isOpen={isOpen}>
         {childFolders.map((child) => (
           <SidebarBrowserItem
             file={child}
@@ -110,7 +110,7 @@ const SidebarBrowserItem = ({
             moveFiles={moveFiles}
           />
         ))}
-      </AnimatedDropdown>
+      </Accordion>
     </div>
   );
 };

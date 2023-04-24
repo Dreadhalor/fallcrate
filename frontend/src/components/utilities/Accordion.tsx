@@ -9,7 +9,7 @@ type Props = {
 };
 
 // this only animates to an explicit height, not to auto
-const AnimatedDropdown = ({
+const Accordion = ({
   maxHeight,
   isOpen,
   border,
@@ -57,4 +57,4 @@ const AnimatedDropdown = ({
     </div>
   );
 };
-export default AnimatedDropdown;
+export default Accordion;
