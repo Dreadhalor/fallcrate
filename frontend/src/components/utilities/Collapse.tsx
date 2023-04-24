@@ -9,7 +9,7 @@ type Props = {
 };
 
 // this only animates to an explicit height, not to auto
-const Accordion = ({
+const Collapse = ({
   maxHeight,
   isOpen,
   border,
@@ -57,4 +57,4 @@ const Accordion = ({
     </div>
   );
 };
-export default Accordion;
+export default Collapse;

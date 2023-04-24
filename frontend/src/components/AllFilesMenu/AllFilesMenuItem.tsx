@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { File } from '../../helpers';
-import Accordion from '../utilities/Accordion';
+import Collapse from '../utilities/Collapse';
 import SidebarBrowser from './SidebarBrowser';
 
 type Props = {
@@ -36,7 +36,7 @@ const AllFilesMenuItem = ({
         />
         {title}
       </div>
-      <Accordion
+      <Collapse
         isOpen={isOpen}
         maxHeight='250px'
         border='border-y border-gray-300'
@@ -48,7 +48,7 @@ const AllFilesMenuItem = ({
           currentDirectory={currentDirectory}
           moveFiles={moveFiles}
         />
-      </Accordion>
+      </Collapse>
     </div>
   );
 };

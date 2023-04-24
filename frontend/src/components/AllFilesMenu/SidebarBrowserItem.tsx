@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { File } from '../../helpers';
-import Accordion from '../utilities/Accordion';
+import Collapse from '../utilities/Collapse';
 
 type Props = {
   file: File;
@@ -97,7 +97,7 @@ const SidebarBrowserItem = ({
         <FaFolder />
         {file.name}
       </div>
-      <Accordion isOpen={isOpen}>
+      <Collapse isOpen={isOpen}>
         {childFolders.map((child) => (
           <SidebarBrowserItem
             file={child}
@@ -110,7 +110,7 @@ const SidebarBrowserItem = ({
             moveFiles={moveFiles}
           />
         ))}
-      </Accordion>
+      </Collapse>
     </div>
   );
 };
