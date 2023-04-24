@@ -33,10 +33,11 @@ const SidebarBrowserItem = ({
     );
   }, [files, file.id]);
 
-  const background_1 =
-    currentDirectory === file.id
-      ? 'bg-[rgba(0,97,254,0.16)]'
-      : 'hover:bg-gray-100';
+  const isCurrentDirectory = currentDirectory === file.id;
+
+  const background_1 = isCurrentDirectory
+    ? 'bg-[rgba(0,97,254,0.16)]'
+    : 'hover:bg-gray-100';
   const background_2 = dragover
     ? 'bg-[rgba(0,97,254,0.16)]'
     : 'hover:bg-gray-100';
@@ -61,10 +62,10 @@ const SidebarBrowserItem = ({
   return (
     <div className='flex cursor-pointer flex-col text-xs'>
       <div
-        className={`flex flex-row items-center gap-[5px] p-[4px] ${background}`}
+        className={`flex flex-row items-center gap-[5px] p-[4px] ${background} group`}
         style={{ paddingLeft: `${indentLevel * 10 + left_margin}px` }}
         onClick={() => {
-          if (currentDirectory === file.id) setIsOpen((prev) => !prev);
+          if (isCurrentDirectory) setIsOpen((prev) => !prev);
           else openDirectory(file.id);
         }}
         draggable
@@ -75,7 +76,9 @@ const SidebarBrowserItem = ({
       >
         {childFolders.length > 0 ? (
           <div
-            className='p-[5px] hover:bg-gray-300'
+            className={`p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
+              isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
+            }`}
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen((prev) => !prev);
