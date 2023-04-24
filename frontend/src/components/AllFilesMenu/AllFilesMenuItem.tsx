@@ -55,12 +55,12 @@ const AllFilesMenuItem = ({
             setDragover(false);
           }}
         >
-          {
+          {dragover && (
             <div
               className='pointer-events-none absolute inset-[1px] z-10'
-              style={{ border: dragover ? '2px dashed blue' : 'none' }}
+              style={{ border: '2px dashed blue' }}
             ></div>
-          }
+          )}
           <SidebarBrowser
             files={files}
             openDirectory={openDirectory}
