@@ -20,7 +20,7 @@ const BrowserHeader = ({
     <div className='group pointer-events-none sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
       <div className='p-[10px]'>
         <div
-          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
+          className={`pointer-events-auto flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
             some_files_selected && 'border'
           } ${
             some_files_selected || all_files_selected
