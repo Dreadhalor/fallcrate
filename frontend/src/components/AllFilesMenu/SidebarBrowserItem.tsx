@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { File } from '../../helpers';
 import { Collapse } from 'react-collapse';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
+import TruncatedText from '../utilities/TruncatedText';
 
 type Props = {
   file: File;
@@ -26,6 +29,7 @@ const SidebarBrowserItem = ({
   const [isOpen, setIsOpen] = useState(false);
   const [childFolders, setChildFolders] = useState<File[]>([]);
   const [dragover, setDragover] = useState(false);
+  const display_id = `file-${file.id}`;
 
   useEffect(() => {
     setChildFolders(
@@ -46,6 +50,8 @@ const SidebarBrowserItem = ({
   const top_level_left_margin = 16;
   const left_margin = 4;
 
+  const [isTruncated, setIsTruncated] = useState(false);
+
   const allowDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragover(true);
@@ -63,7 +69,7 @@ const SidebarBrowserItem = ({
   return (
     <div className='flex cursor-pointer flex-col text-xs'>
       <div
-        className={`flex flex-row items-center gap-[5px] p-[4px] ${background} group`}
+        className={`flex flex-row items-center gap-[5px] px-[4px] ${background} group`}
         style={{
           paddingLeft: `${
             indentLevel * 10 + left_margin + top_level_left_margin
@@ -91,7 +97,7 @@ const SidebarBrowserItem = ({
           >
             <FaChevronRight
               size={8}
-              className='duration-50 transition-transform'
+              className='transition-transform duration-100'
               style={{
                 transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
               }}
@@ -103,7 +109,13 @@ const SidebarBrowserItem = ({
           </div>
         )}
         <FaFolder className='flex-shrink-0' />
-        <span className='truncate'>{file.name}</span>
+        {/* add a tooltip of the file name when hovering over the file name */}
+        <div className='min-w-0 py-[4px]' id={display_id}>
+          <TruncatedText text={file.name} truncationChange={setIsTruncated} />
+        </div>
+        {isTruncated && (
+          <Tooltip anchorSelect={`#${display_id}`} content={file.name} />
+        )}
       </div>
       <Collapse isOpened={isOpen}>
         {childFolders.map((child) => (
