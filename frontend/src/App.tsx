@@ -5,6 +5,7 @@ import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
 import db from './db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
 import MainFileBrowser from './components/MainFileBrowser/MainFileBrowser';
+import CombinationMark from './assets/combination-mark.svg';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -140,19 +141,21 @@ function App() {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <div id='navbar' className='flex w-full border-b border-gray-300 p-[8px]'>
+      <div
+        id='navbar'
+        className='flex min-h-[49px] w-full border-b border-gray-300 px-[8px]'
+      >
         <div
           className='flex w-fit cursor-pointer flex-row items-center gap-[6px] p-[4px]'
           onClick={() => openDirectory(null)}
         >
-          <img className='h-[30px]' src='/src/assets/Logo.svg' />
-          <img className='h-[20px]' src='/src/assets/Fallcrate.svg' />
+          <img className='h-[32px]' src={CombinationMark} />
         </div>
       </div>
       <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
         <div
           id='sidebar'
-          className='z-20 h-full w-[250px] border-r border-gray-300 bg-gray-100'
+          className='bg-faded z-20 h-full w-[250px] border-r border-gray-300'
         >
           <AllFilesMenuItem
             title={'All Files'}
