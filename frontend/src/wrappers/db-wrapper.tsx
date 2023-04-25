@@ -1,4 +1,4 @@
-import { buildNewFile, buildNewFolder } from './helpers';
+import { buildNewFile, buildNewFolder } from '../helpers';
 
 const fetchFiles = async () => {
   // make a get request to localhost:3000/files

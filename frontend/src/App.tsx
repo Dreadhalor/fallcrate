@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { FaFile, FaFolder } from 'react-icons/fa';
 import Breadcrumb from './components/Breadcrumb';
 import AllFilesMenuItem from './components/AllFilesMenu/AllFilesMenuItem';
-import db from './db-wrapper';
+import db from './wrappers/db-wrapper';
 import { File, getDirectoryPath, sortFiles } from './helpers';
 import MainFileBrowser from './components/MainFileBrowser/MainFileBrowser';
 import CombinationMark from './assets/combination-mark.svg';
+import { getStorage } from 'firebase/storage';
+import { useFirebaseApp } from 'reactfire';
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -14,6 +16,8 @@ function App() {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<File[]>(
     []
   );
+
+  const storageInstance = getStorage(useFirebaseApp());
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
@@ -155,7 +159,7 @@ function App() {
       <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
         <div
           id='sidebar'
-          className='bg-faded z-20 h-full w-[250px] border-r border-gray-300'
+          className='z-20 h-full w-[250px] border-r border-gray-300 bg-faded'
         >
           <AllFilesMenuItem
             title={'All Files'}

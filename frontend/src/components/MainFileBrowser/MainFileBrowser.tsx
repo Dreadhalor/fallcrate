@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { File } from '../../helpers';
+import CloudImage from '../utilities/CloudImage';
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
 
@@ -52,6 +53,7 @@ const MainFileBrowser = ({
             moveFiles([file_id], currentDirectory);
         }}
       >
+        <CloudImage name='just-a-head-scratch-pia-guerra.jpg' />
         {currentDirectoryFiles.length > 0 && (
           <>
             <div className='pointer-events-none flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
