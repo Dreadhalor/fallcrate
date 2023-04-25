@@ -31,7 +31,7 @@ const AllFilesMenuItem = ({
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <div
-          className={`rounded-sm p-[5px] transition-colors duration-200 group-hover:bg-gray-300`}
+          className='rounded-sm p-[5px] transition-colors duration-200 group-hover:bg-gray-300'
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen((prev) => !prev);
