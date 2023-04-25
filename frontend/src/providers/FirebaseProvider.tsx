@@ -1,6 +1,6 @@
 import { FirebaseAppProvider } from 'reactfire';
 import { getStorage, connectStorageEmulator } from 'firebase/storage'; // Firebase v9+\
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+// import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { StorageProvider, useFirebaseApp } from 'reactfire';
 
 // Your web app's Firebase configuration
@@ -22,12 +22,12 @@ type Props = {
 function FirebaseComponents({ children }: Props) {
   const app = useFirebaseApp();
   const storage = getStorage(app);
-  const db = getFirestore(app);
+  // const db = getFirestore(app);
 
   if (location.hostname === 'localhost') {
     // Point to the emulators running on localhost.
     connectStorageEmulator(storage, 'localhost', 9199);
-    connectFirestoreEmulator(db, 'localhost', 8080);
+    // connectFirestoreEmulator(db, 'localhost', 8080);
   }
 
   return <StorageProvider sdk={storage}>{children}</StorageProvider>;

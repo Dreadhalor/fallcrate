@@ -1,5 +1,3 @@
-// just-a-head-scratch-pia-guerra.jpg
-
 import { useStorage, useStorageDownloadURL } from 'reactfire';
 import { ref } from 'firebase/storage';
 
