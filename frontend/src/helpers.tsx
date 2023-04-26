@@ -57,6 +57,26 @@ export const getDirectoryPath = (
   return [...getDirectoryPath(file?.parent, files), file];
 };
 
+export const getFileDeleteTreeIDs = (
+  file_id: string,
+  files: CustomFile[]
+): string[] => {
+  const file = files.find((file) => file.id === file_id);
+  if (!file) return [];
+  return [file, ...getNestedFiles(file.id, files)].map((file) => file.id);
+};
+
+const getNestedFiles = (
+  file_id: string | null,
+  files: CustomFile[]
+): CustomFile[] => {
+  const nestedFiles = files.filter((file) => file.parent === file_id);
+  return nestedFiles.flatMap((file) => [
+    file,
+    ...getNestedFiles(file.id, files),
+  ]);
+};
+
 export const createDragImage = (name: string) => {
   const dragImage = document.createElement('div');
   dragImage.style.position = 'absolute';

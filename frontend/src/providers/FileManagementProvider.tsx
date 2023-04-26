@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { CustomFile, checkForCircularReference, sortFiles } from '../helpers';
+import {
+  CustomFile,
+  checkForCircularReference,
+  getFileDeleteTreeIDs,
+  sortFiles,
+} from '../helpers';
 import useDB from '@src/hooks/useDB';
 
 interface FileManagementContextValue {
@@ -41,15 +46,26 @@ export const FileManagementProvider = ({ children }: Props) => {
     CustomFile[]
   >([]);
 
+  const clearSelfParents = (files: CustomFile[]) => {
+    files.forEach((file) => {
+      if (file.parent === file.id) {
+        moveFiles([file.id], null);
+      }
+    });
+    return files;
+  };
+
   const db = useDB();
 
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
     if (directory_id !== currentDirectory) setSelectedFiles([]);
     setCurrentDirectory(directory_id);
-    setCurrentDirectoryFiles(
-      files.filter((file) => file.parent === directory_id).sort(sortFiles)
-    );
+    const newCurrentDirectoryFiles = files
+      .filter((file) => file.parent === directory_id)
+      .sort(sortFiles);
+    setCurrentDirectoryFiles(newCurrentDirectoryFiles);
+    // console.log('currentDirectoryFiles:', newCurrentDirectoryFiles);
   };
 
   const selectFile = (file_id: string) => {
@@ -81,14 +97,14 @@ export const FileManagementProvider = ({ children }: Props) => {
       setFiles((prev) => [...prev, data]);
     });
   };
-  const deleteFile = (file_id: string) =>
-    db
-      .deleteFile(file_id)
-      .then((_) => {
+  const deleteFile = (file_id: string) => {
+    const delete_tree = getFileDeleteTreeIDs(file_id, files);
+    delete_tree.forEach((file_id) => {
+      db.deleteFile(file_id).then(() => {
         setFiles((prev) => prev.filter((file) => file.id !== file_id));
-        setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
-      })
-      .catch((err) => console.log(err));
+      });
+    });
+  };
 
   const deleteFiles = (file_ids: string[]) =>
     file_ids.forEach((file_id) => deleteFile(file_id));
@@ -156,14 +172,11 @@ export const FileManagementProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    db.fetchFiles().then((data) => setFiles(data));
+    db.fetchFiles().then((data) => setFiles(clearSelfParents(data)));
   }, []);
+
   useEffect(() => {
-    files.forEach((file) => {
-      if (file.parent === file.id) {
-        moveFiles([file.id], null);
-      }
-    });
+    clearSelfParents(files);
     openDirectory(currentDirectory);
   }, [files]);
 
