@@ -1,4 +1,4 @@
-import { CustomFile } from '../helpers';
+import { CustomFile } from '@src/types';
 
 export interface Database {
   fetchFiles: () => Promise<CustomFile[]>;

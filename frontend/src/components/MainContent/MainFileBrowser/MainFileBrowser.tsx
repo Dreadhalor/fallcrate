@@ -2,18 +2,14 @@ import { useRef, useState } from 'react';
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
 import { useFileManagement } from '@providers/FileManagementProvider';
+import FileDropzone from '../FileDropzone';
 
 const MainFileBrowser = () => {
   const [dragover, setDragover] = useState(false);
   const drop_ref = useRef<HTMLDivElement>(null);
 
-  const {
-    currentDirectoryFiles,
-    currentDirectory,
-    moveFiles,
-    selectedFiles,
-    massToggleSelectFiles,
-  } = useFileManagement();
+  const { currentDirectoryFiles, currentDirectory, moveFiles } =
+    useFileManagement();
 
   return (
     <div className='relative flex flex-1 overflow-hidden'>
@@ -35,21 +31,15 @@ const MainFileBrowser = () => {
           setDragover(false);
           // drop file into current directory
           const file_id = e.dataTransfer.getData('file_id');
-          if (file_id && e.target === drop_ref.current)
+          if (file_id && !drop_ref.current?.contains(e.target as Node)) {
             moveFiles([file_id], currentDirectory);
+          }
         }}
       >
         {currentDirectoryFiles.length > 0 && (
           <>
-            <div className='pointer-events-none flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
-              Here is a random spacer to demonstrate that the column header is
-              sticky
-            </div>
-            <BrowserHeader
-              selectedFiles={selectedFiles}
-              currentDirectoryFiles={currentDirectoryFiles}
-              massToggleSelectFiles={massToggleSelectFiles}
-            />
+            <FileDropzone />
+            <BrowserHeader />
           </>
         )}
         {currentDirectoryFiles.map((file) => (

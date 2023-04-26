@@ -9,8 +9,9 @@ import {
   setDoc,
 } from 'firebase/firestore';
 
-import { CustomFile, buildNewFile, buildNewFolder } from '../helpers';
+import { buildNewFile, buildNewFolder } from '../helpers';
 import { Database } from './Database';
+import { CustomFile } from '@src/types';
 
 const useFirestoreDB = (): Database => {
   const firestore = useFirestore();

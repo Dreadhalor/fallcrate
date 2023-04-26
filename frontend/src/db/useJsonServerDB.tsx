@@ -1,4 +1,5 @@
-import { CustomFile, buildNewFile, buildNewFolder } from '../helpers';
+import { CustomFile } from '@src/types';
+import { buildNewFile, buildNewFolder } from '../helpers';
 import { Database } from './Database';
 
 const useJsonServerDB = (): Database => {

@@ -6,7 +6,8 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useFileManagement } from '@providers/FileManagementProvider';
 import TruncatedText from '@components/utilities/TruncatedText';
-import { CustomFile, createDragImage } from '@src/helpers';
+import { createDragImage } from '@src/helpers';
+import { CustomFile } from '@src/types';
 
 type Props = {
   file: CustomFile;

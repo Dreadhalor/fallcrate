@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
-import { CustomFile } from '../../../helpers';
+import { CustomFile } from '@src/types';
 import { useFileManagement } from '@providers/FileManagementProvider';
 
 type Props = {

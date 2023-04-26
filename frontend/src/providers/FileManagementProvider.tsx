@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-  CustomFile,
   checkForCircularReference,
   getFileDeleteTreeIDs,
   sortFiles,
 } from '../helpers';
-import useDB from '@src/hooks/useDB';
+import { useDB } from '@src/hooks/useDB';
+import { CustomFile } from '@src/types';
 
 interface FileManagementContextValue {
   files: CustomFile[];

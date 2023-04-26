@@ -1,11 +1,5 @@
 import { v4 as uuid } from 'uuid';
-
-export interface CustomFile {
-  id: string;
-  name: string;
-  type: string;
-  parent: string;
-}
+import { CustomFile } from './types';
 
 export const buildNewFolder = ({
   name,
@@ -25,14 +19,20 @@ export const buildNewFolder = ({
 export const buildNewFile = ({
   name,
   parent,
+  size,
+  url,
 }: {
   name: string;
   parent?: string | null;
+  size?: number;
+  url?: string;
 }) => {
   return {
     id: uuid(),
     name,
     type: 'file',
+    size: size ?? 0,
+    url: url ?? '',
     parent: parent ?? null,
   } as CustomFile;
 };

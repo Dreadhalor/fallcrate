@@ -479,6 +479,22 @@
       "name": "09999",
       "type": "directory",
       "parent": "c56bc561-0c9f-4331-a100-e1f3839fb41d"
+    },
+    {
+      "id": "df3557f2-44c3-44d9-ae2c-045b98cf2914",
+      "name": "previewhighresolutionimage.jpeg",
+      "type": "file",
+      "size": 0,
+      "url": "",
+      "parent": null
+    },
+    {
+      "id": "058a9ad4-6155-4611-9b96-b8af241090e2",
+      "name": "localhost-1682485957890.log",
+      "type": "file",
+      "size": 0,
+      "url": "",
+      "parent": null
     }
   ]
 }
