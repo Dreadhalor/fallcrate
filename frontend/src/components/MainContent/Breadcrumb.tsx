@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CustomFile } from '@src/types';
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 
 type Props = {
   file: CustomFile | null;
@@ -9,7 +9,7 @@ type Props = {
 const Breadcrumb = ({ file }: Props) => {
   const [dragover, setDragover] = useState(false);
 
-  const { currentDirectory, openDirectory, moveFiles } = useFileManagement();
+  const { currentDirectory, openDirectory, moveFiles } = useFilesystem();
 
   const file_id = file?.id ?? null;
   const is_current_directory = (file?.id ?? null) === currentDirectory;

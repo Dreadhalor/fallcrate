@@ -4,7 +4,7 @@ import { BsDot } from 'react-icons/bs';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { createDragImage } from '@src/helpers';
 import { CustomFile } from '@src/types';
@@ -20,8 +20,7 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const [dragover, setDragover] = useState(false);
   const display_id = `file-${file.id}`;
 
-  const { files, currentDirectory, openDirectory, moveFiles } =
-    useFileManagement();
+  const { files, currentDirectory, openDirectory, moveFiles } = useFilesystem();
 
   useEffect(() => {
     setChildFolders(

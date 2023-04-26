@@ -1,5 +1,5 @@
 import { CustomFile } from '@src/types';
-import { buildNewFile, buildNewFolder } from '../helpers';
+import { buildNewFile, buildNewFolder } from '@src/helpers';
 import { Database } from './Database';
 
 const useJsonServerDB = (): Database => {
@@ -8,17 +8,14 @@ const useJsonServerDB = (): Database => {
     return fetch('http://localhost:3000/files').then((res) => res.json());
   };
 
-  const createFile = async (
-    name: string,
-    parent: string | null
-  ): Promise<CustomFile> => {
+  const createFile = async (file: any): Promise<CustomFile> => {
     // make a post request to localhost:3000/files
     return fetch('http://localhost:3000/files', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildNewFile({ name, parent })),
+      body: JSON.stringify(buildNewFile(file)),
     }).then((res) => res.json());
   };
   const renameFile = async (

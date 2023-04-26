@@ -1,4 +1,4 @@
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 import { FaFile, FaFolder } from 'react-icons/fa';
 
 const MainContentToolbar = () => {
@@ -8,7 +8,7 @@ const MainContentToolbar = () => {
     promptNewFile,
     promptNewFolder,
     promptRenameFile,
-  } = useFileManagement();
+  } = useFilesystem();
 
   return (
     <div

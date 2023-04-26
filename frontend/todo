@@ -1,1 +1,1 @@
-* put the 'checkDirectoryForNameConflict' function in helpers.tsx
+* check on type-safeness of file:any in Database.ts

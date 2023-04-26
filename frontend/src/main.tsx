@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.scss';
 import FirebaseProvider from './providers/FirebaseProvider';
-import { FileManagementProvider } from './providers/FileManagementProvider';
+import { FilesystemProvider } from '@providers/FilesystemProvider';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <FirebaseProvider>
-      <FileManagementProvider>
+      <FilesystemProvider>
         <App />
-      </FileManagementProvider>
+      </FilesystemProvider>
     </FirebaseProvider>
   </React.StrictMode>
 );

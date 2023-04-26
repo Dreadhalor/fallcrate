@@ -1,9 +1,9 @@
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 import SidebarBrowserItem from './SidebarBrowserItem';
 import { sortFiles } from '@src/helpers';
 
 const SidebarBrowser = () => {
-  const { files } = useFileManagement();
+  const { files } = useFilesystem();
 
   const top_level_folders = files
     .filter((file) => file.parent === null && file.type === 'directory')

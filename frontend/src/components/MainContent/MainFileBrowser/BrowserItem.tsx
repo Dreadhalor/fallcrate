@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
 import { CustomFile } from '@src/types';
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 
 type Props = {
   file: CustomFile;
 };
 
 const BrowserItem = ({ file }: Props) => {
-  const { moveFiles, selectedFiles, selectFile, openFile } =
-    useFileManagement();
+  const { moveFiles, selectedFiles, selectFile, openFile } = useFilesystem();
 
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;

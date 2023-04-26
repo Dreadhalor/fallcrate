@@ -1,20 +1,16 @@
 // FileDropzone.tsx
 import React, { useCallback } from 'react';
-import { useFilesystem } from '@src/hooks/useFilesystem'; // Import useFilesystem hook
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 
 const FileDropzone = () => {
-  const { uploadFile } = useFilesystem(); // Destructure uploadFile from the useFilesystem hook
-  const { currentDirectory } = useFileManagement();
+  const { uploadFile } = useFilesystem();
 
   const handleUpload = useCallback(
     async (file: File) => {
-      const parent = currentDirectory; // Use the currentDirectory value passed as a prop
-
       // Use the uploadFile method from the useFilesystem hook
-      await uploadFile(file, parent);
+      await uploadFile(file);
     },
-    [uploadFile, currentDirectory] // Update the dependency array to include currentDirectory
+    [uploadFile] // Update the dependency array to include currentDirectory
   );
 
   const handleDrop = useCallback(

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 import FileDropzone from '../FileDropzone';
 
 const MainFileBrowser = () => {
@@ -9,7 +9,7 @@ const MainFileBrowser = () => {
   const drop_ref = useRef<HTMLDivElement>(null);
 
   const { currentDirectoryFiles, currentDirectory, moveFiles } =
-    useFileManagement();
+    useFilesystem();
 
   return (
     <div className='relative flex flex-1 overflow-hidden'>

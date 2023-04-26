@@ -16,20 +16,11 @@ export const buildNewFolder = ({
   } as CustomFile;
 };
 
-export const buildNewFile = ({
-  name,
-  parent,
-  size,
-  url,
-}: {
-  name: string;
-  parent?: string | null;
-  size?: number;
-  url?: string;
-}) => {
+export const buildNewFile = (file: any) => {
+  const { id, name, size, parent, url } = file;
   return {
-    id: uuid(),
-    name,
+    id: id ?? uuid(),
+    name: name ?? '',
     type: 'file',
     size: size ?? 0,
     url: url ?? '',

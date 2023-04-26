@@ -1,9 +1,9 @@
 import { FaCheck, FaMinus } from 'react-icons/fa';
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 
 const BrowserHeader = () => {
   const { selectedFiles, currentDirectoryFiles, massToggleSelectFiles } =
-    useFileManagement();
+    useFilesystem();
   const all_files_selected =
     selectedFiles.length === currentDirectoryFiles.length;
   const some_files_selected = selectedFiles.length > 0 && !all_files_selected;

@@ -1,8 +1,8 @@
-import { useFileManagement } from '@src/providers/FileManagementProvider';
 import CombinationMark from '@assets/combination-mark.svg';
+import { useFilesystem } from '@providers/FilesystemProvider';
 
 const Navbar = () => {
-  const { openDirectory } = useFileManagement();
+  const { openDirectory } = useFilesystem();
 
   return (
     <div

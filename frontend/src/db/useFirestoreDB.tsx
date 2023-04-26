@@ -22,11 +22,8 @@ const useFirestoreDB = (): Database => {
     return snapshot.docs.map((doc) => doc.data() as CustomFile);
   };
 
-  const createFile = async (
-    name: string,
-    parent: string | null
-  ): Promise<CustomFile> => {
-    const newFile = buildNewFile({ name, parent });
+  const createFile = async (file: any): Promise<CustomFile> => {
+    const newFile = buildNewFile(file);
     const docRef = doc(filesCollection, newFile.id);
     await setDoc(docRef, newFile);
     return newFile;

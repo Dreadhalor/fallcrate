@@ -1,11 +1,11 @@
-import { useFileManagement } from '@providers/FileManagementProvider';
+import { useFilesystem } from '@providers/FilesystemProvider';
 import { getDirectoryPath } from '@src/helpers';
 import Breadcrumb from './Breadcrumb';
 import MainFileBrowser from './MainFileBrowser/MainFileBrowser';
 import MainContentToolbar from './MainContentToolbar';
 
 const MainContent = () => {
-  const { files, currentDirectory } = useFileManagement();
+  const { files, currentDirectory } = useFilesystem();
 
   return (
     <div id='content' className='flex h-full flex-1 flex-col'>

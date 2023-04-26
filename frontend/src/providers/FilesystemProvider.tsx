@@ -6,9 +6,11 @@ import {
   sortFiles,
 } from '@src/helpers';
 import { useDB } from '@src/hooks/useDB';
+import { useStorage } from '@src/hooks/useStorage';
 import { CustomFile } from '@src/types';
+import { v4 as uuidv4 } from 'uuid';
 
-interface FileManagementContextValue {
+interface FilesystemContextValue {
   files: CustomFile[];
   selectedFiles: string[];
   currentDirectory: string | null;
@@ -25,21 +27,22 @@ interface FileManagementContextValue {
   promptNewFolder: () => void;
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
+  uploadFile: (file: File) => void;
 }
 
-const FileManagementContext = createContext<FileManagementContextValue>(
-  {} as FileManagementContextValue
+const FilesystemContext = createContext<FilesystemContextValue>(
+  {} as FilesystemContextValue
 );
 
-export const useFileManagement = () => {
-  return useContext(FileManagementContext);
+export const useFilesystem = () => {
+  return useContext(FilesystemContext);
 };
 
 type Props = {
   children: React.ReactNode;
 };
 
-export const FileManagementProvider = ({ children }: Props) => {
+export const FilesystemProvider = ({ children }: Props) => {
   const [files, setFiles] = useState<CustomFile[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
@@ -48,6 +51,7 @@ export const FileManagementProvider = ({ children }: Props) => {
   >([]);
 
   const db = useDB();
+  const storage = useStorage();
 
   // Helper functions
   const handleOperationError = (message: string) => {
@@ -94,7 +98,7 @@ export const FileManagementProvider = ({ children }: Props) => {
 
   // CRUD operations
   const createFile = (name: string) => {
-    db.createFile(name, currentDirectory).then((data) => {
+    db.createFile({ name }).then((data) => {
       setFiles((prev) => [...prev, data]);
     });
   };
@@ -117,6 +121,12 @@ export const FileManagementProvider = ({ children }: Props) => {
     // Perform individual delete operations for each file ID in the delete tree
     for (const id of delete_tree) {
       await db.deleteFile(id);
+      // if file is a file, delete it from storage
+      if (files.find((file) => file.id === id)?.type === 'file') {
+        const path = `uploads/${id}`;
+        console.log(`Deleting file at path ${path}`);
+        await storage.deleteFile(path);
+      }
     }
 
     // Update the files state and deselect the deleted files in one step
@@ -132,21 +142,12 @@ export const FileManagementProvider = ({ children }: Props) => {
   };
 
   const deleteFiles = async (file_ids: string[]) => {
-    const allDeleteTrees = new Set<string>();
-
-    for (const file_id of file_ids) {
-      const delete_tree = getFileDeleteTreeIDs(file_id, files);
-      for (const id of delete_tree) allDeleteTrees.add(id);
-    }
-
-    // Run delete operations concurrently
-    await Promise.all(
-      Array.from(allDeleteTrees).map((id) => db.deleteFile(id))
-    );
+    // Run deleteFile operations concurrently for each file ID
+    await Promise.all(file_ids.map((file_id) => deleteFile(file_id)));
 
     // Update state in one step
-    setFiles((prev) => prev.filter((file) => !allDeleteTrees.has(file.id)));
-    setSelectedFiles((prev) => prev.filter((id) => !allDeleteTrees.has(id)));
+    setFiles((prev) => prev.filter((file) => !file_ids.includes(file.id)));
+    setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
   };
 
   const promptNewFile = () => {
@@ -227,6 +228,28 @@ export const FileManagementProvider = ({ children }: Props) => {
     });
   };
 
+  const uploadFile = async (file: File) => {
+    // Generate a unique id for the file
+    const id = uuidv4();
+
+    // Upload the file to storage
+    const path = `uploads/${id}`;
+    await storage.uploadFile(file, path);
+
+    // Create a file entry in the database
+    const newFile: CustomFile = {
+      id,
+      name: file.name,
+      type: 'file',
+      size: file.size,
+      parent: currentDirectory ?? null,
+      url: await storage.getDownloadURL(path),
+    };
+
+    const result = await db.createFile(newFile);
+    setFiles((prev) => [...prev, result]);
+  };
+
   useEffect(() => {
     db.fetchFiles().then((data) => setFiles(clearSelfParents(data)));
   }, []);
@@ -237,7 +260,7 @@ export const FileManagementProvider = ({ children }: Props) => {
   }, [files]);
 
   return (
-    <FileManagementContext.Provider
+    <FilesystemContext.Provider
       value={{
         files,
         selectedFiles,
@@ -255,9 +278,10 @@ export const FileManagementProvider = ({ children }: Props) => {
         promptNewFolder,
         promptRenameFile,
         moveFiles,
+        uploadFile,
       }}
     >
       {children}
-    </FileManagementContext.Provider>
+    </FilesystemContext.Provider>
   );
 };
