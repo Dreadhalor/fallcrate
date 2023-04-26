@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
-export interface File {
+
+export interface CustomFile {
   id: string;
   name: string;
   type: string;
@@ -36,7 +37,7 @@ export const buildNewFile = ({
   };
 };
 
-export const sortFiles = (file_a: File, file_b: File) => {
+export const sortFiles = (file_a: CustomFile, file_b: CustomFile) => {
   if (file_a.type === 'directory' && file_b.type === 'file') {
     return -1;
   } else if (file_a.type === 'file' && file_b.type === 'directory') {
@@ -48,8 +49,8 @@ export const sortFiles = (file_a: File, file_b: File) => {
 
 export const getDirectoryPath = (
   file_id: string | null,
-  files: File[]
-): (File | null)[] => {
+  files: CustomFile[]
+): (CustomFile | null)[] => {
   if (file_id === null) return [null];
   const file = files.find((file) => file?.id === file_id);
   if (!file) return [null];
@@ -75,4 +76,16 @@ export const createDragImage = (name: string) => {
   document.body.appendChild(dragImage);
 
   return dragImage;
+};
+
+export const checkForCircularReference = (
+  file_id: string,
+  parent_id: string | null,
+  files: CustomFile[]
+): boolean => {
+  if (file_id === parent_id) return true;
+  if (parent_id === null) return false;
+  const parent = files.find((file) => file.id === parent_id);
+  if (parent) return checkForCircularReference(file_id, parent.parent, files);
+  return false;
 };

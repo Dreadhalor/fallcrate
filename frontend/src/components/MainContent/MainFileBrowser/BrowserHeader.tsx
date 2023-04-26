@@ -1,9 +1,9 @@
 import { FaCheck, FaMinus } from 'react-icons/fa';
-import { File } from '../../helpers';
+import { CustomFile } from '../../../helpers';
 
 type Props = {
   selectedFiles: string[];
-  currentDirectoryFiles: File[];
+  currentDirectoryFiles: CustomFile[];
   massToggleSelectFiles: () => void;
 };
 

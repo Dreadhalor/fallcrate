@@ -1,22 +1,16 @@
 import { useState } from 'react';
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
-import { File } from '../../helpers';
+import { CustomFile } from '../../../helpers';
+import { useFileManagement } from '@providers/FileManagementProvider';
 
 type Props = {
-  file: File;
-  selectedFiles: string[];
-  selectFile: (file_id: string) => void;
-  openFile: (file_id: string) => void;
-  moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
+  file: CustomFile;
 };
 
-const BrowserItem = ({
-  file,
-  selectedFiles,
-  selectFile,
-  openFile,
-  moveFiles,
-}: Props) => {
+const BrowserItem = ({ file }: Props) => {
+  const { moveFiles, selectedFiles, selectFile, openFile } =
+    useFileManagement();
+
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;
 
@@ -40,11 +34,6 @@ const BrowserItem = ({
   const [dragging, setDragging] = useState(false);
 
   const background = dragover && !dragging ? 'bg-[rgba(0,97,254,0.16)]' : '';
-
-  const item_background_colors = {
-    hover: '#f5f5f5',
-    selected: 'rgba(0,97,254,0.16)',
-  };
 
   const item_selected = `border-l-[2px] pl-[8px]`;
   const item_unselected = `pl-[10px]`;

@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        faded: '#f7f5f2',
+        faded_bg: '#f7f5f2',
       },
     },
   },

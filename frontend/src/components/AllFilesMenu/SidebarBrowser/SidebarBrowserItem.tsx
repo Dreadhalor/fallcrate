@@ -1,35 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
-import { createDragImage, File } from '../../helpers';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import TruncatedText from '../utilities/TruncatedText';
+import { useFileManagement } from '@providers/FileManagementProvider';
+import TruncatedText from '@components/utilities/TruncatedText';
+import { CustomFile, createDragImage } from '@src/helpers';
 
 type Props = {
-  file: File;
-  files: File[];
-  folders: [File, boolean][];
+  file: CustomFile;
   indentLevel?: number;
-  currentDirectory: string | null;
-  openDirectory: (file_id: string | null) => void;
-  moveFiles: (file_ids: string[], destination_id: string | null) => void;
 };
 
-const SidebarBrowserItem = ({
-  file,
-  files,
-  folders,
-  indentLevel = 0,
-  currentDirectory,
-  openDirectory,
-  moveFiles,
-}: Props) => {
+const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [childFolders, setChildFolders] = useState<File[]>([]);
+  const [childFolders, setChildFolders] = useState<CustomFile[]>([]);
   const [dragover, setDragover] = useState(false);
   const display_id = `file-${file.id}`;
+
+  const { files, currentDirectory, openDirectory, moveFiles } =
+    useFileManagement();
 
   useEffect(() => {
     setChildFolders(
@@ -135,13 +126,8 @@ const SidebarBrowserItem = ({
         {childFolders.map((child) => (
           <SidebarBrowserItem
             file={child}
-            files={files}
-            folders={folders}
-            key={child.id}
             indentLevel={indentLevel + 1}
-            currentDirectory={currentDirectory}
-            openDirectory={openDirectory}
-            moveFiles={moveFiles}
+            key={child.id}
           />
         ))}
       </Collapse>

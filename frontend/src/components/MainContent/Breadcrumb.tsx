@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { File } from '../helpers';
+import { CustomFile } from '@src/helpers';
 
 type Props = {
-  file: File | null;
+  file: CustomFile | null;
   currentDirectory: string | null;
   openDirectory: (file_id: string | null) => void;
   moveFiles: (file_ids: string[], destination_id: string | null) => void;
@@ -18,8 +18,10 @@ const Breadcrumb = ({
 
   const file_id = file?.id ?? null;
   const is_current_directory = (file?.id ?? null) === currentDirectory;
-  const color = is_current_directory ? 'text-black' : 'text-gray-500';
-  const underline = is_current_directory ? '' : 'hover:underline';
+  const color = is_current_directory ? 'text-black' : 'text-gray-400';
+  const mouseover = is_current_directory
+    ? ''
+    : 'hover:underline hover:text-black';
 
   const allowDrop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -53,7 +55,7 @@ const Breadcrumb = ({
           onDragOver={allowDrop}
           onDragLeave={() => setDragover(false)}
           disabled={is_current_directory}
-          className={`${underline} ${color}`}
+          className={`${mouseover} ${color}`}
           onClick={() => openDirectory(file?.id ?? null)}
         >
           {file?.name ?? 'Fallcrate'}

@@ -1,33 +1,19 @@
 import { useRef, useState } from 'react';
-import { File } from '../../helpers';
-import CloudImage from '../utilities/CloudImage';
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
+import { useFileManagement } from '@providers/FileManagementProvider';
 
-type Props = {
-  currentDirectory: string | null;
-  currentDirectoryFiles: File[];
-  selectedFiles: string[];
-  selectFile: (file_id: string) => void;
-  openFile: (file_id: string) => void;
-  massToggleSelectFiles: () => void;
-  moveFiles: (
-    file_ids_to_move: string[],
-    destination_id: string | null
-  ) => void;
-};
-
-const MainFileBrowser = ({
-  currentDirectory,
-  currentDirectoryFiles,
-  selectedFiles,
-  selectFile,
-  openFile,
-  massToggleSelectFiles,
-  moveFiles,
-}: Props) => {
+const MainFileBrowser = () => {
   const [dragover, setDragover] = useState(false);
   const drop_ref = useRef<HTMLDivElement>(null);
+
+  const {
+    currentDirectoryFiles,
+    currentDirectory,
+    moveFiles,
+    selectedFiles,
+    massToggleSelectFiles,
+  } = useFileManagement();
 
   return (
     <div className='relative flex flex-1 overflow-hidden'>
@@ -53,7 +39,6 @@ const MainFileBrowser = ({
             moveFiles([file_id], currentDirectory);
         }}
       >
-        <CloudImage name='just-a-head-scratch-pia-guerra.jpg' />
         {currentDirectoryFiles.length > 0 && (
           <>
             <div className='pointer-events-none flex flex-row justify-center p-[10px] pt-[20px] text-gray-400'>
@@ -68,14 +53,7 @@ const MainFileBrowser = ({
           </>
         )}
         {currentDirectoryFiles.map((file) => (
-          <BrowserItem
-            file={file}
-            key={file.id}
-            selectedFiles={selectedFiles}
-            selectFile={selectFile}
-            openFile={openFile}
-            moveFiles={moveFiles}
-          />
+          <BrowserItem file={file} key={file.id} />
         ))}
         {currentDirectoryFiles.length === 0 && (
           <div className='m-auto flex items-center justify-center pb-[100px]'>
