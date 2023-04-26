@@ -19,7 +19,7 @@ export const buildNewFolder = ({
     name,
     type: 'directory',
     parent: parent ?? null,
-  };
+  } as CustomFile;
 };
 
 export const buildNewFile = ({
@@ -34,7 +34,7 @@ export const buildNewFile = ({
     name,
     type: 'file',
     parent: parent ?? null,
-  };
+  } as CustomFile;
 };
 
 export const sortFiles = (file_a: CustomFile, file_b: CustomFile) => {

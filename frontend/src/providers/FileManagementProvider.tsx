@@ -100,7 +100,7 @@ export const FileManagementProvider = ({ children }: Props) => {
   const deleteFile = (file_id: string) => {
     const delete_tree = getFileDeleteTreeIDs(file_id, files);
     delete_tree.forEach((file_id) => {
-      db.deleteFile(file_id).then(() => {
+      db.deleteFile(file_id).then((_) => {
         setFiles((prev) => prev.filter((file) => file.id !== file_id));
       });
     });
