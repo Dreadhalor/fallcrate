@@ -66,4 +66,7 @@ node_modules/
 .env
 
 # saved emulator data
-data
+firebase-data
+
+# json-server data
+json-server-data
