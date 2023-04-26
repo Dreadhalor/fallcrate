@@ -109,3 +109,15 @@ export const checkForCircularReference = (
   if (parent) return checkForCircularReference(file_id, parent.parent, files);
   return false;
 };
+
+export const checkDirectoryForNameConflict = (
+  name: string,
+  file_id: string,
+  parent_id: string | null,
+  files: CustomFile[]
+) => {
+  const files_in_directory = files.filter((file) => file.parent === parent_id);
+  return files_in_directory.some(
+    (file) => file.name === name && file.id !== file_id
+  );
+};

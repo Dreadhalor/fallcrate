@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
+  checkDirectoryForNameConflict,
   checkForCircularReference,
   getFileDeleteTreeIDs,
   sortFiles,
-} from '../helpers';
+} from '@src/helpers';
 import { useDB } from '@src/hooks/useDB';
 import { CustomFile } from '@src/types';
 
@@ -62,19 +63,6 @@ export const FileManagementProvider = ({ children }: Props) => {
     return files;
   };
 
-  const checkDirectoryForNameConflict = (
-    name: string,
-    file_id: string,
-    parent_id: string | null
-  ) => {
-    const files_in_directory = files.filter(
-      (file) => file.parent === parent_id
-    );
-    return files_in_directory.some(
-      (file) => file.name === name && file.id !== file_id
-    );
-  };
-
   // Directory and file management functions
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
@@ -112,7 +100,7 @@ export const FileManagementProvider = ({ children }: Props) => {
   };
 
   const createFolder = (name: string) => {
-    if (checkDirectoryForNameConflict(name, '', currentDirectory)) {
+    if (checkDirectoryForNameConflict(name, '', currentDirectory, files)) {
       handleOperationError(
         `A folder with the name "${name}" already exists in this directory!`
       );
@@ -148,9 +136,7 @@ export const FileManagementProvider = ({ children }: Props) => {
 
     for (const file_id of file_ids) {
       const delete_tree = getFileDeleteTreeIDs(file_id, files);
-      for (const id of delete_tree) {
-        allDeleteTrees.add(id);
-      }
+      for (const id of delete_tree) allDeleteTrees.add(id);
     }
 
     // Run delete operations concurrently
@@ -165,27 +151,23 @@ export const FileManagementProvider = ({ children }: Props) => {
 
   const promptNewFile = () => {
     const name = prompt('Enter a file name');
-    if (name) {
-      createFile(name);
-    }
+    if (name) createFile(name);
   };
 
   const promptNewFolder = () => {
     const name = prompt('Enter a folder name');
-    if (name) {
-      createFolder(name);
-    }
+    if (name) createFolder(name);
   };
 
   const promptRenameFile = (file_id: string) => {
     const file = files.find((file) => file.id === file_id);
     const name = prompt('Enter a new file name', file?.name);
 
-    if (!name || name === file?.name) {
-      return;
-    }
+    if (!name || name === file?.name) return;
 
-    if (checkDirectoryForNameConflict(name, file_id, file?.parent || null)) {
+    if (
+      checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
+    ) {
       handleOperationError(
         `A file with the name "${name}" already exists in the current directory!`
       );
@@ -204,11 +186,16 @@ export const FileManagementProvider = ({ children }: Props) => {
       const file = files.find((file) => file.id === file_id);
       const parent = files.find((file) => file.id === parent_id);
 
-      if (file_id === parent_id) {
-        return;
-      }
+      if (file_id === parent_id) return;
 
-      if (checkDirectoryForNameConflict(file?.name || '', file_id, parent_id)) {
+      if (
+        checkDirectoryForNameConflict(
+          file?.name || '',
+          file_id,
+          parent_id,
+          files
+        )
+      ) {
         handleOperationError(
           `A file with the name "${file?.name}" already exists in the destination folder!`
         );
