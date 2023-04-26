@@ -46,6 +46,13 @@ export const FileManagementProvider = ({ children }: Props) => {
     CustomFile[]
   >([]);
 
+  const db = useDB();
+
+  // Helper functions
+  const handleOperationError = (message: string) => {
+    alert(message);
+  };
+
   const clearSelfParents = (files: CustomFile[]) => {
     files.forEach((file) => {
       if (file.parent === file.id) {
@@ -55,8 +62,20 @@ export const FileManagementProvider = ({ children }: Props) => {
     return files;
   };
 
-  const db = useDB();
+  const checkDirectoryForNameConflict = (
+    name: string,
+    file_id: string,
+    parent_id: string | null
+  ) => {
+    const files_in_directory = files.filter(
+      (file) => file.parent === parent_id
+    );
+    return files_in_directory.some(
+      (file) => file.name === name && file.id !== file_id
+    );
+  };
 
+  // Directory and file management functions
   const openDirectory = (directory_id: string | null) => {
     // clear selected files, unless the directory is simply being refreshed
     if (directory_id !== currentDirectory) setSelectedFiles([]);
@@ -65,7 +84,6 @@ export const FileManagementProvider = ({ children }: Props) => {
       .filter((file) => file.parent === directory_id)
       .sort(sortFiles);
     setCurrentDirectoryFiles(newCurrentDirectoryFiles);
-    // console.log('currentDirectoryFiles:', newCurrentDirectoryFiles);
   };
 
   const selectFile = (file_id: string) => {
@@ -92,24 +110,59 @@ export const FileManagementProvider = ({ children }: Props) => {
       setFiles((prev) => [...prev, data]);
     });
   };
+
   const createFolder = (name: string) => {
+    if (checkDirectoryForNameConflict(name, '', currentDirectory)) {
+      handleOperationError(
+        `A folder with the name "${name}" already exists in this directory!`
+      );
+      return;
+    }
     db.createFolder(name, currentDirectory).then((data) => {
       setFiles((prev) => [...prev, data]);
     });
   };
-  const deleteFile = (file_id: string) => {
+
+  const deleteFile = async (file_id: string) => {
     const delete_tree = getFileDeleteTreeIDs(file_id, files);
-    delete_tree.forEach((file_id) => {
-      db.deleteFile(file_id).then((_) => {
-        setFiles((prev) => prev.filter((file) => file.id !== file_id));
-      });
+
+    // Perform individual delete operations for each file ID in the delete tree
+    for (const id of delete_tree) {
+      await db.deleteFile(id);
+    }
+
+    // Update the files state and deselect the deleted files in one step
+    setFiles((prev) => {
+      const remainingFiles = prev.filter(
+        (file) => !delete_tree.includes(file.id)
+      );
+      setSelectedFiles((prevSelected) =>
+        prevSelected.filter((id) => !delete_tree.includes(id))
+      );
+      return remainingFiles;
     });
   };
 
-  const deleteFiles = (file_ids: string[]) =>
-    file_ids.forEach((file_id) => deleteFile(file_id));
+  const deleteFiles = async (file_ids: string[]) => {
+    const allDeleteTrees = new Set<string>();
 
-  // a function that opens a prompt to create a new file name
+    for (const file_id of file_ids) {
+      const delete_tree = getFileDeleteTreeIDs(file_id, files);
+      for (const id of delete_tree) {
+        allDeleteTrees.add(id);
+      }
+    }
+
+    // Run delete operations concurrently
+    await Promise.all(
+      Array.from(allDeleteTrees).map((id) => db.deleteFile(id))
+    );
+
+    // Update state in one step
+    setFiles((prev) => prev.filter((file) => !allDeleteTrees.has(file.id)));
+    setSelectedFiles((prev) => prev.filter((id) => !allDeleteTrees.has(id)));
+  };
+
   const promptNewFile = () => {
     const name = prompt('Enter a file name');
     if (name) {
@@ -124,50 +177,66 @@ export const FileManagementProvider = ({ children }: Props) => {
     }
   };
 
-  // prompt to rename a file
   const promptRenameFile = (file_id: string) => {
     const file = files.find((file) => file.id === file_id);
     const name = prompt('Enter a new file name', file?.name);
-    if (name && name !== file?.name) {
-      db.renameFile(file_id, name).then((data) => {
-        setFiles((prev) =>
-          prev.map((file) => (file.id === file_id ? data : file))
-        );
-      });
+
+    if (!name || name === file?.name) {
+      return;
     }
+
+    if (checkDirectoryForNameConflict(name, file_id, file?.parent || null)) {
+      handleOperationError(
+        `A file with the name "${name}" already exists in the current directory!`
+      );
+      return;
+    }
+
+    db.renameFile(file_id, name).then((data) => {
+      setFiles((prev) =>
+        prev.map((file) => (file.id === file_id ? data : file))
+      );
+    });
   };
 
   const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
     file_ids_to_move.forEach((file_id) => {
-      if (file_id == parent_id) return;
       const file = files.find((file) => file.id === file_id);
       const parent = files.find((file) => file.id === parent_id);
-      const valid_parent = parent?.type === 'directory' || parent_id === null;
-      const circular_parent = checkForCircularReference(
-        file_id,
-        parent_id,
-        files
-      );
-      if (valid_parent) {
-        if (!circular_parent) {
-          db.moveFile(file_id, parent_id).then((data) => {
-            setFiles((prev) =>
-              prev.map((file) => (file.id === data.id ? data : file))
-            );
-            // if the file was moved to a different directory, deselect it
-            if (parent_id !== currentDirectory)
-              setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
-          });
-        } else {
-          alert(
-            `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`
-          );
-        }
-      } else {
-        alert(
+
+      if (file_id === parent_id) {
+        return;
+      }
+
+      if (checkDirectoryForNameConflict(file?.name || '', file_id, parent_id)) {
+        handleOperationError(
+          `A file with the name "${file?.name}" already exists in the destination folder!`
+        );
+        return;
+      }
+
+      if (checkForCircularReference(file_id, parent_id, files)) {
+        handleOperationError(
+          `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`
+        );
+        return;
+      }
+
+      if (parent && parent.type !== 'directory') {
+        handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a file into a file!`
         );
+        return;
       }
+
+      db.moveFile(file_id, parent_id).then((data) => {
+        setFiles((prev) =>
+          prev.map((file) => (file.id === data.id ? data : file))
+        );
+        // if the file was moved to a different directory, deselect it
+        if (parent_id !== currentDirectory)
+          setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
+      });
     });
   };
 
