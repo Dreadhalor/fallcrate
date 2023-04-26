@@ -35,19 +35,22 @@ const BrowserItem = ({ file }: Props) => {
 
   const background = dragover && !dragging ? 'bg-[rgba(0,97,254,0.16)]' : '';
 
-  const item_selected = `border-l-[2px] pl-[8px]`;
-  const item_unselected = `pl-[10px]`;
-  const possible_bgs = {
-    unselected: 'group-hover:bg-[#f5f5f5]',
-    selected: 'bg-[rgba(0,97,254,0.16)]',
-    dragging: is_selected ? 'bg-[rgba(0,97,254,0.16)]' : 'bg-[#f5f5f5]',
+  const getItemClass = () => {
+    const item_selected = `border-l-[2px] pl-[8px]`;
+    const item_unselected = `pl-[10px]`;
+    return is_selected ? item_selected : item_unselected;
   };
-  const selected_class = is_selected ? item_selected : item_unselected;
-  const bg = dragging
-    ? possible_bgs.dragging
-    : is_selected
-    ? possible_bgs.selected
-    : possible_bgs.unselected;
+
+  const getBackgroundClass = () => {
+    const possible_bgs = {
+      unselected: 'group-hover:bg-[#f5f5f5]',
+      selected: 'bg-[rgba(0,97,254,0.16)]',
+      dragging: is_selected ? 'bg-[rgba(0,97,254,0.16)]' : 'bg-[#f5f5f5]',
+    };
+    if (dragging) return possible_bgs.dragging;
+    if (is_selected) return possible_bgs.selected;
+    return possible_bgs.unselected;
+  };
 
   return (
     <div
@@ -78,7 +81,7 @@ const BrowserItem = ({ file }: Props) => {
         </div>
       </div>
       <div
-        className={`flex h-full flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${selected_class} ${bg}`}
+        className={`flex h-full flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}
         onClick={() => openFile(file.id)}
       >
         {file.type === 'directory' ? <FaFolder /> : <FaFile />}

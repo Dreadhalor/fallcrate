@@ -7,9 +7,27 @@ import FileDropzone from '../FileDropzone';
 const MainFileBrowser = () => {
   const [dragover, setDragover] = useState(false);
   const drop_ref = useRef<HTMLDivElement>(null);
-
   const { currentDirectoryFiles, currentDirectory, moveFiles } =
     useFilesystem();
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragover(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragover(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragover(false);
+    // drop file into current directory
+    const file_id = e.dataTransfer.getData('file_id');
+    if (file_id && !drop_ref.current?.contains(e.target as Node)) {
+      moveFiles([file_id], currentDirectory);
+    }
+  };
 
   return (
     <div className='relative flex flex-1 overflow-hidden'>
@@ -21,20 +39,9 @@ const MainFileBrowser = () => {
         id='content-browser'
         className='relative flex flex-1 flex-col overflow-auto'
         ref={drop_ref}
-        onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
-          e.preventDefault();
-          setDragover(true);
-        }}
-        onDragLeave={() => setDragover(false)}
-        onDrop={(e: React.DragEvent<HTMLDivElement>) => {
-          e.preventDefault();
-          setDragover(false);
-          // drop file into current directory
-          const file_id = e.dataTransfer.getData('file_id');
-          if (file_id && !drop_ref.current?.contains(e.target as Node)) {
-            moveFiles([file_id], currentDirectory);
-          }
-        }}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
       >
         <FileDropzone />
         {currentDirectoryFiles.length > 0 && <BrowserHeader />}
