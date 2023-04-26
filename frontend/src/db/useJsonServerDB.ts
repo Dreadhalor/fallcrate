@@ -1,6 +1,7 @@
 import { buildNewFile, buildNewFolder } from '../helpers';
+import { Database } from './Database';
 
-const useDB = () => {
+const useJsonServerDB = (): Database => {
   const fetchFiles = async () => {
     // make a get request to localhost:3000/files
     return fetch('http://localhost:3000/files').then((res) => res.json());
@@ -68,4 +69,4 @@ const useDB = () => {
   };
 };
 
-export default useDB;
+export default useJsonServerDB;

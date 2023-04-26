@@ -11,7 +11,7 @@ const AllFilesMenuBody = ({ isOpen, maxHeight }: Props) => {
   const [dragover, setDragover] = useState(false);
 
   return (
-    <Collapse isOpened={isOpen} initialStyle={{ height: maxHeight }}>
+    <Collapse isOpened={isOpen}>
       <div
         className={`relative max-h-[${maxHeight}px] overflow-auto border-y border-gray-300`}
         onDragOver={(e) => {
