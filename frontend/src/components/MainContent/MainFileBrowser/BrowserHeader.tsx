@@ -26,7 +26,8 @@ const BrowserHeader = () => {
         </div>
       </div>
       <div className='flex h-full flex-1 flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] px-[10px] align-baseline'>
-        Name
+        <span className='flex-1'>Name</span>
+        <div className='flex w-[100px] items-center justify-center'>Size</div>
       </div>
     </div>
   );

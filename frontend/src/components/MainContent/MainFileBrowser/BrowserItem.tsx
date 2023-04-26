@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
 import { CustomFile } from '@src/types';
 import { useFilesystem } from '@providers/FilesystemProvider';
+import prettyBytes from 'pretty-bytes';
 
 type Props = {
   file: CustomFile;
@@ -81,7 +82,12 @@ const BrowserItem = ({ file }: Props) => {
         onClick={() => openFile(file.id)}
       >
         {file.type === 'directory' ? <FaFolder /> : <FaFile />}
-        {file.name}
+        <span className='flex-1'>{file.name}</span>
+        {file.type === 'file' && (
+          <div className='flex w-[100px] items-center justify-center'>
+            {prettyBytes(file.size ?? 0)}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -92,8 +92,13 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
 
   const openFile = (file_id: string) => {
-    if (files.find((file) => file.id === file_id)?.type === 'directory')
-      openDirectory(file_id);
+    const file = files.find((file) => file.id === file_id);
+    if (!file) return;
+    if (file.type === 'directory') return openDirectory(file_id);
+    if (file.type === 'file') {
+      // open the file in a new tab
+      window.open(file.url, '_blank');
+    }
   };
 
   // CRUD operations
@@ -125,7 +130,9 @@ export const FilesystemProvider = ({ children }: Props) => {
       if (files.find((file) => file.id === id)?.type === 'file') {
         const path = `uploads/${id}`;
         console.log(`Deleting file at path ${path}`);
-        await storage.deleteFile(path);
+        storage.deleteFile(path).catch((err) => {
+          console.log(err);
+        });
       }
     }
 

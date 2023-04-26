@@ -36,12 +36,8 @@ const MainFileBrowser = () => {
           }
         }}
       >
-        {currentDirectoryFiles.length > 0 && (
-          <>
-            <FileDropzone />
-            <BrowserHeader />
-          </>
-        )}
+        <FileDropzone />
+        {currentDirectoryFiles.length > 0 && <BrowserHeader />}
         {currentDirectoryFiles.map((file) => (
           <BrowserItem file={file} key={file.id} />
         ))}
