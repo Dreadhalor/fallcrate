@@ -9,11 +9,7 @@ const AllFilesMenu = () => {
 
   return (
     <div className='flex cursor-pointer flex-col'>
-      <AllFilesMenuHeader
-        title='All Files'
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+      <AllFilesMenuHeader isOpen={isOpen} setIsOpen={setIsOpen} />
       <AllFilesMenuBody isOpen={isOpen} maxHeight={max_height} />
     </div>
   );

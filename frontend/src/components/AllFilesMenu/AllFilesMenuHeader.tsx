@@ -1,35 +1,48 @@
-import React from 'react';
+import AllFilesBreadcrumb from '@components/AllFilesMenu/AllFilesBreadcrumb';
+import React, { useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 
 type Props = {
-  title: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const AllFilesMenuHeader = ({ title, isOpen, setIsOpen }: Props) => {
+const AllFilesMenuHeader = ({ isOpen, setIsOpen }: Props) => {
+  const [isTopHovered, setIsTopHovered] = useState(false);
+  const [isBreadcrumbHovered, setIsBreadcrumbHovered] = useState(false);
+
+  const isHovered = isTopHovered && !isBreadcrumbHovered;
+
   return (
     <div
-      className='group flex flex-row items-center gap-[5px] py-[10px] pr-[20px] pl-[10px]'
+      className='flex flex-row items-center gap-[3px] py-[8px] pr-[20px] pl-[10px]'
       onClick={() => setIsOpen((prev) => !prev)}
+      onMouseEnter={() => setIsTopHovered(true)}
+      onMouseLeave={() => setIsTopHovered(false)}
     >
-      <div
-        className='rounded-sm p-[5px] transition-colors duration-200 group-hover:bg-gray-300'
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen((prev) => !prev);
-        }}
-      >
-        <FaChevronRight
-          size={10}
-          className='h-full transition-transform'
-          style={{
-            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+      <div>
+        <div
+          className={`rounded-sm p-[5px] ${
+            isHovered ? 'bg-gray-300' : ''
+          } transition-colors duration-200`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((prev) => !prev);
           }}
-        />
+        >
+          <FaChevronRight
+            size={10}
+            className='h-full transition-transform'
+            style={{
+              transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+            }}
+          />
+        </div>
       </div>
-
-      {title}
+      <AllFilesBreadcrumb
+        onMouseEnter={() => setIsBreadcrumbHovered(true)}
+        onMouseLeave={() => setIsBreadcrumbHovered(false)}
+      />
     </div>
   );
 };
