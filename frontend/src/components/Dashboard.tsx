@@ -1,15 +1,33 @@
+import { Resizable } from 're-resizable';
 import AllFilesMenu from './AllFilesMenu';
 import MainContent from './MainContent/MainContent';
 
 const Dashboard = () => {
   return (
     <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
-      <div // Sidebar, but there's only one item in it so not worth making a separate component
-        id='sidebar'
-        className='z-20 h-full w-[250px] border-r border-gray-300 bg-faded_bg'
+      <Resizable
+        className='z-20 h-full border-r border-gray-300 bg-faded_bg'
+        defaultSize={{
+          width: 250,
+          height: '100%',
+        }}
+        minWidth={100}
+        maxWidth={500}
+        enable={{
+          top: false,
+          right: true,
+          bottom: false,
+          left: false,
+          topRight: false,
+          bottomRight: false,
+          bottomLeft: false,
+          topLeft: false,
+        }}
       >
-        <AllFilesMenu />
-      </div>
+        <div id='sidebar' className='h-full w-full'>
+          <AllFilesMenu />
+        </div>
+      </Resizable>
       <MainContent />
     </div>
   );
