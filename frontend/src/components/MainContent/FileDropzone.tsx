@@ -6,17 +6,14 @@ const FileDropzone = () => {
   const { uploadFile } = useFilesystem();
 
   const handleUpload = useCallback(
-    async (file: File) => {
-      // Use the uploadFile method from the useFilesystem hook
-      await uploadFile(file);
-    },
+    async (file: File) => uploadFile(file), // Use the uploadFile method from the useFilesystem hook
     [uploadFile] // Update the dependency array to include currentDirectory
   );
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
-      e.stopPropagation();
+      // e.stopPropagation();
 
       const files = e.dataTransfer.files;
 
@@ -29,7 +26,7 @@ const FileDropzone = () => {
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation();
   };
 
   return (

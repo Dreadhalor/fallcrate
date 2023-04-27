@@ -1,1 +1,2 @@
 * check on type-safeness of file:any in Database.ts
+* maybe fix weird race condition bug with A->B->C where moving C into A sometimes leaves a blank space below C

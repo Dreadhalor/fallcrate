@@ -8,6 +8,7 @@ import { useFilesystem } from '@providers/FilesystemProvider';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { createDragImage } from '@src/helpers';
 import { CustomFile } from '@src/types';
+import { useDragAndDrop } from '@providers/DragAndDropProvider';
 
 type Props = {
   file: CustomFile;
@@ -20,12 +21,16 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const [dragover, setDragover] = useState(false);
   const display_id = `file-${file.id}`;
 
+  const { state, setState } = useDragAndDrop();
+
   const { files, currentDirectory, openDirectory, moveFiles } = useFilesystem();
 
   useEffect(() => {
-    setChildFolders(
-      files.filter((f) => f.parent === file.id && f.type === 'directory')
+    const childFolders = files.filter(
+      (f) => f.parent === file.id && f.type === 'directory'
     );
+    setChildFolders(childFolders);
+    if (isOpen && childFolders.length === 0) setIsOpen(false);
   }, [files, file.id]);
 
   const isCurrentDirectory = currentDirectory === file.id;
@@ -49,9 +54,12 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   };
 
   const drag = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.setData('file_id', file.id);
     const dragImage = createDragImage(file.name);
     e.dataTransfer.setDragImage(dragImage, 0, 0);
+    setState({
+      draggedFileId: file.id,
+      source: 'SidebarBrowserItem',
+    });
   };
 
   const dragEnd = (e: React.DragEvent<HTMLDivElement>) => {
@@ -63,9 +71,12 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file_id = e.dataTransfer.getData('file_id');
-    if (file_id) moveFiles([file_id], file.id);
-    setDragover(false);
+    const file_id = state.draggedFileId;
+    setTimeout(() => {
+      if (file_id) moveFiles([file_id], file.id);
+      setDragover(false);
+      setState({ draggedFileId: null, source: null });
+    }, 0);
   };
 
   return (

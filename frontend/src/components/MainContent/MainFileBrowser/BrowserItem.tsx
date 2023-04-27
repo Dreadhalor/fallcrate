@@ -3,6 +3,7 @@ import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
 import { CustomFile } from '@src/types';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import prettyBytes from 'pretty-bytes';
+import { useDragAndDrop } from '@providers/DragAndDropProvider';
 
 type Props = {
   file: CustomFile;
@@ -14,20 +15,31 @@ const BrowserItem = ({ file }: Props) => {
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;
 
+  const { state, setState } = useDragAndDrop();
   const allowDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragover(true);
   };
   const drag = (e: React.DragEvent<HTMLDivElement>) => {
     setDragging(true);
-    e.dataTransfer.setData('file_id', file.id);
+    e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+    setState({
+      draggedFileId: file.id,
+      source: 'BrowserItem',
+    });
   };
+
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file_id = e.dataTransfer.getData('file_id');
-    if (file_id) moveFiles([file_id], file.id);
+
+    const file_id = state.draggedFileId;
+    if (file_id) {
+      moveFiles([file_id], file.id);
+      // e.stopPropagation();
+    }
     setDragover(false);
     setDragging(false);
+    setState({ draggedFileId: null, source: null });
   };
 
   const [dragover, setDragover] = useState(false);

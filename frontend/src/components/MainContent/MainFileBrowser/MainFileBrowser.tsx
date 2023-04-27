@@ -3,12 +3,14 @@ import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import FileDropzone from '../FileDropzone';
+import { useDragAndDrop } from '@providers/DragAndDropProvider';
 
 const MainFileBrowser = () => {
   const [dragover, setDragover] = useState(false);
   const drop_ref = useRef<HTMLDivElement>(null);
   const { currentDirectoryFiles, currentDirectory, moveFiles } =
     useFilesystem();
+  const { state, setState } = useDragAndDrop();
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -21,12 +23,15 @@ const MainFileBrowser = () => {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragover(false);
-    // drop file into current directory
-    const file_id = e.dataTransfer.getData('file_id');
-    if (file_id && !drop_ref.current?.contains(e.target as Node)) {
-      moveFiles([file_id], currentDirectory);
+    const child_file_id = state.draggedFileId;
+    // check if the target is the dropzone
+    const drop_in_current_dir = e.target === drop_ref.current;
+
+    if (child_file_id && drop_in_current_dir) {
+      moveFiles([child_file_id], currentDirectory);
     }
+    setDragover(false);
+    setState({ draggedFileId: null, source: null });
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CustomFile } from '@src/types';
 import { useFilesystem } from '@providers/FilesystemProvider';
+import { useDragAndDrop } from '@providers/DragAndDropProvider';
 
 type Props = {
   file: CustomFile | null;
@@ -18,22 +19,28 @@ const Breadcrumb = ({ file }: Props) => {
     ? ''
     : 'hover:underline hover:text-black';
 
+  const { state, setState } = useDragAndDrop();
   const allowDrop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setDragover(true);
   };
   const drag = (e: React.DragEvent<HTMLButtonElement>) => {
     if (file_id) {
-      e.dataTransfer.setData('file_id', file_id);
+      e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+      setState({
+        draggedFileId: file_id,
+        source: 'Breadcrumb',
+      });
     }
   };
   const drop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const child_file_id = e.dataTransfer.getData('file_id');
+    const child_file_id = state.draggedFileId;
     if (child_file_id) {
       moveFiles([child_file_id], file_id);
     }
     setDragover(false);
+    setState({ draggedFileId: null, source: null });
   };
 
   return (

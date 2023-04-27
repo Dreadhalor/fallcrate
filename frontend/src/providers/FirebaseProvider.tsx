@@ -41,12 +41,10 @@ function FirebaseComponents({ children }: Props) {
   );
 }
 
-const FirebaseProvider = ({ children }: Props) => {
+export const FirebaseProvider = ({ children }: Props) => {
   return (
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
       <FirebaseComponents>{children}</FirebaseComponents>
     </FirebaseAppProvider>
   );
 };
-
-export default FirebaseProvider;
