@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDrop } from 'react-dnd';
 
 type Props = {
   isOpen: boolean;
@@ -15,7 +16,12 @@ const Collapse = ({
   children,
   dragOutline = false,
 }: Props) => {
-  const [dragover, setDragover] = useState(false);
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'file',
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
 
   return (
     <div
@@ -25,24 +31,13 @@ const Collapse = ({
       {dragOutline && (
         <div
           className='pointer-events-none absolute inset-[1px] z-10'
-          style={{ border: dragover ? '2px dashed blue' : 'none' }}
+          style={{ border: isOver ? '2px dashed blue' : 'none' }}
         ></div>
       )}
       <div
+        ref={drop}
         className={`overflow-auto ${border}`}
         style={{ maxHeight }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragover(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setDragover(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragover(false);
-        }}
       >
         {children}
       </div>

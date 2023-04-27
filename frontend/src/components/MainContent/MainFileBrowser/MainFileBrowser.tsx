@@ -1,52 +1,42 @@
-import { useRef, useState } from 'react';
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import FileDropzone from '../FileDropzone';
-import { useDragAndDrop } from '@providers/DragAndDropProvider';
+import { useDrop } from 'react-dnd';
+import { DraggedItem } from '@src/types';
 
 const MainFileBrowser = () => {
-  const [dragover, setDragover] = useState(false);
-  const drop_ref = useRef<HTMLDivElement>(null);
   const { currentDirectoryFiles, currentDirectory, moveFiles } =
     useFilesystem();
-  const { state, setState } = useDragAndDrop();
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragover(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragover(false);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const child_file_id = state.draggedFileId;
-    // check if the target is the dropzone
-    const drop_in_current_dir = e.target === drop_ref.current;
-
-    if (child_file_id && drop_in_current_dir) {
-      moveFiles([child_file_id], currentDirectory);
-    }
-    setDragover(false);
-    setState({ draggedFileId: null, source: null });
-  };
+  // Drop related logic
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: 'file',
+      drop: (item: DraggedItem, monitor) => {
+        if (monitor.isOver({ shallow: true }) && item.id)
+          moveFiles([item.id], currentDirectory);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+      }),
+    }),
+    // currentDirectory ends up always being null without this
+    [currentDirectory, moveFiles]
+  );
 
   return (
     <div className='relative flex flex-1 overflow-hidden'>
-      <div
-        className='pointer-events-none absolute inset-[1px] z-20'
-        style={{ border: dragover ? '2px dashed blue' : 'none' }}
-      ></div>
+      {isOver && (
+        <div
+          className='pointer-events-none absolute inset-[1px] z-20'
+          style={{ border: '2px dashed blue' }}
+        ></div>
+      )}
       <div
         id='content-browser'
         className='relative flex flex-1 flex-col overflow-auto'
-        ref={drop_ref}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        ref={drop}
       >
         <FileDropzone />
         {currentDirectoryFiles.length > 0 && <BrowserHeader />}

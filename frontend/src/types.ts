@@ -6,3 +6,7 @@ export interface CustomFile {
   parent: string | null;
   url?: string;
 }
+
+export interface DraggedItem {
+  id: string;
+}

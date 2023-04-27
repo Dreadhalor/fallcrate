@@ -31,7 +31,7 @@ const TruncatedText = ({ text, truncationChange }: Props) => {
   }, []);
 
   return (
-    <div className='h-full truncate' ref={text_ref}>
+    <div className='truncate' ref={text_ref}>
       {text}
     </div>
   );

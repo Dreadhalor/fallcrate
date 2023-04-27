@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Collapse } from 'react-collapse';
 import SidebarBrowser from './SidebarBrowser';
+import { useDrop } from 'react-dnd';
 
 type Props = {
   isOpen: boolean;
@@ -8,26 +8,22 @@ type Props = {
 };
 
 const AllFilesMenuBody = ({ isOpen, maxHeight }: Props) => {
-  const [dragover, setDragover] = useState(false);
+  // use drop to show a dashed border when dragging a file over the menu
+  // purely for visual purposes
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'file',
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
 
   return (
     <Collapse isOpened={isOpen}>
       <div
+        ref={drop}
         className={`relative max-h-[${maxHeight}px] overflow-auto border-y border-gray-300`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragover(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setDragover(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragover(false);
-        }}
       >
-        {dragover && (
+        {isOver && (
           <div
             className='pointer-events-none absolute inset-[1px] z-10'
             style={{ border: '2px dashed blue' }}

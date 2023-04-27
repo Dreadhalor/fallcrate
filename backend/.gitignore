@@ -70,3 +70,6 @@ firebase-data
 
 # json-server data
 json-server-data
+
+# dist folder
+public

@@ -58,9 +58,7 @@ export const FilesystemProvider = ({ children }: Props) => {
 
   const clearSelfParents = (files: CustomFile[]) => {
     files.forEach((file) => {
-      if (file.parent === file.id) {
-        moveFiles([file.id], null);
-      }
+      if (file.parent === file.id) moveFiles([file.id], null);
     });
     return files;
   };
@@ -121,7 +119,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       // if file is a file, delete it from storage
       if (files.find((file) => file.id === id)?.type === 'file') {
         const path = `uploads/${id}`;
-        console.log(`Deleting file at path ${path}`);
         storage.deleteFile(path).catch((err) => {
           console.log(err);
         });
