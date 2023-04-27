@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       colors: {
         faded_bg: '#f7f5f2',
+        faded_border: '#e0e0e0',
       },
     },
   },

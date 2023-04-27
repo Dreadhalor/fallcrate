@@ -21,7 +21,7 @@ const AllFilesMenuBody = ({ isOpen, maxHeight }: Props) => {
     <Collapse isOpened={isOpen}>
       <div
         ref={drop}
-        className={`relative max-h-[${maxHeight}px] overflow-auto border-y border-gray-300`}
+        className={`relative max-h-[${maxHeight}px] overflow-auto border-y border-faded_border`}
       >
         {isOver && (
           <div
