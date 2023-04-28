@@ -1,4 +1,4 @@
-* check on type-safeness of file:any in Database.ts
-* maybe fix weird race condition bug with A->B->C where moving C into A sometimes leaves a blank space below C
-* if possible, define styles externally so that we have one source of truth for both tailwind.config.cjs & index.scss
-* fix the flash of loading screen on opening a modal that loads quickly
+- check on type-safeness of file:any in Database.ts
+- maybe fix weird race condition bug with A->B->C where moving C into A sometimes leaves a blank space below C
+- if possible, define styles externally so that we have one source of truth for both tailwind.config.cjs & index.scss
+- fix the flash of loading screen on opening a modal that loads quickly - also, let "loading..." appear on top of the modal for a moment after load, it looks nice
