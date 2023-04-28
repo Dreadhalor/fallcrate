@@ -26,6 +26,11 @@ interface FilesystemContextValue {
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
   uploadFile: (file: File) => void;
+  imageModal: { open: boolean; url: string | null };
+  setImageModal: React.Dispatch<
+    React.SetStateAction<{ open: boolean; url: string | null }>
+  >;
+  openImageModal: (url: string) => void;
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -47,9 +52,17 @@ export const FilesystemProvider = ({ children }: Props) => {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
   >([]);
+  const [imageModal, setImageModal] = useState<{
+    open: boolean;
+    url: string | null;
+  }>({ open: false, url: null });
 
   const db = useDB();
   const storage = useStorage();
+
+  const openImageModal = (url: string) => {
+    setImageModal({ open: true, url });
+  };
 
   // Helper functions
   const handleOperationError = (message: string) => {
@@ -93,7 +106,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (file.type === 'directory') return openDirectory(file_id);
     if (file.type === 'file') {
       // open the file in a new tab
-      window.open(file.url, '_blank');
+      // window.open(file.url, '_blank');
+      openImageModal(file.url ?? '');
     }
   };
 
@@ -268,6 +282,9 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptRenameFile,
         moveFiles,
         uploadFile,
+        imageModal,
+        setImageModal,
+        openImageModal,
       }}
     >
       {children}

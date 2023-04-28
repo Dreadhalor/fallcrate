@@ -17,3 +17,41 @@ body,
 .ReactCollapse--collapse {
   transition: height 300ms;
 }
+
+/* floating animation */
+@keyframes float {
+  0% {
+    transform: translateY(2.5);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+  100% {
+    transform: translateY(2.5);
+  }
+}
+/* floating text */
+.loading-text {
+  animation: float 1.5s ease-in-out infinite;
+}
+
+.close-button {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  opacity: 0.8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.close-button:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+  opacity: 1;
+}
