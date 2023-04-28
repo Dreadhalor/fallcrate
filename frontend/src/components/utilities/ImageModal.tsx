@@ -1,5 +1,5 @@
 import { useFilesystem } from '@providers/FilesystemProvider';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
 
@@ -10,18 +10,9 @@ const ImageModal = () => {
     height: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const show_loading_delay = 10000;
 
   const margin_image = 10;
   const modal_viewport_ratio = 0.9;
-
-  const delay_ref = useRef<NodeJS.Timeout | null>(null);
-  const clearDelay = () => {
-    if (delay_ref.current) {
-      clearTimeout(delay_ref.current);
-      delay_ref.current = null;
-    }
-  };
 
   const updateDimensions = () => {
     if (!imageModal.open) return;
@@ -31,16 +22,11 @@ const ImageModal = () => {
     img.onload = () => {
       setImageDimensions(calculateDimensions(img.width, img.height));
       setIsLoading(false);
-      clearDelay();
     };
 
     // Only set isLoading to true if the image is not yet loaded.
     if (!img.complete) {
       setIsLoading(true);
-      delay_ref.current = setTimeout(
-        () => setIsLoading(false),
-        show_loading_delay
-      );
     }
   };
 
@@ -93,7 +79,6 @@ const ImageModal = () => {
     setImageDimensions({ width: 0, height: 0 });
     setImageModal({ open: false, url: null });
     setIsLoading(false);
-    clearDelay();
   };
 
   const loadingContent = (
