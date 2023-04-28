@@ -10,7 +10,7 @@ const ImageModal = () => {
     height: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const show_loading_delay = 300;
+  const show_loading_delay = 10000;
 
   const margin_image = 10;
   const modal_viewport_ratio = 0.9;

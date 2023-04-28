@@ -5,6 +5,9 @@ import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: '../backend/public',
+  },
   resolve: {
     alias: {
       '@providers': resolve(__dirname, 'src/providers'),
