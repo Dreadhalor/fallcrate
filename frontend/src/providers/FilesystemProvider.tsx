@@ -9,6 +9,7 @@ import { useDB } from '@src/hooks/useDB';
 import { useStorage } from '@src/hooks/useStorage';
 import { CustomFile } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
+import { useAchievements } from './AchievementProvider';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -59,6 +60,7 @@ export const FilesystemProvider = ({ children }: Props) => {
 
   const db = useDB();
   const storage = useStorage();
+  const achievements = useAchievements();
 
   const openImageModal = (url: string) => {
     setImageModal({ open: true, url });
@@ -180,11 +182,15 @@ export const FilesystemProvider = ({ children }: Props) => {
       return;
     }
 
-    db.renameFile(file_id, name).then((data) => {
-      setFiles((prev) =>
-        prev.map((file) => (file.id === file_id ? data : file))
-      );
-    });
+    db.renameFile(file_id, name)
+      .then((data) => {
+        setFiles((prev) =>
+          prev.map((file) => (file.id === file_id ? data : file))
+        );
+      })
+      .then((_) => {
+        achievements.unlockAchievement('rename_file');
+      });
   };
 
   const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {

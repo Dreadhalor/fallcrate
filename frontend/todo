@@ -3,3 +3,8 @@
 * if possible, define styles externally so that we have one source of truth for both tailwind.config.cjs & index.scss
 * fix the flash of loading screen on opening a modal that loads quickly - also, let "loading..." appear on top of the modal for a moment after load, it looks nice
 * you know you're gonna have to do it anyway so just do it - make thumbnails for images
+* Eventually: put in easter eggs for achievements
+* truncate long names in the middle
+* for the breadcrumb:
+  * calculate the longest path that can be displayed without truncationg & display it
+  * everything else, compile into an ellipsis in the breadcrumb base with a dropdown menu

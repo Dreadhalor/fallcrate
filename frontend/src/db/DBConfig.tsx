@@ -8,7 +8,7 @@ export interface DBConfig {
 
 const defaultDBType = import.meta.env.VITE_DATABASE_TYPE || 'firestore';
 
-export const createDB = (
+export const useCreateDB = (
   config: DBConfig = { type: defaultDBType as 'json-server' | 'firestore' }
 ): Database => {
   switch (config.type) {

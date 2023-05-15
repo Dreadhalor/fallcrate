@@ -9,5 +9,8 @@
     "stop": "npx kill-port 4000 4400 8080 9199"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^9.22.0"
+  }
 }

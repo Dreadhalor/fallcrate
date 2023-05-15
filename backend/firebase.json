@@ -15,15 +15,15 @@
     },
     "ui": {
       "enabled": true
-    }
+    },
+    "auth": {
+      "port": 9099
+    },
+    "singleProjectMode": true
   },
   "hosting": {
     "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",

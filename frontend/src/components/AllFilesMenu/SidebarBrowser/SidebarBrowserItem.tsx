@@ -3,7 +3,6 @@ import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
-import 'react-tooltip/dist/react-tooltip.css';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { CustomFile, DraggedItem } from '@src/types';
