@@ -186,10 +186,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (
       checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
     ) {
-      unlockAchievementById('filename_conflict');
       handleOperationError(
         `A file with the name "${name}" already exists in the current directory!`
       );
+      unlockAchievementById('filename_conflict');
       return;
     }
 
