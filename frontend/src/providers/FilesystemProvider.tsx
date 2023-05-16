@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   checkDirectoryForNameConflict,
   checkForCircularReference,
@@ -27,7 +21,6 @@ interface FilesystemContextValue {
   massToggleSelectFiles: () => void;
   openFile: (file_id: string) => void;
   createFolder: (name: string) => void;
-  deleteFile: (file_id: string) => void;
   deleteFiles: (file_ids: string[]) => void;
   promptNewFolder: () => void;
   promptRenameFile: (file_id: string) => void;
@@ -148,7 +141,6 @@ export const FilesystemProvider = ({ children }: Props) => {
           console.log(err);
         });
       }
-      unlockAchievementById('delete_file');
     }
 
     // Update the files state and deselect the deleted files in one step
@@ -161,15 +153,28 @@ export const FilesystemProvider = ({ children }: Props) => {
       );
       return remainingFiles;
     });
+
+    return delete_tree;
   };
 
   const deleteFiles = async (file_ids: string[]) => {
     // Run deleteFile operations concurrently for each file ID
-    await Promise.all(file_ids.map((file_id) => deleteFile(file_id)));
+    let deleted_ids: Set<string> = new Set();
+    await Promise.all(file_ids.map((file_id) => deleteFile(file_id))).then(
+      (data) => {
+        data.forEach((ids) => {
+          ids.forEach((id) => deleted_ids.add(id));
+        });
+      }
+    );
 
     // Update state in one step
     setFiles((prev) => prev.filter((file) => !file_ids.includes(file.id)));
     setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
+
+    console.log('deleted files:', deleted_ids);
+    if (deleted_ids.size > 1) unlockAchievementById('delete_file');
+    if (deleted_ids.size > 5) unlockAchievementById('mass_delete');
   };
 
   const promptNewFolder = () => {
@@ -297,7 +302,6 @@ export const FilesystemProvider = ({ children }: Props) => {
         massToggleSelectFiles,
         openFile,
         createFolder,
-        deleteFile,
         deleteFiles,
         promptNewFolder,
         promptRenameFile,

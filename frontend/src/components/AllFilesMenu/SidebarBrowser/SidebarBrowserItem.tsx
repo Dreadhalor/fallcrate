@@ -120,6 +120,7 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
             anchorSelect={`#${display_id}`}
             content={file.name}
             positionStrategy='fixed'
+            style={{ maxWidth: '300px' }}
           />
         )}
       </div>
