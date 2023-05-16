@@ -14,15 +14,18 @@ const AllFilesBreadcrumb = ({ onMouseEnter, onMouseLeave }: Props) => {
   const { openDirectory, moveFiles } = useFilesystem();
 
   // Drop related logic
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ITEM_TYPE,
-    drop: (item: DraggedItem) => {
-      if (item.id) moveFiles([item.id], null);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: ITEM_TYPE,
+      drop: (item: DraggedItem) => {
+        if (item.id) moveFiles([item.id], null);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+      }),
     }),
-  }));
+    [moveFiles]
+  );
 
   return (
     <div className='relative py-[2px] px-[4px]'>

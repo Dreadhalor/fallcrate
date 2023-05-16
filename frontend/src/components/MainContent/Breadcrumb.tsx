@@ -1,6 +1,7 @@
 import { CustomFile, DraggedItem } from '@src/types';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import { useDrag, useDrop } from 'react-dnd';
+import { useAchievements } from 'milestone-components';
 
 type Props = {
   file: CustomFile | null;
@@ -10,6 +11,7 @@ const ITEM_TYPE = 'file';
 
 const Breadcrumb = ({ file }: Props) => {
   const { currentDirectory, openDirectory, moveFiles } = useFilesystem();
+  const { unlockAchievementById } = useAchievements();
 
   const file_id = file?.id ?? null;
   const is_current_directory = (file?.id ?? null) === currentDirectory;
@@ -29,15 +31,18 @@ const Breadcrumb = ({ file }: Props) => {
   }));
 
   // Drop related logic
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ITEM_TYPE,
-    drop: (item: DraggedItem) => {
-      if (item.id) moveFiles([item.id], file_id);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver() && monitor.getItem().id !== file_id,
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: ITEM_TYPE,
+      drop: (item: DraggedItem) => {
+        if (item.id) moveFiles([item.id], file_id);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver() && monitor.getItem().id !== file_id,
+      }),
     }),
-  }));
+    [file_id, moveFiles]
+  );
 
   // Merge drag and drop refs
   const dragDropRef = (el: HTMLButtonElement | null) => {
@@ -45,6 +50,11 @@ const Breadcrumb = ({ file }: Props) => {
       drag(el);
       drop(el);
     }
+  };
+
+  const handleClick = () => {
+    openDirectory(file?.id ?? null);
+    unlockAchievementById('breadcrumb_navigation');
   };
 
   return (
@@ -60,7 +70,7 @@ const Breadcrumb = ({ file }: Props) => {
           ref={dragDropRef}
           disabled={is_current_directory}
           className={`${mouseover} ${color}`}
-          onClick={() => openDirectory(file?.id ?? null)}
+          onClick={handleClick}
         >
           {file?.name ?? 'Fallcrate'}
         </button>

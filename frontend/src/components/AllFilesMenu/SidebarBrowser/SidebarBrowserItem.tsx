@@ -42,15 +42,18 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   }));
 
   // Drop related logic
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ITEM_TYPE,
-    drop: (item: DraggedItem) => {
-      if (item.id) moveFiles([item.id], file.id);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: ITEM_TYPE,
+      drop: (item: DraggedItem) => {
+        if (item.id) moveFiles([item.id], file.id);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+      }),
     }),
-  }));
+    [file.id, moveFiles]
+  );
 
   // Merge drag and drop refs
   const dragDropRef = (el: HTMLDivElement | null) => {

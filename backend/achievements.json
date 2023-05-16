@@ -17,7 +17,7 @@
   },
   "delete_file": {
     "title": "It's Not Me, It's You",
-    "description": "Delete a file"
+    "description": "Delete a file or folder"
   },
   "download_file": {
     "title": "I'll Be Taking That Now",
@@ -52,7 +52,7 @@
     "description": "Attempt to move a folder or file into a file"
   },
   "filename_conflict": {
-    "title": "I am Spartacus!",
+    "title": "I'm Spartacus!",
     "description": "Attempt to name a file the same name as another file"
   },
   "navigation_depth": {

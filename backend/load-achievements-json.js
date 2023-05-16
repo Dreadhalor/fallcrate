@@ -8,7 +8,6 @@ const {
   terminate,
 } = require('firebase/firestore');
 const data = require('./achievements.json');
-// console.log(data);
 
 const config = {
   apiKey: 'AIzaSyCQ5KQFFuFYTRhqZD0U6o82ZbZE1QgLsGQ',

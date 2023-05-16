@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import {
   checkDirectoryForNameConflict,
   checkForCircularReference,
@@ -9,7 +15,7 @@ import { useDB } from '@src/hooks/useDB';
 import { useStorage } from '@src/hooks/useStorage';
 import { CustomFile } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
-import { useAchievements } from './AchievementProvider';
+import { useAchievements } from 'milestone-components';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -60,7 +66,8 @@ export const FilesystemProvider = ({ children }: Props) => {
 
   const db = useDB();
   const storage = useStorage();
-  const achievements = useAchievements();
+
+  const { unlockAchievementById } = useAchievements();
 
   const openImageModal = (url: string) => {
     setImageModal({ open: true, url });
@@ -110,6 +117,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       // open the file in a new tab
       // window.open(file.url, '_blank');
       openImageModal(file.url ?? '');
+      unlockAchievementById('preview_image');
     }
   };
 
@@ -124,6 +132,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     db.createFolder(name, currentDirectory).then((data) => {
       setFiles((prev) => [...prev, data]);
     });
+    unlockAchievementById('create_folder');
   };
 
   const deleteFile = async (file_id: string) => {
@@ -139,6 +148,7 @@ export const FilesystemProvider = ({ children }: Props) => {
           console.log(err);
         });
       }
+      unlockAchievementById('delete_file');
     }
 
     // Update the files state and deselect the deleted files in one step
@@ -176,6 +186,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (
       checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
     ) {
+      unlockAchievementById('filename_conflict');
       handleOperationError(
         `A file with the name "${name}" already exists in the current directory!`
       );
@@ -189,7 +200,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         );
       })
       .then((_) => {
-        achievements.unlockAchievement('rename_file');
+        unlockAchievementById('rename_file');
       });
   };
 
@@ -218,6 +229,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`
         );
+        unlockAchievementById('parent_into_child');
         return;
       }
 
@@ -225,6 +237,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a file into a file!`
         );
+        unlockAchievementById('file_into_file');
         return;
       }
 
@@ -235,6 +248,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         // if the file was moved to a different directory, deselect it
         if (parent_id !== currentDirectory)
           setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
+        unlockAchievementById('folder_into_folder');
       });
     });
   };
@@ -259,6 +273,7 @@ export const FilesystemProvider = ({ children }: Props) => {
 
     const result = await db.createFile(newFile);
     setFiles((prev) => [...prev, result]);
+    unlockAchievementById('upload_file');
   };
 
   useEffect(() => {
