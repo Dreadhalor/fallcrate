@@ -18,7 +18,7 @@ const Navbar = () => {
         <img className='h-[32px]' src={CombinationMark} />
       </div>
       <Searchbar />
-      <UserMenu light={true} height={40} />
+      <UserMenu light={true} height={40} style={{ marginLeft: '8px' }} />
     </div>
   );
 };

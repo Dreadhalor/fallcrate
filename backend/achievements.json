@@ -101,6 +101,14 @@
   },
   "select_file": {
     "title": "Random File, I Choose You!",
-    "description": "Manually select a file or folder"
+    "description": "Manually select one file or folder"
+  },
+  "collapse_sidebar_by_dragging": {
+    "title": "Collapse Sidebar by Dragging",
+    "description": "Collapse the sidebar by dragging the resize handle until it snaps closed"
+  },
+  "sidebar_pixel_perfect": {
+    "title": "A Pixel-Perfect Problem",
+    "description": "Balance the sidebar resize handle perfectly between open and closed"
   }
 }

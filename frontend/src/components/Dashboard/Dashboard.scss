@@ -24,3 +24,10 @@ $width-hover: 2px;
     @include border-highlight(#e0e0e0, $width-hover);
   }
 }
+
+.collapse-button {
+  transition: opacity 0.2s ease-in-out, border-width 0.2s ease-in-out;
+  &__icon {
+    transition: transform 0.2s ease-in-out;
+  }
+}
