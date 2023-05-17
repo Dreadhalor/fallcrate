@@ -124,16 +124,23 @@ export const FilesystemProvider = ({ children }: Props) => {
     setSelectedFiles((prev) => {
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
-      else return [...prev, file_id];
+      else {
+        unlockAchievementById('select_file');
+        return [...prev, file_id];
+      }
     });
   };
+  // doesn't trigger the achievement for selecting a file - this is intentional
   const selectFileExclusively = (file_id: string) => {
     setSelectedFiles([file_id]);
   };
 
   const massToggleSelectFiles = () => {
     if (selectedFiles.length > 0) setSelectedFiles([]);
-    else setSelectedFiles(currentDirectoryFiles.map((file) => file.id));
+    else {
+      setSelectedFiles(currentDirectoryFiles.map((file) => file.id));
+      unlockAchievementById('mass_select');
+    }
   };
 
   const openFile = (file_id?: string) => {

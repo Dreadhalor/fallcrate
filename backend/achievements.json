@@ -94,5 +94,13 @@
   "zoom_into_preview": {
     "title": "Enhance!",
     "description": "Zoom into a previewed image"
+  },
+  "mass_select": {
+    "title": "You're ALL My Favorite",
+    "description": "Use the column header checkbox to select all files in the current directory at once"
+  },
+  "select_file": {
+    "title": "Random File, I Choose You!",
+    "description": "Manually select a file or folder"
   }
 }
