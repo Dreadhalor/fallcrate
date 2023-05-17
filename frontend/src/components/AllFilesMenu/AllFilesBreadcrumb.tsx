@@ -2,6 +2,7 @@ import { DraggedItem } from '@src/types';
 import { useFilesystem } from '@providers/FilesystemProvider';
 import { useDrop } from 'react-dnd';
 import { MouseEvent } from 'react';
+import TruncatedText from '@components/utilities/TruncatedText';
 
 type Props = {
   onMouseEnter?: (event: MouseEvent<HTMLButtonElement>) => void;
@@ -28,7 +29,9 @@ const AllFilesBreadcrumb = ({ onMouseEnter, onMouseLeave }: Props) => {
   );
 
   return (
-    <div className='relative py-[2px] px-[4px]'>
+    // overflow-hideen here + TruncatedText below is just so that "All Files" doesn't wrap to a second line while
+    // the sidebar closes
+    <div className='relative overflow-hidden py-[2px] px-[4px]'>
       {isOver && (
         <div
           className='pointer-events-none absolute inset-[1px] z-20'
@@ -46,7 +49,7 @@ const AllFilesBreadcrumb = ({ onMouseEnter, onMouseLeave }: Props) => {
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        All Files
+        <TruncatedText text='All Files' />
       </button>
     </div>
   );

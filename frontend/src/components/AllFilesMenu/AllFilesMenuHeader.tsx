@@ -20,24 +20,22 @@ const AllFilesMenuHeader = ({ isOpen, setIsOpen }: Props) => {
       onMouseEnter={() => setIsTopHovered(true)}
       onMouseLeave={() => setIsTopHovered(false)}
     >
-      <div>
-        <div
-          className={`rounded-sm p-[5px] ${
-            isHovered ? 'bg-gray-300' : ''
-          } transition-colors duration-200`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen((prev) => !prev);
+      <div
+        className={`rounded-sm p-[5px] ${
+          isHovered ? 'bg-gray-300' : ''
+        } transition-colors duration-200`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen((prev) => !prev);
+        }}
+      >
+        <FaChevronRight
+          size={10}
+          className='h-full transition-transform'
+          style={{
+            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
           }}
-        >
-          <FaChevronRight
-            size={10}
-            className='h-full transition-transform'
-            style={{
-              transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-            }}
-          />
-        </div>
+        />
       </div>
       <AllFilesBreadcrumb
         onMouseEnter={() => setIsBreadcrumbHovered(true)}

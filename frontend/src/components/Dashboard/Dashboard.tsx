@@ -34,7 +34,7 @@ const Dashboard = () => {
 
   const quick_collapse_size = 26;
   const collapsed_width = 20;
-  const schwarzchild_width = 150;
+  const schwarzchild_width = 160;
   const default_width = 250;
 
   const collapseSidebar = () => {
