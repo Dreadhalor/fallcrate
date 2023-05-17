@@ -5,8 +5,11 @@ import MainContent from '../MainContent/MainContent';
 import { useState } from 'react';
 
 import './Dashboard.scss';
+import { useAchievements } from 'milestone-components';
 
 const Dashboard = () => {
+  const { unlockAchievementById } = useAchievements();
+
   const setHandleEmphasis = (type: 'hover' | 'drag', active: boolean) => {
     const handle = document.querySelector('.resize-right-handle');
     if (handle) {
@@ -57,10 +60,12 @@ const Dashboard = () => {
           ),
         }}
         onResizeStart={() => {
-          setResizing(true);
+          setMouseDown(true);
           setHandleEmphasis('drag', true);
         }}
+        onResize={() => setResizing(true)}
         onResizeStop={() => {
+          if (resizing) unlockAchievementById('resize_sidebar');
           setResizing(false);
           setMouseDown(false);
           setHandleEmphasis('drag', false);
