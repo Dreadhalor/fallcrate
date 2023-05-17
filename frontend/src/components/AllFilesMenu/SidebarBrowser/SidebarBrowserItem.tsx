@@ -7,6 +7,7 @@ import { useFilesystem } from '@providers/FilesystemProvider';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { CustomFile, DraggedItem } from '@src/types';
 import { useDrag, useDrop } from 'react-dnd';
+import { useAchievements } from 'milestone-components';
 
 type Props = {
   file: CustomFile;
@@ -16,7 +17,12 @@ type Props = {
 const ITEM_TYPE = 'file';
 
 const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
+  const { unlockAchievementById } = useAchievements();
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (isOpen) unlockAchievementById('expand_folder');
+  }, [isOpen]);
+
   const [childFolders, setChildFolders] = useState<CustomFile[]>([]);
   const display_id = `file-${file.id}`;
 
