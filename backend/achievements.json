@@ -108,7 +108,7 @@
     "description": "Collapse the sidebar by dragging the resize handle until it snaps closed"
   },
   "sidebar_pixel_perfect": {
-    "title": "A Pixel-Perfect Problem",
-    "description": "Balance the sidebar resize handle perfectly between open and closed"
+    "title": "It's Not a Bug, It's an Achievement",
+    "description": "Drop the sidebar resize handle perfectly balanced between open and closed"
   }
 }
