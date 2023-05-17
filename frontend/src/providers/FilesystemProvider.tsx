@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   checkDirectoryForNameConflict,
+  checkForCircularBranch,
   checkForCircularReference,
   getFileDeleteTreeIDs,
   sortFiles,
@@ -18,8 +19,9 @@ interface FilesystemContextValue {
   currentDirectoryFiles: CustomFile[];
   openDirectory: (directory_id: string | null) => void;
   selectFile: (file_id: string) => void;
+  selectFileExclusively: (file_id: string) => void;
   massToggleSelectFiles: () => void;
-  openFile: (file_id: string) => void;
+  openFile: (file_id?: string) => void;
   createFolder: (name: string) => void;
   deleteFiles: (file_ids: string[]) => void;
   promptNewFolder: () => void;
@@ -31,6 +33,8 @@ interface FilesystemContextValue {
     React.SetStateAction<{ open: boolean; url: string | null }>
   >;
   openImageModal: (url: string) => void;
+  getParent: (file: CustomFile) => CustomFile | null;
+  getFile: (file_id: string) => CustomFile | null;
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -71,9 +75,36 @@ export const FilesystemProvider = ({ children }: Props) => {
     alert(message);
   };
 
+  const getParent = (file: CustomFile) => {
+    if (file.parent === null) return null;
+    return files.find((candidate) => candidate.id === file.parent) ?? null;
+  };
+  const getFile = (file_id: string) =>
+    files.find((file) => file.id === file_id) ?? null;
+
   const clearSelfParents = (files: CustomFile[]) => {
     files.forEach((file) => {
-      if (file.parent === file.id) moveFiles([file.id], null);
+      if (file.parent === file.id) moveFiles([file.id], null, false);
+    });
+    return files;
+  };
+  const resetOrphanBranches = (files: CustomFile[]) => {
+    files.forEach((file) => {
+      if (file.parent === null) return;
+      if (!files.find((candidate) => candidate.id === file.parent)) {
+        console.log('relocating orphaned file:', file);
+        moveFiles([file.id], null, false);
+      }
+    });
+    return files;
+  };
+  const resetCircularBranches = (files: CustomFile[]) => {
+    files.forEach((file) => {
+      const branch = checkForCircularBranch(file.id, files);
+      if (branch.length > 0) {
+        console.log('relocating circular branch:', branch);
+        moveFiles(branch, null, false);
+      }
     });
     return files;
   };
@@ -96,13 +127,17 @@ export const FilesystemProvider = ({ children }: Props) => {
       else return [...prev, file_id];
     });
   };
+  const selectFileExclusively = (file_id: string) => {
+    setSelectedFiles([file_id]);
+  };
 
   const massToggleSelectFiles = () => {
     if (selectedFiles.length > 0) setSelectedFiles([]);
     else setSelectedFiles(currentDirectoryFiles.map((file) => file.id));
   };
 
-  const openFile = (file_id: string) => {
+  const openFile = (file_id?: string) => {
+    if (!file_id) return;
     const file = files.find((file) => file.id === file_id);
     if (!file) return;
     if (file.type === 'directory') return openDirectory(file_id);
@@ -172,7 +207,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     setFiles((prev) => prev.filter((file) => !file_ids.includes(file.id)));
     setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
 
-    console.log('deleted files:', deleted_ids);
     if (deleted_ids.size > 1) unlockAchievementById('delete_file');
     if (deleted_ids.size > 5) unlockAchievementById('mass_delete');
   };
@@ -209,7 +243,11 @@ export const FilesystemProvider = ({ children }: Props) => {
       });
   };
 
-  const moveFiles = (file_ids_to_move: string[], parent_id: string | null) => {
+  const moveFiles = (
+    file_ids_to_move: string[],
+    parent_id: string | null,
+    achievementsEnabled = true
+  ) => {
     file_ids_to_move.forEach((file_id) => {
       const file = files.find((file) => file.id === file_id);
       const parent = files.find((file) => file.id === parent_id);
@@ -234,7 +272,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`
         );
-        unlockAchievementById('parent_into_child');
+        if (achievementsEnabled) unlockAchievementById('parent_into_child');
         return;
       }
 
@@ -242,7 +280,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a file into a file!`
         );
-        unlockAchievementById('file_into_file');
+        if (achievementsEnabled) unlockAchievementById('file_into_file');
         return;
       }
 
@@ -253,7 +291,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         // if the file was moved to a different directory, deselect it
         if (parent_id !== currentDirectory)
           setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
-        unlockAchievementById('folder_into_folder');
+        if (achievementsEnabled && parent_id)
+          unlockAchievementById('folder_into_folder');
       });
     });
   };
@@ -287,6 +326,8 @@ export const FilesystemProvider = ({ children }: Props) => {
 
   useEffect(() => {
     clearSelfParents(files);
+    resetOrphanBranches(files);
+    resetCircularBranches(files);
     openDirectory(currentDirectory);
   }, [files]);
 
@@ -299,6 +340,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         currentDirectoryFiles,
         openDirectory,
         selectFile,
+        selectFileExclusively,
         massToggleSelectFiles,
         openFile,
         createFolder,
@@ -310,6 +352,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         imageModal,
         setImageModal,
         openImageModal,
+        getParent,
+        getFile,
       }}
     >
       {children}

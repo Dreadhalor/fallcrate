@@ -30,9 +30,9 @@ export const buildNewFile = (file: any) => {
 
 export const sortFiles = (file_a: CustomFile, file_b: CustomFile) => {
   if (file_a.type === 'directory' && file_b.type === 'file') {
-    return -1;
-  } else if (file_a.type === 'file' && file_b.type === 'directory') {
     return 1;
+  } else if (file_a.type === 'file' && file_b.type === 'directory') {
+    return -1;
   } else {
     return file_a.name.localeCompare(file_b.name);
   }
@@ -42,7 +42,7 @@ export const getDirectoryPath = (
   file_id: string | null,
   files: CustomFile[]
 ): (CustomFile | null)[] => {
-  if (file_id === null) return [null];
+  if (!file_id) return [null];
   const file = files.find((file) => file?.id === file_id);
   if (!file) return [null];
   return [...getDirectoryPath(file?.parent, files), file];
@@ -99,6 +99,24 @@ export const checkForCircularReference = (
   const parent = files.find((file) => file.id === parent_id);
   if (parent) return checkForCircularReference(file_id, parent.parent, files);
   return false;
+};
+export const checkForCircularBranch = (
+  file_id: string,
+  files: CustomFile[]
+): string[] => {
+  const anchor = files.find((file) => file.id === file_id);
+  if (!anchor) return [];
+  const branch = [anchor.id];
+  let parent = files.find((file) => file.id === file.parent);
+  while (parent) {
+    parent = files.find((file) => file.id === parent?.parent);
+    if (parent && parent.id !== anchor.id) {
+      branch.push(parent.id);
+    } else {
+      return branch;
+    }
+  }
+  return [];
 };
 
 export const checkDirectoryForNameConflict = (
