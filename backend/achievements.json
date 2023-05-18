@@ -101,7 +101,7 @@
   },
   "select_file": {
     "title": "Random File, I Choose You!",
-    "description": "Manually select one file or folder"
+    "description": "Use the checkbox to select one file or folder"
   },
   "collapse_sidebar_by_dragging": {
     "title": "Collapse Sidebar by Dragging",

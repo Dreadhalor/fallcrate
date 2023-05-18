@@ -121,6 +121,8 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
 
   const selectFile = (file_id: string) => {
+    // if the currentDirectoryFiles does not include the file_id, bail
+    if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
     setSelectedFiles((prev) => {
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
@@ -132,6 +134,8 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
   // doesn't trigger the achievement for selecting a file - this is intentional
   const selectFileExclusively = (file_id: string) => {
+    // if the currentDirectoryFiles does not include the file_id, bail
+    if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
     setSelectedFiles([file_id]);
   };
 

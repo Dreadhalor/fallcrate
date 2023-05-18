@@ -4,6 +4,7 @@ import { useFilesystem } from '@providers/FilesystemProvider';
 import prettyBytes from 'pretty-bytes';
 import { useDrag, useDrop } from 'react-dnd';
 import TruncatedText from '@components/utilities/TruncatedText';
+import FileContextMenu from '@components/FileContextMenu/FileContextMenu';
 
 type Props = {
   file: CustomFile;
@@ -86,21 +87,23 @@ const BrowserItem = ({ file }: Props) => {
           {is_selected && <FaCheck />}
         </div>
       </div>
-      <div
-        className={`flex h-full min-w-0 flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}
-        onClick={() => openFile(file.id)}
-      >
-        {file.type === 'directory' ? (
-          <FaFolder className='flex-shrink-0' />
-        ) : (
-          <FaFile className='flex-shrink-0' />
-        )}
-        <TruncatedText text={file.name} />
+      <FileContextMenu file={file} selectable>
+        <div
+          className={`flex h-full min-w-0 flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}
+          onClick={() => openFile(file.id)}
+        >
+          {file.type === 'directory' ? (
+            <FaFolder className='flex-shrink-0' />
+          ) : (
+            <FaFile className='flex-shrink-0' />
+          )}
+          <TruncatedText text={file.name} />
 
-        <div className='ml-auto flex w-[100px] items-center justify-center'>
-          {file.type === 'file' && prettyBytes(file.size ?? 0)}
+          <div className='ml-auto flex w-[100px] items-center justify-center'>
+            {file.type === 'file' && prettyBytes(file.size ?? 0)}
+          </div>
         </div>
-      </div>
+      </FileContextMenu>
     </div>
   );
 };
