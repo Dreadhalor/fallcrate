@@ -7,10 +7,9 @@ export interface CustomFile {
   size?: number;
   parent: string | null;
   url?: string;
-  uploadedBy: string;
   createdAt: Timestamp;
+  uploadedBy: string;
 }
-
 export interface DraggedItem {
   id: string;
 }

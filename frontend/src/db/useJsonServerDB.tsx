@@ -2,20 +2,21 @@ import { CustomFile } from '@src/types';
 import { buildNewFile, buildNewFolder } from '@src/helpers';
 import { Database } from './Database';
 
-const useJsonServerDB = (): Database => {
-  const fetchFiles = async (uid: string): Promise<CustomFile[]> => {
+const useJsonServerDB = (uid: string): Database => {
+  const fetchFiles = async (): Promise<CustomFile[]> => {
     // make a get request to localhost:3000/files
     return fetch('http://localhost:3000/files').then((res) => res.json());
   };
 
-  const createFile = async (file: any): Promise<CustomFile> => {
+  const createFile = async (file: CustomFile): Promise<CustomFile> => {
+    const newFile: CustomFile = { ...file, uploadedBy: uid };
     // make a post request to localhost:3000/files
     return fetch('http://localhost:3000/files', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildNewFile(file)),
+      body: JSON.stringify(buildNewFile(newFile)),
     }).then((res) => res.json());
   };
   const renameFile = async (
@@ -56,11 +57,15 @@ const useJsonServerDB = (): Database => {
       .then((res) => res.json())
       .then((json) => json.id);
   };
+  const deleteFiles = async (file_ids: string[]): Promise<string[]> => {
+    if (!file_ids) return Promise.reject('No file ids provided');
+    // make a delete request to localhost:3000/files/:file_id
+    return Promise.all(file_ids.map((id) => deleteFile(id)));
+  };
 
   const createFolder = async (
     name: string,
-    parent: string | null,
-    uid: string
+    parent: string | null
   ): Promise<CustomFile> => {
     // make a post request to localhost:3000/files
     return fetch('http://localhost:3000/files', {
@@ -73,14 +78,14 @@ const useJsonServerDB = (): Database => {
   };
 
   const subscribeToFiles =
-    (uid: string, callback: (files: CustomFile[]) => void) => () => {};
+    (callback: (files: CustomFile[]) => void) => () => {};
 
   return {
     fetchFiles,
     createFile,
     renameFile,
     moveFile,
-    deleteFile,
+    deleteFiles,
     createFolder,
     subscribeToFiles,
   };

@@ -3,7 +3,7 @@ import {
   checkDirectoryForNameConflict,
   checkForCircularBranch,
   checkForCircularReference,
-  getFileDeleteTreeIDs,
+  getUnionFileDeleteTreeIDs,
   sortFiles,
 } from '@src/helpers';
 import { useDB } from '@src/hooks/useDB';
@@ -62,10 +62,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     url: string | null;
   }>({ open: false, url: null });
 
-  const db = useDB();
+  const { uid } = useAuth();
+  const db = useDB(uid);
   const storage = useStorage();
 
-  const { uid } = useAuth();
   const { unlockAchievementById } = useAchievements();
 
   const openImageModal = (url: string) => {
@@ -170,19 +170,14 @@ export const FilesystemProvider = ({ children }: Props) => {
       );
       return;
     }
-    db.createFolder(name, currentDirectory, uid).then((data) => {
-      setFiles((prev) => [...prev, data]);
-    });
+    db.createFolder(name, currentDirectory);
     unlockAchievementById('create_folder');
   };
 
-  const deleteFile = async (file_id: string) => {
-    const delete_tree = getFileDeleteTreeIDs(file_id, files);
-
-    // Perform individual delete operations for each file ID in the delete tree
-    for (const id of delete_tree) {
-      await db.deleteFile(id);
-      // if file is a file, delete it from storage
+  const deleteFiles = async (file_ids: string[]) => {
+    const delete_tree = getUnionFileDeleteTreeIDs(file_ids, files);
+    const deleted_ids = await db.deleteFiles(delete_tree);
+    for (const id of deleted_ids) {
       if (files.find((file) => file.id === id)?.type === 'file') {
         const path = `uploads/${id}`;
         storage.deleteFile(path).catch((err) => {
@@ -190,38 +185,10 @@ export const FilesystemProvider = ({ children }: Props) => {
         });
       }
     }
-
-    // Update the files state and deselect the deleted files in one step
-    setFiles((prev) => {
-      const remainingFiles = prev.filter(
-        (file) => !delete_tree.includes(file.id)
-      );
-      setSelectedFiles((prevSelected) =>
-        prevSelected.filter((id) => !delete_tree.includes(id))
-      );
-      return remainingFiles;
-    });
-
-    return delete_tree;
-  };
-
-  const deleteFiles = async (file_ids: string[]) => {
-    // Run deleteFile operations concurrently for each file ID
-    let deleted_ids: Set<string> = new Set();
-    await Promise.all(file_ids.map((file_id) => deleteFile(file_id))).then(
-      (data) => {
-        data.forEach((ids) => {
-          ids.forEach((id) => deleted_ids.add(id));
-        });
-      }
-    );
-
-    // Update state in one step
-    setFiles((prev) => prev.filter((file) => !file_ids.includes(file.id)));
     setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
 
-    if (deleted_ids.size > 1) unlockAchievementById('delete_file');
-    if (deleted_ids.size > 5) unlockAchievementById('mass_delete');
+    if (deleted_ids.length > 0) unlockAchievementById('delete_file');
+    if (deleted_ids.length >= 5) unlockAchievementById('mass_delete');
   };
 
   const promptNewFolder = () => {
@@ -245,15 +212,9 @@ export const FilesystemProvider = ({ children }: Props) => {
       return;
     }
 
-    db.renameFile(file_id, name)
-      .then((data) => {
-        setFiles((prev) =>
-          prev.map((file) => (file.id === file_id ? data : file))
-        );
-      })
-      .then((_) => {
-        unlockAchievementById('rename_file');
-      });
+    db.renameFile(file_id, name).then((_) => {
+      unlockAchievementById('rename_file');
+    });
   };
 
   const moveFiles = (
@@ -298,9 +259,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       }
 
       db.moveFile(file_id, parent_id).then((data) => {
-        setFiles((prev) =>
-          prev.map((file) => (file.id === data.id ? data : file))
-        );
         // if the file was moved to a different directory, deselect it
         if (parent_id !== currentDirectory)
           setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
@@ -326,28 +284,28 @@ export const FilesystemProvider = ({ children }: Props) => {
       size: file.size,
       parent: currentDirectory ?? null,
       url: await storage.getDownloadURL(path),
-      uploadedBy: uid,
       createdAt: Timestamp.now(),
+      uploadedBy: uid,
     };
 
-    const result = await db.createFile(newFile);
-    setFiles((prev) => [...prev, result]);
-    unlockAchievementById('upload_file');
+    await db
+      .createFile(newFile)
+      .then((_) => unlockAchievementById('upload_file'));
   };
 
-  useEffect(() => {
-    db.fetchFiles(uid).then((data) => setFiles(clearSelfParents(data)));
-  }, [uid]);
-
   // useEffect(() => {
-  //   const userFilesUnsubscribe = db.subscribeToFiles(uid, (data) =>
-  //     setFiles(clearSelfParents(data))
-  //   );
-
-  //   return () => {
-  //     userFilesUnsubscribe();
-  //   };
+  //   db.fetchFiles(uid).then((data) => setFiles(clearSelfParents(data)));
   // }, [uid]);
+
+  useEffect(() => {
+    const userFilesUnsubscribe = db.subscribeToFiles((data) =>
+      setFiles(clearSelfParents(data))
+    );
+
+    return () => {
+      userFilesUnsubscribe();
+    };
+  }, [uid]);
 
   useEffect(() => {
     clearSelfParents(files);

@@ -21,8 +21,8 @@ export const buildNewFolder = ({
   } as CustomFile;
 };
 
-export const buildNewFile = (file: any) => {
-  const { id, name, size, parent, url } = file;
+export const buildNewFile = (file: CustomFile) => {
+  const { id, name, size, parent, url, uploadedBy, createdAt } = file;
   return {
     id: id ?? uuid(),
     name: name ?? '',
@@ -30,6 +30,8 @@ export const buildNewFile = (file: any) => {
     size: size ?? 0,
     url: url ?? '',
     parent: parent ?? null,
+    uploadedBy: uploadedBy ?? '',
+    createdAt: createdAt ?? Timestamp.now(),
   } as CustomFile;
 };
 
@@ -53,13 +55,22 @@ export const getDirectoryPath = (
   return [...getDirectoryPath(file?.parent, files), file];
 };
 
-export const getFileDeleteTreeIDs = (
+const getFileDeleteTreeIDs = (
   file_id: string,
   files: CustomFile[]
 ): string[] => {
   const file = files.find((file) => file.id === file_id);
   if (!file) return [];
   return [file, ...getNestedFiles(file.id, files)].map((file) => file.id);
+};
+export const getUnionFileDeleteTreeIDs = (
+  file_ids: string[],
+  files: CustomFile[]
+): string[] => {
+  const list = file_ids.flatMap((file_id) =>
+    getFileDeleteTreeIDs(file_id, files)
+  );
+  return [...new Set(list)]; // shouldn't need to do this but just in case
 };
 
 const getNestedFiles = (
