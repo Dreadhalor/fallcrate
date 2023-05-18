@@ -28,7 +28,6 @@ interface FileContextMenuContextValue {
   ) => void;
 }
 
-// Context to hold the state
 const FileContextMenuContext = createContext<FileContextMenuContextValue>(
   {} as FileContextMenuContextValue
 );
@@ -53,7 +52,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
   const showFileContextMenu = (
     event: React.MouseEvent,
     file: CustomFile,
-    selectFile = false
+    selectFile = false // this isn't used anymore but let's keep it in case I wanna use it later
   ) => {
     if (selectFile) selectFileExclusively(file.id);
     unlockAchievementById('context_menu');

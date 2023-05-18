@@ -95,7 +95,6 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
           if (isCurrentDirectory) setIsOpen((prev) => !prev);
           else openDirectory(file.id);
         }}
-        onContextMenu={(e) => showFileContextMenu(e, file)}
       >
         {childFolders.length > 0 ? (
           <div
