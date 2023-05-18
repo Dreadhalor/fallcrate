@@ -3,7 +3,7 @@ import { buildNewFile, buildNewFolder } from '@src/helpers';
 import { Database } from './Database';
 
 const useJsonServerDB = (): Database => {
-  const fetchFiles = async (): Promise<CustomFile[]> => {
+  const fetchFiles = async (uid: string): Promise<CustomFile[]> => {
     // make a get request to localhost:3000/files
     return fetch('http://localhost:3000/files').then((res) => res.json());
   };
@@ -59,7 +59,8 @@ const useJsonServerDB = (): Database => {
 
   const createFolder = async (
     name: string,
-    parent: string | null
+    parent: string | null,
+    uid: string
   ): Promise<CustomFile> => {
     // make a post request to localhost:3000/files
     return fetch('http://localhost:3000/files', {
@@ -67,9 +68,12 @@ const useJsonServerDB = (): Database => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildNewFolder({ name, parent })),
+      body: JSON.stringify(buildNewFolder({ name, parent, uid })),
     }).then((res) => res.json());
   };
+
+  const subscribeToFiles =
+    (uid: string, callback: (files: CustomFile[]) => void) => () => {};
 
   return {
     fetchFiles,
@@ -78,6 +82,7 @@ const useJsonServerDB = (): Database => {
     moveFile,
     deleteFile,
     createFolder,
+    subscribeToFiles,
   };
 };
 

@@ -1,18 +1,23 @@
 import { v4 as uuid } from 'uuid';
 import { CustomFile } from './types';
+import { Timestamp } from 'firebase/firestore';
 
 export const buildNewFolder = ({
   name,
   parent,
+  uid,
 }: {
   name: string;
   parent?: string | null;
+  uid: string;
 }) => {
   return {
     id: uuid(),
     name,
     type: 'directory',
     parent: parent ?? null,
+    uploadedBy: uid,
+    createdAt: Timestamp.now(),
   } as CustomFile;
 };
 

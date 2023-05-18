@@ -1,4 +1,3 @@
-import { useFirestore } from 'reactfire';
 import {
   doc,
   updateDoc,
@@ -7,6 +6,10 @@ import {
   getDocs,
   getDoc,
   setDoc,
+  getFirestore,
+  query,
+  where,
+  onSnapshot,
 } from 'firebase/firestore';
 
 import { buildNewFile, buildNewFolder } from '../helpers';
@@ -14,11 +17,12 @@ import { Database } from './Database';
 import { CustomFile } from '@src/types';
 
 const useFirestoreDB = (): Database => {
-  const firestore = useFirestore();
+  const firestore = getFirestore();
   const filesCollection = collection(firestore, 'files');
 
-  const fetchFiles = async (): Promise<CustomFile[]> => {
-    const snapshot = await getDocs(filesCollection);
+  const fetchFiles = async (uid: string): Promise<CustomFile[]> => {
+    const filesQuery = query(filesCollection, where('uploadedBy', '==', uid));
+    const snapshot = await getDocs(filesQuery);
     return snapshot.docs.map((doc) => doc.data() as CustomFile);
   };
 
@@ -77,12 +81,24 @@ const useFirestoreDB = (): Database => {
 
   const createFolder = async (
     name: string,
-    parent: string | null
+    parent: string | null,
+    uid: string
   ): Promise<CustomFile> => {
-    const newFolder = buildNewFolder({ name, parent });
+    const newFolder = buildNewFolder({ name, parent, uid });
     const docRef = doc(filesCollection, newFolder.id);
     await setDoc(docRef, newFolder);
     return newFolder;
+  };
+
+  const subscribeToFiles = (
+    uid: string,
+    callback: (files: CustomFile[]) => void
+  ) => {
+    const filesQuery = query(filesCollection, where('uploadedBy', '==', uid));
+    return onSnapshot(filesQuery, (querySnapshot) => {
+      const files = querySnapshot.docs.map((doc) => doc.data() as CustomFile);
+      callback(files);
+    });
   };
 
   return {
@@ -92,6 +108,7 @@ const useFirestoreDB = (): Database => {
     moveFile,
     deleteFile,
     createFolder,
+    subscribeToFiles,
   };
 };
 

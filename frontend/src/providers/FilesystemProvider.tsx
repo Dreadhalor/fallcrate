@@ -10,7 +10,8 @@ import { useDB } from '@src/hooks/useDB';
 import { useStorage } from '@src/hooks/useStorage';
 import { CustomFile } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
-import { useAchievements } from 'milestone-components';
+import { useAchievements, useAuth } from 'milestone-components';
+import { Timestamp } from 'firebase/firestore';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -64,6 +65,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const db = useDB();
   const storage = useStorage();
 
+  const { uid } = useAuth();
   const { unlockAchievementById } = useAchievements();
 
   const openImageModal = (url: string) => {
@@ -168,7 +170,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       );
       return;
     }
-    db.createFolder(name, currentDirectory).then((data) => {
+    db.createFolder(name, currentDirectory, uid).then((data) => {
       setFiles((prev) => [...prev, data]);
     });
     unlockAchievementById('create_folder');
@@ -324,6 +326,8 @@ export const FilesystemProvider = ({ children }: Props) => {
       size: file.size,
       parent: currentDirectory ?? null,
       url: await storage.getDownloadURL(path),
+      uploadedBy: uid,
+      createdAt: Timestamp.now(),
     };
 
     const result = await db.createFile(newFile);
@@ -332,8 +336,18 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    db.fetchFiles().then((data) => setFiles(clearSelfParents(data)));
-  }, []);
+    db.fetchFiles(uid).then((data) => setFiles(clearSelfParents(data)));
+  }, [uid]);
+
+  // useEffect(() => {
+  //   const userFilesUnsubscribe = db.subscribeToFiles(uid, (data) =>
+  //     setFiles(clearSelfParents(data))
+  //   );
+
+  //   return () => {
+  //     userFilesUnsubscribe();
+  //   };
+  // }, [uid]);
 
   useEffect(() => {
     clearSelfParents(files);
