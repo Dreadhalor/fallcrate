@@ -8,7 +8,7 @@ import TruncatedText from '@components/utilities/TruncatedText';
 import { CustomFile, DraggedItem } from '@src/types';
 import { useDrag, useDrop } from 'react-dnd';
 import { useAchievements } from 'milestone-components';
-import FileContextMenu from '@components/FileContextMenu/FileContextMenu';
+import { useFileContextMenu } from '@providers/FileContextMenuProvider';
 
 type Props = {
   file: CustomFile;
@@ -80,59 +80,60 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
 
   const [isTruncated, setIsTruncated] = useState(false);
 
+  const { showFileContextMenu } = useFileContextMenu();
+
   return (
     <div className='flex cursor-pointer flex-col text-xs'>
-      <FileContextMenu file={file}>
-        <div
-          ref={dragDropRef}
-          className={`flex flex-row items-center gap-[5px] px-[4px] ${background} group`}
-          style={{
-            paddingLeft: `${indentLevel * indent_margin + left_margin}px`,
-            opacity: isDragging ? 0.5 : 1,
-          }}
-          onClick={() => {
-            if (isCurrentDirectory) setIsOpen((prev) => !prev);
-            else openDirectory(file.id);
-          }}
-        >
-          {childFolders.length > 0 ? (
-            <div
-              className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
-                isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen((prev) => !prev);
+      <div
+        ref={dragDropRef}
+        className={`flex flex-row items-center gap-[5px] px-[4px] ${background} group`}
+        style={{
+          paddingLeft: `${indentLevel * indent_margin + left_margin}px`,
+          opacity: isDragging ? 0.5 : 1,
+        }}
+        onClick={() => {
+          if (isCurrentDirectory) setIsOpen((prev) => !prev);
+          else openDirectory(file.id);
+        }}
+        onContextMenu={(e) => showFileContextMenu(e, file)}
+      >
+        {childFolders.length > 0 ? (
+          <div
+            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
+              isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((prev) => !prev);
+            }}
+          >
+            <FaChevronRight
+              size={8}
+              className='transition-transform duration-100'
+              style={{
+                transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
               }}
-            >
-              <FaChevronRight
-                size={8}
-                className='transition-transform duration-100'
-                style={{
-                  transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                }}
-              />
-            </div>
-          ) : (
-            <div className='p-[5px]'>
-              <BsDot size={8} />
-            </div>
-          )}
-          <FaFolder className='flex-shrink-0' />
-          {/* add a tooltip of the file name when hovering over the file name */}
-          <div className='min-w-0 py-[4px]' id={display_id}>
-            <TruncatedText text={file.name} truncationChange={setIsTruncated} />
-          </div>
-          {isTruncated && (
-            <Tooltip
-              anchorSelect={`#${display_id}`}
-              content={file.name}
-              positionStrategy='fixed'
-              style={{ maxWidth: '300px' }}
             />
-          )}
+          </div>
+        ) : (
+          <div className='p-[5px]'>
+            <BsDot size={8} />
+          </div>
+        )}
+        <FaFolder className='flex-shrink-0' />
+        {/* add a tooltip of the file name when hovering over the file name */}
+        <div className='min-w-0 py-[4px]' id={display_id}>
+          <TruncatedText text={file.name} truncationChange={setIsTruncated} />
         </div>
-      </FileContextMenu>
+        {isTruncated && (
+          <Tooltip
+            anchorSelect={`#${display_id}`}
+            content={file.name}
+            positionStrategy='fixed'
+            style={{ maxWidth: '300px' }}
+          />
+        )}
+      </div>
       <Collapse isOpened={isOpen}>
         {childFolders.map((child) => (
           <SidebarBrowserItem
