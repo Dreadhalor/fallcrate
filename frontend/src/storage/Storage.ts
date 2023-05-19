@@ -8,6 +8,6 @@ export interface Storage {
     onError?: (error: StorageError) => void,
     onComplete?: () => void
   ) => Promise<string>;
-  deleteFile: (path: string) => Promise<void>;
+  deleteFiles: (file_ids: string[]) => Promise<void[]>;
   getDownloadURL: (path: string) => Promise<string>;
 }

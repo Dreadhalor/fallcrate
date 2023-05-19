@@ -174,17 +174,21 @@ export const FilesystemProvider = ({ children }: Props) => {
     unlockAchievementById('create_folder');
   };
 
+  const filterBlobStorageIds = (files: CustomFile[], selection: string[]) =>
+    files
+      .filter((file) => selection.includes(file.id))
+      .filter((file) => file.type === 'file')
+      .map((file) => file.id);
+
   const deleteFiles = async (file_ids: string[]) => {
     const delete_tree = getUnionFileDeleteTreeIDs(file_ids, files);
+    //get the blob ids before deleting the files from the database
+    const blob_ids = filterBlobStorageIds(files, delete_tree);
     const deleted_ids = await db.deleteFiles(delete_tree);
-    for (const id of deleted_ids) {
-      if (files.find((file) => file.id === id)?.type === 'file') {
-        const path = `uploads/${id}`;
-        storage.deleteFile(path).catch((err) => {
-          console.log(err);
-        });
-      }
-    }
+    // only delete the files from storage if they were successfully deleted from the database
+    await storage.deleteFiles(
+      deleted_ids.filter((id) => blob_ids.includes(id))
+    );
     setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
 
     if (deleted_ids.length > 0) unlockAchievementById('delete_file');

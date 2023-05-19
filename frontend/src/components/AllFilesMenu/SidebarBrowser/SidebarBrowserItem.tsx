@@ -8,7 +8,6 @@ import TruncatedText from '@components/utilities/TruncatedText';
 import { CustomFile, DraggedItem } from '@src/types';
 import { useDrag, useDrop } from 'react-dnd';
 import { useAchievements } from 'milestone-components';
-import { useFileContextMenu } from '@providers/FileContextMenuProvider';
 
 type Props = {
   file: CustomFile;
@@ -79,8 +78,6 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const indent_margin = 10;
 
   const [isTruncated, setIsTruncated] = useState(false);
-
-  const { showFileContextMenu } = useFileContextMenu();
 
   return (
     <div className='flex cursor-pointer flex-col text-xs'>

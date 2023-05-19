@@ -1,4 +1,3 @@
-import { useStorage } from 'reactfire';
 import {
   UploadTaskSnapshot,
   StorageError,
@@ -6,11 +5,12 @@ import {
   uploadBytesResumable,
   deleteObject,
   getDownloadURL as firebaseGetDownloadURL,
+  getStorage,
 } from 'firebase/storage';
 import { Storage } from './Storage';
 
 export const useFirebaseStorage = (): Storage => {
-  const storage = useStorage();
+  const storage = getStorage();
 
   const uploadFile = async (
     file: File,
@@ -45,10 +45,13 @@ export const useFirebaseStorage = (): Storage => {
     });
   };
 
-  const deleteFile = async (path: string) => {
+  const deleteFile = async (id: string) => {
+    const path = `uploads/${id}`;
     const storageRef = ref(storage, path);
     return await deleteObject(storageRef);
   };
+  const deleteFiles = async (ids: string[]) =>
+    Promise.all(ids.map((id) => deleteFile(id)));
 
   const getDownloadURL = async (path: string): Promise<string> => {
     const storageRef = ref(storage, path);
@@ -57,7 +60,7 @@ export const useFirebaseStorage = (): Storage => {
 
   return {
     uploadFile,
-    deleteFile,
+    deleteFiles,
     getDownloadURL,
   };
 };
