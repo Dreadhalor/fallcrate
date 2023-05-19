@@ -62,13 +62,13 @@ const MainContentToolbar = () => {
       />
       {selectedFiles.length > 0 && (
         <>
+          <MainContentMenuButton
+            title='Download'
+            icon={<HiDownload size={18} />}
+            onClick={() => downloadFilesOrFolders(selectedFiles)}
+          />
           {selectedFiles.length === 1 && (
             <>
-              <MainContentMenuButton
-                title='Download'
-                icon={<HiDownload size={18} />}
-                onClick={() => downloadFilesOrFolders([selectedFiles[0]])}
-              />
               <MainContentMenuButton
                 title='Rename'
                 icon={<RiEditBoxFill size={18} />}
