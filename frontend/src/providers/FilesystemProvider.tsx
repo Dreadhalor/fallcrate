@@ -24,6 +24,7 @@ import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
 import JSZip from 'jszip';
+import { useFiles } from '@src/hooks/fileserver/useFiles';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -69,13 +70,13 @@ type Props = {
 };
 
 export const FilesystemProvider = ({ children }: Props) => {
-  const [files, setFiles] = useState<CustomFile[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-  const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
+  const { files } = useFiles();
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
   >([]);
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
   const [imageModalParams, setImageModalParams] = useState<{
     open: boolean;
     file: CustomFile | null;
@@ -91,6 +92,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     setImageModalParams({ open: true, file });
   };
 
+  useEffect(() => {
+    openDirectory(currentDirectory);
+  }, [files]);
+
   // Helper functions
   const handleOperationError = (text: string) => {
     message.error(text);
@@ -103,12 +108,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const getFile = (file_id: string) =>
     files.find((file) => file.id === file_id) ?? null;
 
-  const clearSelfParents = (files: CustomFile[]) => {
-    files.forEach((file) => {
-      if (file.parent === file.id) moveFiles([file.id], null, false);
-    });
-    return files;
-  };
+
   const resetOrphanBranches = (files: CustomFile[]) => {
     files.forEach((file) => {
       if (file.parent === null) return;
@@ -591,23 +591,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       return 'https://via.placeholder.com/256';
     }
   };
-
-  useEffect(() => {
-    const userFilesUnsubscribe = db.subscribeToFiles((data) =>
-      setFiles(clearSelfParents(data))
-    );
-
-    return () => {
-      userFilesUnsubscribe();
-    };
-  }, [uid]);
-
-  useEffect(() => {
-    clearSelfParents(files);
-    resetOrphanBranches(files);
-    resetCircularBranches(files);
-    openDirectory(currentDirectory);
-  }, [files]);
 
   return (
     <FilesystemContext.Provider
