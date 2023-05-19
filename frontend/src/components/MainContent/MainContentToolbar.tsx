@@ -4,6 +4,7 @@ import { IoDuplicate } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import { RiEditBoxFill } from 'react-icons/ri';
 import UploadButton from './UploadButton';
+import { HiDownload } from 'react-icons/hi';
 
 type ButtonProps = {
   title: React.ReactNode;
@@ -15,7 +16,7 @@ type ButtonProps = {
 export const MainContentMenuButton = ({
   title,
   icon,
-  onClick = () => {},
+  onClick = () => { },
   type = 'secondary',
   className = '',
 }: ButtonProps) => {
@@ -45,6 +46,7 @@ const MainContentToolbar = () => {
     promptNewFolder,
     promptRenameFile,
     duplicateFile,
+    downloadFiles,
   } = useFilesystem();
 
   return (
@@ -62,6 +64,11 @@ const MainContentToolbar = () => {
         <>
           {selectedFiles.length === 1 && (
             <>
+              <MainContentMenuButton
+                title='Download'
+                icon={<HiDownload size={18} />}
+                onClick={() => downloadFiles([selectedFiles[0]])}
+              />
               <MainContentMenuButton
                 title='Rename'
                 icon={<RiEditBoxFill size={18} />}

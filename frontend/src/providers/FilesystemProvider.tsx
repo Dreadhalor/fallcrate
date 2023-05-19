@@ -52,6 +52,7 @@ interface FilesystemContextValue {
   nestedSelectedFiles: string[];
   duplicateFile: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
+  downloadFiles: (file_ids: string[]) => Promise<void>;
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -142,7 +143,6 @@ export const FilesystemProvider = ({ children }: Props) => {
   const selectFile = (file_id: string) => {
     // if the currentDirectoryFiles does not include the file_id, bail
     if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
-    // let newFiles = [];
     setSelectedFiles((prev) => {
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
@@ -376,6 +376,24 @@ export const FilesystemProvider = ({ children }: Props) => {
     };
     input.click();
   };
+  const downloadFile = async (file_id: string) => {
+    const file = files.find((file) => file.id === file_id);
+    if (file?.type !== 'file') return;
+    const url = await storage.getDownloadURL(`uploads/${file_id}`);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const downloadFiles = async (file_ids: string[]) => {
+    file_ids.forEach((file_id) => downloadFile(file_id));
+    unlockAchievementById('download_file');
+  };
+
+
 
   const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
     let new_name = name;
@@ -531,6 +549,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         nestedSelectedFiles,
         duplicateFile,
         getFileUrl,
+        downloadFiles,
       }}
     >
       {children}

@@ -17,9 +17,7 @@ const MainContent = () => {
           <Breadcrumb key={file?.id ?? 'root'} file={file} />
         ))}
         {n > 0 && (
-          <div className='ml-auto font-bold'>{`${n} file${
-            n > 1 ? 's' : ''
-          } selected${nested > 0 ? ` (+${nested} nested)` : ''}`}</div>
+          <div className='ml-auto font-bold'>{`${n} selected${nested > 0 ? ` (+${nested} nested)` : ''}`}</div>
         )}
       </div>
       <MainContentToolbar />
