@@ -5,7 +5,8 @@ import MainFileBrowser from './MainFileBrowser/MainFileBrowser';
 import MainContentToolbar from './MainContentToolbar';
 
 const MainContent = () => {
-  const { files, currentDirectory } = useFilesystem();
+  const { files, currentDirectory, selectedFiles } = useFilesystem();
+  const n = selectedFiles.length;
 
   return (
     <div id='content' className='flex h-full min-w-0 flex-1 flex-col'>
@@ -13,6 +14,11 @@ const MainContent = () => {
         {getDirectoryPath(currentDirectory, files).map((file) => (
           <Breadcrumb key={file?.id ?? 'root'} file={file} />
         ))}
+        {n > 0 && (
+          <div className='ml-auto font-bold'>{`${n} file${
+            n > 1 ? 's' : ''
+          } selected`}</div>
+        )}
       </div>
       <MainContentToolbar />
       <MainFileBrowser />

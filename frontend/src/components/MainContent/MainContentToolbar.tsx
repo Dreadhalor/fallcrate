@@ -1,5 +1,40 @@
 import { useFilesystem } from '@providers/FilesystemProvider';
-import { FaFolder } from 'react-icons/fa';
+import { FaFolderPlus } from 'react-icons/fa';
+import { MdDelete } from 'react-icons/md';
+import { RiEditBoxFill } from 'react-icons/ri';
+
+type ButtonProps = {
+  title: string;
+  icon: React.ReactNode;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  type?: 'primary' | 'secondary' | 'warning';
+  className?: string;
+};
+const MainContentMenuButton = ({
+  title,
+  icon,
+  onClick,
+  type = 'secondary',
+  className,
+}: ButtonProps) => {
+  const typeClassMap = {
+    secondary: 'border border-gray-300 bg-white hover:bg-gray-100',
+    warning: 'border border-gray-300 bg-white hover:bg-red-100',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+  };
+
+  const typeClasses = typeClassMap[type];
+
+  return (
+    <button
+      className={`flex items-center justify-center gap-[8px] rounded-sm  py-[5px] px-[15px] ${typeClasses} ${className}`}
+      onClick={onClick}
+    >
+      {icon}
+      {title}
+    </button>
+  );
+};
 
 const MainContentToolbar = () => {
   const { selectedFiles, deleteFiles, promptNewFolder, promptRenameFile } =
@@ -10,29 +45,28 @@ const MainContentToolbar = () => {
       id='content-toolbar'
       className='flex min-h-[60px] flex-row gap-[10px] py-[10px] px-[20px]'
     >
-      <button
-        className='flex min-w-[120px] items-center gap-[5px] bg-blue-600 py-[5px] px-[15px] text-white hover:bg-blue-700'
+      <MainContentMenuButton
+        title='Create Folder'
+        icon={<FaFolderPlus />}
         onClick={promptNewFolder}
-      >
-        <FaFolder />
-        Create Folder
-      </button>
+        type='primary'
+      />
       {selectedFiles.length > 0 && (
         <>
           {selectedFiles.length === 1 && (
-            <button
-              className='min-w-[120px] border border-gray-300 py-[5px] px-[15px] hover:bg-gray-200'
+            <MainContentMenuButton
+              title='Rename'
+              icon={<RiEditBoxFill size={18} />}
               onClick={() => promptRenameFile(selectedFiles[0])}
-            >
-              Rename
-            </button>
+            />
           )}
-          <button
-            className='ml-auto min-w-[120px] border border-gray-300 py-[5px] px-[15px] hover:bg-red-100'
+          <MainContentMenuButton
+            title='Delete'
+            icon={<MdDelete size={20} />}
             onClick={() => deleteFiles(selectedFiles)}
-          >
-            Delete Files ({selectedFiles.length})
-          </button>
+            type='warning'
+            className='ml-auto'
+          />
         </>
       )}
     </div>

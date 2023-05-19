@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from 'react';
-// import { Menu, MenuItem, MenuButton, ControlledMenu } from '@szhsin/react-menu';
 import { Item, ItemParams, Menu, useContextMenu } from 'react-contexify';
 import { useFilesystem } from './FilesystemProvider';
 import { CustomFile } from '@src/types';
