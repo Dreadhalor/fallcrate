@@ -73,7 +73,7 @@ export const getUnionFileDeleteTreeIDs = (
   return [...new Set(list)]; // shouldn't need to do this but just in case
 };
 
-const getNestedFiles = (
+export const getNestedFiles = (
   file_id: string | null,
   files: CustomFile[]
 ): CustomFile[] => {

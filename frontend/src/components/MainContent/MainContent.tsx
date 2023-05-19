@@ -5,8 +5,10 @@ import MainFileBrowser from './MainFileBrowser/MainFileBrowser';
 import MainContentToolbar from './MainContentToolbar';
 
 const MainContent = () => {
-  const { files, currentDirectory, selectedFiles } = useFilesystem();
+  const { files, currentDirectory, selectedFiles, nestedSelectedFiles } =
+    useFilesystem();
   const n = selectedFiles.length;
+  const nested = nestedSelectedFiles.length;
 
   return (
     <div id='content' className='flex h-full min-w-0 flex-1 flex-col'>
@@ -17,7 +19,7 @@ const MainContent = () => {
         {n > 0 && (
           <div className='ml-auto font-bold'>{`${n} file${
             n > 1 ? 's' : ''
-          } selected`}</div>
+          } selected${nested > 0 ? ` (+${nested} nested)` : ''}`}</div>
         )}
       </div>
       <MainContentToolbar />

@@ -1,8 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import {
   checkDirectoryForNameConflict,
   checkForCircularBranch,
   checkForCircularReference,
+  getNestedFiles,
   getUnionFileDeleteTreeIDs,
   sortFiles,
 } from '@src/helpers';
@@ -36,6 +43,7 @@ interface FilesystemContextValue {
   openImageModal: (url: string) => void;
   getParent: (file: CustomFile) => CustomFile | null;
   getFile: (file_id: string) => CustomFile | null;
+  nestedSelectedFiles: string[];
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -53,6 +61,7 @@ type Props = {
 export const FilesystemProvider = ({ children }: Props) => {
   const [files, setFiles] = useState<CustomFile[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
@@ -125,6 +134,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const selectFile = (file_id: string) => {
     // if the currentDirectoryFiles does not include the file_id, bail
     if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
+    // let newFiles = [];
     setSelectedFiles((prev) => {
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
@@ -140,6 +150,17 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
     setSelectedFiles([file_id]);
   };
+  const getNestedSelectedFiles = () => {
+    const nestedFiles = new Set<string>();
+    selectedFiles.map((file_id) =>
+      getNestedFiles(file_id, files).forEach((file) => nestedFiles.add(file.id))
+    );
+    return Array.from(nestedFiles);
+  };
+
+  useLayoutEffect(() => {
+    setNestedSelectedFiles(getNestedSelectedFiles());
+  }, [selectedFiles]);
 
   const massToggleSelectFiles = () => {
     if (selectedFiles.length > 0) setSelectedFiles([]);
@@ -155,8 +176,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (!file) return;
     if (file.type === 'directory') return openDirectory(file_id);
     if (file.type === 'file') {
-      // open the file in a new tab
-      // window.open(file.url, '_blank');
+      // this shows nothing if the file isn't an image but whatever for now
       openImageModal(file.url ?? '');
       unlockAchievementById('preview_image');
     }
@@ -297,10 +317,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       .then((_) => unlockAchievementById('upload_file'));
   };
 
-  // useEffect(() => {
-  //   db.fetchFiles(uid).then((data) => setFiles(clearSelfParents(data)));
-  // }, [uid]);
-
   useEffect(() => {
     const userFilesUnsubscribe = db.subscribeToFiles((data) =>
       setFiles(clearSelfParents(data))
@@ -341,6 +357,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         openImageModal,
         getParent,
         getFile,
+        nestedSelectedFiles,
       }}
     >
       {children}
