@@ -53,7 +53,7 @@ interface FilesystemContextValue {
   nestedSelectedFiles: string[];
   duplicateFile: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
-  downloadFiles: (file_ids: string[]) => Promise<void>;
+  downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -377,7 +377,11 @@ export const FilesystemProvider = ({ children }: Props) => {
     };
     input.click();
   };
-  const downloadFile = async (file_id: string) => {
+
+  const downloadFilesOrFolders = async (file_ids: string[]) => {
+    file_ids.forEach((file_id) => downloadFileOrFolder(file_id));
+  };
+  const downloadFileOrFolder = async (file_id: string) => {
     const file = files.find((file) => file.id === file_id);
     if (file?.type !== 'file') return downloadDirectory(file_id);
     const url = await storage.getDownloadURL(`uploads/${file_id}`);
@@ -395,11 +399,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     URL.revokeObjectURL(blobUrl);
     unlockAchievementById('download_file');
   };
-
-  const downloadFiles = async (file_ids: string[]) => {
-    file_ids.forEach((file_id) => downloadFile(file_id));
-  };
-
   const downloadDirectory = async (directory_id: string) => {
     const directory = files.find((file) => file.id === directory_id);
     if (directory?.type !== 'directory') return;
@@ -414,7 +413,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     };
 
     const addDirectoryToZip = async (directory: CustomFile, parentZip: JSZip) => {
-      const subZip = parentZip.folder(directory.name) as JSZip; // add type assertion here
+      const subZip = parentZip.folder(directory.name) as JSZip; // it won't be null because we're creating it
       const subFiles = files.filter((file) => file.parent === directory.id);
       for (const file of subFiles) {
         if (file.type === 'file') {
@@ -427,7 +426,10 @@ export const FilesystemProvider = ({ children }: Props) => {
 
     await addDirectoryToZip(directory, zip);
 
+    const is_all_folders = Object.values(zip.files).every((file) => file.dir);
+
     const zipBlob = await zip.generateAsync({ type: 'blob' });
+
     const blobUrl = URL.createObjectURL(zipBlob);
 
     const a = document.createElement('a');
@@ -437,6 +439,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(blobUrl);
+    if (is_all_folders) unlockAchievementById('all_folders');
+    unlockAchievementById('download_folder');
   };
 
 
@@ -596,7 +600,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         nestedSelectedFiles,
         duplicateFile,
         getFileUrl,
-        downloadFiles,
+        downloadFilesOrFolders,
       }}
     >
       {children}

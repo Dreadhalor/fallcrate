@@ -46,7 +46,7 @@ const MainContentToolbar = () => {
     promptNewFolder,
     promptRenameFile,
     duplicateFile,
-    downloadFiles,
+    downloadFilesOrFolders,
   } = useFilesystem();
 
   return (
@@ -67,7 +67,7 @@ const MainContentToolbar = () => {
               <MainContentMenuButton
                 title='Download'
                 icon={<HiDownload size={18} />}
-                onClick={() => downloadFiles([selectedFiles[0]])}
+                onClick={() => downloadFilesOrFolders([selectedFiles[0]])}
               />
               <MainContentMenuButton
                 title='Rename'
