@@ -1,6 +1,6 @@
 // FileDropzone.tsx
 import React, { useCallback } from 'react';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 
 const FileDropzone = () => {
   const { uploadFile } = useFilesystem();

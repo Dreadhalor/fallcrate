@@ -1,4 +1,4 @@
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';

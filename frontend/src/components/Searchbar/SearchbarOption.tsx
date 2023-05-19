@@ -1,5 +1,5 @@
 import TruncatedText from '@components/utilities/TruncatedText';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { CustomFile } from '@src/types';
 import { FaFile, FaFolder } from 'react-icons/fa';
 

@@ -1,5 +1,5 @@
 import { DraggedItem } from '@src/types';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { useDrop } from 'react-dnd';
 import { MouseEvent } from 'react';
 import TruncatedText from '@components/utilities/TruncatedText';

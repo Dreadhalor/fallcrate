@@ -1,5 +1,5 @@
 import { CustomFile, DraggedItem } from '@src/types';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { useDrag, useDrop } from 'react-dnd';
 import { useAchievements } from 'milestone-components';
 
@@ -21,7 +21,7 @@ const Breadcrumb = ({ file }: Props) => {
     : 'hover:underline hover:text-black';
 
   // Drag related logic
-  const [{}, drag] = useDrag(() => ({
+  const [{ }, drag] = useDrag(() => ({
     type: ITEM_TYPE,
     item: { id: file_id },
     canDrag: !!file_id,

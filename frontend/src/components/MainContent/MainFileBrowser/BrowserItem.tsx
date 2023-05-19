@@ -1,6 +1,6 @@
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
 import { CustomFile, DraggedItem } from '@src/types';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import prettyBytes from 'pretty-bytes';
 import { useDrag, useDrop } from 'react-dnd';
 import TruncatedText from '@components/utilities/TruncatedText';
@@ -77,13 +77,11 @@ const BrowserItem = ({ file }: Props) => {
     >
       <div className='p-[10px]'>
         <div
-          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
-            some_selected && 'border'
-          } ${
-            is_selected
+          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${some_selected && 'border'
+            } ${is_selected
               ? 'bg-black text-white'
               : 'bg-white text-black hover:bg-gray-200'
-          }`}
+            }`}
           onClick={() => selectFile(file.id)}
         >
           {is_selected && <FaCheck />}

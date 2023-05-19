@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { Item, ItemParams, Menu, useContextMenu } from 'react-contexify';
-import { useFilesystem } from './FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { CustomFile } from '@src/types';
 import { BiDuplicate, BiEdit } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';

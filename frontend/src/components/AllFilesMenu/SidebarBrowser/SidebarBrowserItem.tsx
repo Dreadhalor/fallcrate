@@ -3,7 +3,7 @@ import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { CustomFile, DraggedItem } from '@src/types';
 import { useDrag, useDrop } from 'react-dnd';
@@ -95,9 +95,8 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
       >
         {childFolders.length > 0 ? (
           <div
-            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
-              isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
-            }`}
+            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
+              }`}
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen((prev) => !prev);

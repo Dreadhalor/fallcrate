@@ -1,4 +1,4 @@
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { getDirectoryPath } from '@src/helpers';
 import Breadcrumb from './Breadcrumb';
 import MainFileBrowser from './MainFileBrowser/MainFileBrowser';

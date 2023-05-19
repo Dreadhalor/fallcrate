@@ -1,4 +1,4 @@
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { FaFolderPlus } from 'react-icons/fa';
 import { IoDuplicate } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';

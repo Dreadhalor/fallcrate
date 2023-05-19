@@ -6,7 +6,7 @@ import {
 import { MainContentMenuButton } from './MainContentToolbar';
 import { FaChevronDown } from 'react-icons/fa';
 import { HiUpload } from 'react-icons/hi';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 
 const UploadButton = () => {
   const { promptUploadFiles, promptUploadFolder } = useFilesystem();

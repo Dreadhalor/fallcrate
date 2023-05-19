@@ -1,5 +1,5 @@
 import CombinationMark from '@assets/combination-mark.svg';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import { UserMenu } from 'milestone-components';
 import Searchbar from './Searchbar/Searchbar';
 

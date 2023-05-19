@@ -1,4 +1,4 @@
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import SidebarBrowserItem from './SidebarBrowserItem';
 import { sortFiles } from '@src/helpers';
 

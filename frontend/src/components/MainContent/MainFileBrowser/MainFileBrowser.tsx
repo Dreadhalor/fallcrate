@@ -1,6 +1,6 @@
 import BrowserHeader from './BrowserHeader';
 import BrowserItem from './BrowserItem';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 import FileDropzone from '../FileDropzone';
 import { useDrop } from 'react-dnd';
 import { DraggedItem } from '@src/types';

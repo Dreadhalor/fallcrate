@@ -1,5 +1,5 @@
 import { FaCheck, FaMinus } from 'react-icons/fa';
-import { useFilesystem } from '@providers/FilesystemProvider';
+import { useFilesystem } from '@hooks/useFilesystem';
 
 const BrowserHeader = () => {
   const { selectedFiles, currentDirectoryFiles, massToggleSelectFiles } =
@@ -17,9 +17,8 @@ const BrowserHeader = () => {
     <div className='group pointer-events-none sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
       <div className='p-[10px]'>
         <div
-          className={`pointer-events-auto flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
-            some_files_selected && 'border'
-          } ${getFileSelectionClass()}`}
+          className={`pointer-events-auto flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${some_files_selected && 'border'
+            } ${getFileSelectionClass()}`}
           onClick={massToggleSelectFiles}
         >
           {all_files_selected && <FaCheck />}

@@ -1,6 +1,4 @@
 import React, {
-  createContext,
-  useContext,
   useEffect,
   useLayoutEffect,
   useState,
@@ -13,7 +11,6 @@ import {
   getUnionFileDeleteTreeIDs,
   orderFilesByDirectory,
   parseFileArray,
-  sortFiles,
 } from '@src/helpers';
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
@@ -25,51 +22,14 @@ import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
 import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
 import { useImageModal } from '@providers/ImageModalProvider';
-
-interface FilesystemContextValue {
-  files: CustomFile[];
-  selectedFiles: string[];
-  currentDirectory: string | null;
-  currentDirectoryFiles: CustomFile[];
-  openDirectory: (directory_id: string | null) => void;
-  selectFile: (file_id: string) => void;
-  selectFileExclusively: (file_id: string, overrideDirectoryRestriction?: boolean) => void;
-  massToggleSelectFiles: () => void;
-  openFile: (file_id?: string) => void;
-  createFolder: (name: string) => void;
-  deleteFiles: (file_ids: string[]) => void;
-  promptNewFolder: () => void;
-  promptRenameFile: (file_id: string) => void;
-  moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
-  uploadFile: (file: File) => void;
-  promptUploadFiles: () => void;
-  promptUploadFolder: () => void;
-  openImageModal: (file: CustomFile) => void;
-  getParent: (file: CustomFile) => CustomFile | null;
-  getFile: (file_id: string) => CustomFile | null;
-  nestedSelectedFiles: string[];
-  duplicateFile: (file_id: string) => Promise<void>;
-  getFileUrl: (file_id: string) => Promise<string>;
-  downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
-}
-
-const FilesystemContext = createContext<FilesystemContextValue>(
-  {} as FilesystemContextValue
-);
-
-export const useFilesystem = () => {
-  return useContext(FilesystemContext);
-};
+import { FilesystemContext } from '@src/contexts/FileSystemContext';
+import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 
 type Props = {
   children: React.ReactNode;
 };
 
 export const FilesystemProvider = ({ children }: Props) => {
-  const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
-  const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
-    CustomFile[]
-  >([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
 
@@ -78,6 +38,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const db = useDB(uid);
   const storage = useStorage();
   const { files } = useFiles();
+  const { currentDirectory, currentDirectoryFiles, openDirectory } = useCurrentDirectory();
   const { downloadFilesOrFolders } = useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
   const { openImageModal } = useImageModal();
@@ -98,16 +59,12 @@ export const FilesystemProvider = ({ children }: Props) => {
   const getFile = (file_id: string) =>
     files.find((file) => file.id === file_id) ?? null;
 
-  // Directory and file management functions
-  const openDirectory = (directory_id: string | null) => {
-    // clear selected files, unless the directory is simply being refreshed
-    if (directory_id !== currentDirectory) setSelectedFiles([]);
-    setCurrentDirectory(directory_id);
-    const newCurrentDirectoryFiles = files
-      .filter((file) => file.parent === directory_id)
-      .sort(sortFiles);
-    setCurrentDirectoryFiles(newCurrentDirectoryFiles);
-  };
+  useEffect(() => {
+    // reset selectedFiles if the currentDirectory changes
+    // but not if we're in the middle of hopping to the directory of a file we're selecting
+    setSelectedFiles((prev) => prev.filter((file_id) => currentDirectoryFiles.find((file) => file.id === file_id)));
+  }, [currentDirectory]);
+
 
   const selectFile = (file_id: string) => {
     // if the currentDirectoryFiles does not include the file_id, bail
