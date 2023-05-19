@@ -380,17 +380,23 @@ export const FilesystemProvider = ({ children }: Props) => {
     const file = files.find((file) => file.id === file_id);
     if (file?.type !== 'file') return;
     const url = await storage.getDownloadURL(`uploads/${file_id}`);
+
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
     const a = document.createElement('a');
-    a.href = url;
+    a.href = blobUrl;
     a.download = file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+    unlockAchievementById('download_file');
   };
 
   const downloadFiles = async (file_ids: string[]) => {
     file_ids.forEach((file_id) => downloadFile(file_id));
-    unlockAchievementById('download_file');
   };
 
 
