@@ -11,6 +11,9 @@ export interface CustomFileFields {
 export interface CustomFile extends CustomFileFields {
   uploadedBy: string;
 }
+export interface CustomUploadFields extends CustomFileFields {
+  file?: File;
+}
 export interface DraggedItem {
   id: string;
 }

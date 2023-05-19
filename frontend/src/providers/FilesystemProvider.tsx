@@ -13,11 +13,12 @@ import {
   getNestedFiles,
   getUnionFileDeleteTreeIDs,
   orderFilesByDirectory,
+  parseFileArray,
   sortFiles,
 } from '@src/helpers';
 import { useDB } from '@src/hooks/useDB';
 import { useStorage } from '@src/hooks/useStorage';
-import { CustomFile, CustomFileFields } from '@src/types';
+import { CustomFile, CustomFileFields, CustomUploadFields } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
@@ -308,6 +309,18 @@ export const FilesystemProvider = ({ children }: Props) => {
     });
   };
 
+  const uploadCustomUploadFields = async (fields: CustomUploadFields) => {
+    // Generate a unique id for the file
+    const { id, file } = fields;
+
+    // If not a folder, upload the file to storage
+    if (fields.type === 'file' && file) { // redundant but Typescript doesn't know that
+      const path = `uploads/${id}`;
+      await storage.uploadFile(file, path);
+    }
+
+    await db.createFile(fields);
+  }
   const uploadFile = async (file: File) => {
     // Generate a unique id for the file
     const id = uuidv4();
@@ -342,15 +355,24 @@ export const FilesystemProvider = ({ children }: Props) => {
     input.click();
   };
 
+  const uploadFolder = async (files: CustomUploadFields[]) => {
+    // we assume that the folder is the first file in the array
+    const folder = files[0];
+    folder.parent = currentDirectory ?? null;
+    // sanitize the folder name
+    folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
+    files.forEach((file) => uploadCustomUploadFields(file));
+    unlockAchievementById('upload_folder');
+  };
   const promptUploadFolder = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.webkitdirectory = true;
-    input.onchange = () => {
+    input.onchange = async () => {
       if (!input.files) return;
       const files = Array.from(input.files);
-      console.log(files);
-      // files.forEach((file) => uploadFile(file));
+      const parsedFiles = parseFileArray(files);
+      uploadFolder(parsedFiles);
     };
     input.click();
   };

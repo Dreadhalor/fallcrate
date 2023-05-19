@@ -1,5 +1,5 @@
-import { v4 as uuid } from 'uuid';
-import { CustomFile, CustomFileFields } from './types';
+import { v4 as uuidv4 } from 'uuid';
+import { CustomFile, CustomFileFields, CustomUploadFields } from './types';
 import { Timestamp } from 'firebase/firestore';
 
 export const buildNewFolder = ({
@@ -13,7 +13,7 @@ export const buildNewFolder = ({
   uid: string;
 }) => {
   return {
-    id: uuid(),
+    id: uuidv4(),
     name,
     type: 'directory',
     parent: parent ?? null,
@@ -25,7 +25,7 @@ export const buildNewFolder = ({
 export const buildNewFile = (file: CustomFile) => {
   const { id, name, size, parent, uploadedBy, createdAt, type } = file;
   return {
-    id: id ?? uuid(),
+    id: id ?? uuidv4(),
     name: name ?? '',
     type: type ?? 'file',
     size: size ?? 0,
@@ -167,3 +167,48 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   }
   return orderedFiles;
 };
+
+
+
+export function parseFileArray(files: File[]): CustomUploadFields[] {
+  const parsed_files: CustomUploadFields[] = [];
+  const fileMap: { [key: string]: CustomUploadFields } = {};
+
+  for (const file of files) {
+    // Split the path into segments
+    const pathSegments = file.webkitRelativePath.split('/');
+    let parentId: string | null = null;
+
+    for (let i = 0; i < pathSegments.length; i++) {
+      const segment = pathSegments[i];
+      const isFile = i === pathSegments.length - 1;
+
+      // Generate a key from the parent id and the segment name
+      const key: string = `${parentId}-${segment}`;
+      if (!fileMap[key]) {
+        // Generate a UUID for the item
+        const id = uuidv4();
+
+        const file_fields: CustomUploadFields = {
+          id,
+          parent: parentId,
+          type: isFile ? 'file' : 'directory',
+          name: segment,
+          createdAt: Timestamp.now(),
+          ...(isFile ? { size: file.size } : {}),
+          ...(isFile ? { file } : {})
+        };
+
+        fileMap[key] = file_fields;
+        parsed_files.push(file_fields);
+      }
+
+      // If the current segment is a directory, update the parentId for the next iteration
+      if (!isFile) {
+        parentId = fileMap[key].id;
+      }
+    }
+  }
+
+  return orderFilesByDirectory(parsed_files);
+}
