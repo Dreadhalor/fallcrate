@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
+import JSZip from 'jszip';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -378,7 +379,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
   const downloadFile = async (file_id: string) => {
     const file = files.find((file) => file.id === file_id);
-    if (file?.type !== 'file') return;
+    if (file?.type !== 'file') return downloadDirectory(file_id);
     const url = await storage.getDownloadURL(`uploads/${file_id}`);
 
     const response = await fetch(url);
@@ -398,6 +399,46 @@ export const FilesystemProvider = ({ children }: Props) => {
   const downloadFiles = async (file_ids: string[]) => {
     file_ids.forEach((file_id) => downloadFile(file_id));
   };
+
+  const downloadDirectory = async (directory_id: string) => {
+    const directory = files.find((file) => file.id === directory_id);
+    if (directory?.type !== 'directory') return;
+
+    const zip = new JSZip();
+
+    const addFileToZip = async (file: CustomFile, parentZip: JSZip) => {
+      const url = await storage.getDownloadURL(`uploads/${file.id}`);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      parentZip.file(file.name, blob);
+    };
+
+    const addDirectoryToZip = async (directory: CustomFile, parentZip: JSZip) => {
+      const subZip = parentZip.folder(directory.name) as JSZip; // add type assertion here
+      const subFiles = files.filter((file) => file.parent === directory.id);
+      for (const file of subFiles) {
+        if (file.type === 'file') {
+          await addFileToZip(file, subZip);
+        } else if (file.type === 'directory') {
+          await addDirectoryToZip(file, subZip);
+        }
+      }
+    };
+
+    await addDirectoryToZip(directory, zip);
+
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const blobUrl = URL.createObjectURL(zipBlob);
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `${directory.name}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  };
+
 
 
 
