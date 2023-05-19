@@ -24,6 +24,7 @@ import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
 import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
+import { useImageModal } from '@providers/ImageModalProvider';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -43,10 +44,6 @@ interface FilesystemContextValue {
   uploadFile: (file: File) => void;
   promptUploadFiles: () => void;
   promptUploadFolder: () => void;
-  imageModalParams: { open: boolean; file: CustomFile | null };
-  setImageModalParams: React.Dispatch<
-    React.SetStateAction<{ open: boolean; file: CustomFile | null }>
-  >;
   openImageModal: (file: CustomFile) => void;
   getParent: (file: CustomFile) => CustomFile | null;
   getFile: (file_id: string) => CustomFile | null;
@@ -69,28 +66,21 @@ type Props = {
 };
 
 export const FilesystemProvider = ({ children }: Props) => {
-  const { files } = useFiles();
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
-  const { downloadFilesOrFolders } = useDownloadFilesOrFolders(currentDirectory);
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
   >([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
-  const [imageModalParams, setImageModalParams] = useState<{
-    open: boolean;
-    file: CustomFile | null;
-  }>({ open: false, file: null });
+
 
   const { uid } = useAuth();
   const db = useDB(uid);
   const storage = useStorage();
-
+  const { files } = useFiles();
+  const { downloadFilesOrFolders } = useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
-
-  const openImageModal = (file: CustomFile) => {
-    setImageModalParams({ open: true, file });
-  };
+  const { openImageModal } = useImageModal();
 
   useEffect(() => {
     openDirectory(currentDirectory);
@@ -485,8 +475,6 @@ export const FilesystemProvider = ({ children }: Props) => {
         uploadFile,
         promptUploadFiles,
         promptUploadFolder,
-        imageModalParams,
-        setImageModalParams,
         openImageModal,
         getParent,
         getFile,

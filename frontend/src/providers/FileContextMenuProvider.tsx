@@ -5,6 +5,7 @@ import { CustomFile } from '@src/types';
 import { BiDuplicate, BiEdit } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useAchievements } from 'milestone-components';
+import { useImageModal } from '@providers/ImageModalProvider';
 
 type FileContextMenuItemProps = {
   icon: React.ReactNode;
@@ -37,12 +38,13 @@ type Props = {
 
 export const ContextMenuProvider = ({ children }: Props) => {
   const {
-    imageModalParams: { open },
+
     selectFileExclusively,
     promptRenameFile,
     deleteFiles,
     duplicateFile,
   } = useFilesystem();
+  const { open } = useImageModal();
   const { unlockAchievementById } = useAchievements();
 
   const { show } = useContextMenu({

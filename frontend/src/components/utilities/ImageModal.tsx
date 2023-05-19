@@ -2,9 +2,13 @@ import { useFilesystem } from '@providers/FilesystemProvider';
 import { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
+import { useImageModal } from '@providers/ImageModalProvider';
+
 
 const ImageModal = () => {
-  const { imageModalParams, setImageModalParams, getFileUrl } = useFilesystem();
+  const { open, setOpen, file, setFile } = useImageModal();
+  const { getFileUrl } = useFilesystem();
+
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
     height: 0,
@@ -16,7 +20,7 @@ const ImageModal = () => {
   const modal_viewport_ratio = 0.9;
 
   const updateDimensions = async () => {
-    if (!imageModalParams.open) return;
+    if (!open) return;
 
     const img = new Image();
     img.src = url;
@@ -59,32 +63,33 @@ const ImageModal = () => {
   };
 
   useEffect(() => {
-    if (!imageModalParams.file) setUrl('');
-    getFileUrl(imageModalParams.file?.id ?? '').then((url) => setUrl(url));
-  }, [imageModalParams.file]);
+    if (!file) setUrl('');
+    getFileUrl(file?.id ?? '').then((url) => setUrl(url));
+  }, [file]);
 
   useEffect(() => {
-    if (imageModalParams.open) {
+    if (open) {
       setIsLoading(true);
       updateDimensions();
     }
   }, [url]);
 
   useEffect(() => {
-    if (imageModalParams.open)
+    if (open)
       window.addEventListener('resize', updateDimensions);
     else window.removeEventListener('resize', updateDimensions);
 
     return () => {
       window.removeEventListener('resize', updateDimensions);
     };
-  }, [imageModalParams.open]);
+  }, [open]);
 
-  if (!imageModalParams.open) return null;
+  if (!open) return null;
 
   const closeModal = () => {
     setImageDimensions({ width: 0, height: 0 });
-    setImageModalParams({ open: false, file: null });
+    setOpen(false);
+    setFile(null);
     setIsLoading(false);
   };
 
