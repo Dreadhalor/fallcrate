@@ -1,5 +1,6 @@
 import { useFilesystem } from '@providers/FilesystemProvider';
 import { FaFolderPlus } from 'react-icons/fa';
+import { IoDuplicate } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import { RiEditBoxFill } from 'react-icons/ri';
 
@@ -37,8 +38,13 @@ const MainContentMenuButton = ({
 };
 
 const MainContentToolbar = () => {
-  const { selectedFiles, deleteFiles, promptNewFolder, promptRenameFile } =
-    useFilesystem();
+  const {
+    selectedFiles,
+    deleteFiles,
+    promptNewFolder,
+    promptRenameFile,
+    duplicateFile,
+  } = useFilesystem();
 
   return (
     <div
@@ -54,11 +60,18 @@ const MainContentToolbar = () => {
       {selectedFiles.length > 0 && (
         <>
           {selectedFiles.length === 1 && (
-            <MainContentMenuButton
-              title='Rename'
-              icon={<RiEditBoxFill size={18} />}
-              onClick={() => promptRenameFile(selectedFiles[0])}
-            />
+            <>
+              <MainContentMenuButton
+                title='Rename'
+                icon={<RiEditBoxFill size={18} />}
+                onClick={() => promptRenameFile(selectedFiles[0])}
+              />
+              <MainContentMenuButton
+                title='Duplicate'
+                icon={<IoDuplicate size={18} />}
+                onClick={() => duplicateFile(selectedFiles[0])}
+              />
+            </>
           )}
           <MainContentMenuButton
             title='Delete'

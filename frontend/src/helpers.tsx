@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { CustomFile } from './types';
+import { CustomFile, CustomFileFields } from './types';
 import { Timestamp } from 'firebase/firestore';
 
 export const buildNewFolder = ({
@@ -9,6 +9,7 @@ export const buildNewFolder = ({
 }: {
   name: string;
   parent?: string | null;
+  id?: string;
   uid: string;
 }) => {
   return {
@@ -22,11 +23,11 @@ export const buildNewFolder = ({
 };
 
 export const buildNewFile = (file: CustomFile) => {
-  const { id, name, size, parent, url, uploadedBy, createdAt } = file;
+  const { id, name, size, parent, url, uploadedBy, createdAt, type } = file;
   return {
     id: id ?? uuid(),
     name: name ?? '',
-    type: 'file',
+    type: type ?? 'file',
     size: size ?? 0,
     url: url ?? '',
     parent: parent ?? null,
@@ -75,8 +76,8 @@ export const getUnionFileDeleteTreeIDs = (
 
 export const getNestedFiles = (
   file_id: string | null,
-  files: CustomFile[]
-): CustomFile[] => {
+  files: CustomFileFields[]
+): CustomFileFields[] => {
   const nestedFiles = files.filter((file) => file.parent === file_id);
   return nestedFiles.flatMap((file) => [
     file,
@@ -145,4 +146,25 @@ export const checkDirectoryForNameConflict = (
   return files_in_directory.some(
     (file) => file.name === name && file.id !== file_id
   );
+};
+export const checkFilesForNameConflict = (
+  name: string,
+  files: CustomFile[]
+) => {
+  return files.some((file) => file.name === name);
+};
+
+// order the given files such that parent directories are before their children
+export const orderFilesByDirectory = (files: CustomFileFields[]) => {
+  const orderedFiles = [];
+  const directories = files.filter((file) => file.type === 'directory');
+  const filesWithoutDirectories = files.filter(
+    (file) => file.type !== 'directory'
+  );
+  for (const directory of directories) {
+    orderedFiles.push(directory);
+    const nestedFiles = getNestedFiles(directory.id, filesWithoutDirectories);
+    orderedFiles.push(...nestedFiles);
+  }
+  return orderedFiles;
 };

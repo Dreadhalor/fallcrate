@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export interface CustomFile {
+export interface CustomFileFields {
   id: string;
   name: string;
   type: string;
@@ -8,6 +8,8 @@ export interface CustomFile {
   parent: string | null;
   url?: string;
   createdAt: Timestamp;
+}
+export interface CustomFile extends CustomFileFields {
   uploadedBy: string;
 }
 export interface DraggedItem {

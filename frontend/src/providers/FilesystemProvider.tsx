@@ -7,15 +7,17 @@ import React, {
 } from 'react';
 import {
   checkDirectoryForNameConflict,
+  checkFilesForNameConflict,
   checkForCircularBranch,
   checkForCircularReference,
   getNestedFiles,
   getUnionFileDeleteTreeIDs,
+  orderFilesByDirectory,
   sortFiles,
 } from '@src/helpers';
 import { useDB } from '@src/hooks/useDB';
 import { useStorage } from '@src/hooks/useStorage';
-import { CustomFile } from '@src/types';
+import { CustomFile, CustomFileFields } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
@@ -36,14 +38,16 @@ interface FilesystemContextValue {
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
   uploadFile: (file: File) => void;
-  imageModal: { open: boolean; url: string | null };
-  setImageModal: React.Dispatch<
-    React.SetStateAction<{ open: boolean; url: string | null }>
+  imageModalParams: { open: boolean; file: CustomFile | null };
+  setImageModalParams: React.Dispatch<
+    React.SetStateAction<{ open: boolean; file: CustomFile | null }>
   >;
-  openImageModal: (url: string) => void;
+  openImageModal: (file: CustomFile) => void;
   getParent: (file: CustomFile) => CustomFile | null;
   getFile: (file_id: string) => CustomFile | null;
   nestedSelectedFiles: string[];
+  duplicateFile: (file_id: string) => Promise<void>;
+  getFileUrl: (file_id: string) => Promise<string>;
 }
 
 const FilesystemContext = createContext<FilesystemContextValue>(
@@ -66,19 +70,19 @@ export const FilesystemProvider = ({ children }: Props) => {
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
   >([]);
-  const [imageModal, setImageModal] = useState<{
+  const [imageModalParams, setImageModalParams] = useState<{
     open: boolean;
-    url: string | null;
-  }>({ open: false, url: null });
+    file: CustomFile | null;
+  }>({ open: false, file: null });
 
   const { uid } = useAuth();
   const db = useDB(uid);
   const storage = useStorage();
 
-  const { unlockAchievementById } = useAchievements();
+  const { unlockAchievementById, isUnlockable } = useAchievements();
 
-  const openImageModal = (url: string) => {
-    setImageModal({ open: true, url });
+  const openImageModal = (file: CustomFile) => {
+    setImageModalParams({ open: true, file });
   };
 
   // Helper functions
@@ -177,7 +181,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (file.type === 'directory') return openDirectory(file_id);
     if (file.type === 'file') {
       // this shows nothing if the file isn't an image but whatever for now
-      openImageModal(file.url ?? '');
+      openImageModal(file);
       unlockAchievementById('preview_image');
     }
   };
@@ -204,14 +208,23 @@ export const FilesystemProvider = ({ children }: Props) => {
     const delete_tree = getUnionFileDeleteTreeIDs(file_ids, files);
     //get the blob ids before deleting the files from the database
     const blob_ids = filterBlobStorageIds(files, delete_tree);
+    // optimistically remove the files from the selected files array to avoid an awkward delay
+    setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
     const deleted_ids = await db.deleteFiles(delete_tree);
     // only delete the files from storage if they were successfully deleted from the database
-    await storage.deleteFiles(
-      deleted_ids.filter((id) => blob_ids.includes(id))
-    );
-    setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
+    await storage
+      .deleteFiles(deleted_ids.filter((id) => blob_ids.includes(id)))
+      .catch((error) => {
+        console.error(error);
+      });
 
-    if (deleted_ids.length > 0) unlockAchievementById('delete_file');
+    if (deleted_ids.length > 0) {
+      unlockAchievementById('delete_file');
+      if (isUnlockable('nested_delete')) {
+        const child_files = blob_ids.filter((id) => !file_ids.includes(id));
+        if (child_files.length > 0) unlockAchievementById('nested_delete');
+      }
+    }
     if (deleted_ids.length >= 5) unlockAchievementById('mass_delete');
   };
 
@@ -301,7 +314,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     await storage.uploadFile(file, path);
 
     // Create a file entry in the database
-    const newFile: CustomFile = {
+    const newFile: CustomFileFields = {
       id,
       name: file.name,
       type: 'file',
@@ -309,12 +322,119 @@ export const FilesystemProvider = ({ children }: Props) => {
       parent: currentDirectory ?? null,
       url: await storage.getDownloadURL(path),
       createdAt: Timestamp.now(),
-      uploadedBy: uid,
     };
 
     await db
       .createFile(newFile)
       .then((_) => unlockAchievementById('upload_file'));
+  };
+  const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
+    let new_name = name;
+    let i = 1;
+    while (checkFilesForNameConflict(new_name, files) && i < 100) {
+      // check if the name already has a number in parentheses
+      if (new_name.match(/\(\d+\)/)) {
+        // if it does, increment the number
+        new_name = new_name.replace(/\(\d+\)/, `(${i})`);
+      } else new_name = `${name} (${i})`;
+      i++;
+    }
+    return new_name;
+  };
+  const duplicateBlob = async (
+    old_file_id: string,
+    duplicated_file: CustomFile
+  ) => {
+    if (duplicated_file.type !== 'file') return;
+    const blob = await storage
+      .getDownloadURL(`uploads/${old_file_id}`)
+      .then((url) => fetch(url).then((r) => r.blob()));
+    const path = `uploads/${duplicated_file.id}`;
+    await storage.uploadBlob(blob, path);
+  };
+  const duplicateFile = async (file_id: string) => {
+    const file = files.find((file) => file.id === file_id);
+    if (!file) return;
+    const parent = file.parent;
+    const directoryFiles = files.filter((file) => file.parent === parent);
+    const new_name = getValidDuplicatedName(file.name, directoryFiles);
+    if (file.type === 'directory') {
+      duplicateFolderWithName(file, new_name);
+      unlockAchievementById('duplicate_folder');
+    } else {
+      duplicateSingleFileWithName(file, new_name);
+      unlockAchievementById('duplicate_file');
+    }
+  };
+
+  const saveDuplicatedFile = async (
+    old_id: string,
+    new_file: CustomFileFields
+  ) => {
+    if (!new_file || new_file.type !== 'file') return;
+    await db
+      .createFile(new_file)
+      .then((created_file) => duplicateBlob(old_id, created_file));
+  };
+
+  const duplicateSingleFileWithName = async (
+    file: CustomFile,
+    new_name: string
+  ) => {
+    if (!file || file.type !== 'file') return;
+    const new_file = { ...file, name: new_name, id: uuidv4() };
+    saveDuplicatedFile(file.id, new_file);
+  };
+
+  const duplicateFolderWithName = async (
+    folder: CustomFile,
+    new_name: string
+  ) => {
+    if (!folder || folder.type !== 'directory') return;
+
+    const duplication_map = new Map<string, CustomFileFields>();
+    const reverse_duplication_map = new Map<string, CustomFileFields>();
+
+    const nestedFiles = getNestedFiles(folder.id, files);
+
+    // Added the new folder as an entry in the duplication map
+    const initial_folder = { ...folder, id: uuidv4(), name: new_name };
+    duplication_map.set(folder.id, initial_folder);
+    reverse_duplication_map.set(initial_folder.id, folder);
+
+    nestedFiles.forEach((file) => {
+      const new_file = { ...file, id: uuidv4() };
+      duplication_map.set(file.id, new_file);
+      reverse_duplication_map.set(new_file.id, file);
+    });
+
+    duplication_map.forEach((file) => {
+      file.parent = duplication_map.get(file.parent || '')?.id || null;
+    });
+
+    const orderedFiles = orderFilesByDirectory(
+      Array.from(duplication_map.values())
+    );
+
+    await Promise.all(
+      orderedFiles.map((file) => {
+        if (file.type === 'directory') return db.createFile(file);
+        else {
+          const old_id = reverse_duplication_map.get(file.id)?.id;
+          return saveDuplicatedFile(old_id || '', file);
+        }
+      })
+    );
+  };
+
+  const getFileUrl = async (file_id: string) => {
+    const file = files.find((file) => file.id === file_id);
+    if (!file) return 'https://via.placeholder.com/256';
+    if (file.type === 'file') {
+      return await storage.getDownloadURL(`uploads/${file.id}`);
+    } else {
+      return 'https://via.placeholder.com/256';
+    }
   };
 
   useEffect(() => {
@@ -352,12 +472,14 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptRenameFile,
         moveFiles,
         uploadFile,
-        imageModal,
-        setImageModal,
+        imageModalParams,
+        setImageModalParams,
         openImageModal,
         getParent,
         getFile,
         nestedSelectedFiles,
+        duplicateFile,
+        getFileUrl,
       }}
     >
       {children}

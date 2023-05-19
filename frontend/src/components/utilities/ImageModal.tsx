@@ -4,21 +4,22 @@ import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
 
 const ImageModal = () => {
-  const { imageModal, setImageModal } = useFilesystem();
+  const { imageModalParams, setImageModalParams, getFileUrl } = useFilesystem();
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
     height: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [url, setUrl] = useState('');
 
   const margin_image = 10;
   const modal_viewport_ratio = 0.9;
 
-  const updateDimensions = () => {
-    if (!imageModal.open) return;
+  const updateDimensions = async () => {
+    if (!imageModalParams.open) return;
 
     const img = new Image();
-    img.src = imageModal.url ?? '';
+    img.src = url;
     img.onload = () => {
       setImageDimensions(calculateDimensions(img.width, img.height));
       setIsLoading(false);
@@ -58,26 +59,32 @@ const ImageModal = () => {
   };
 
   useEffect(() => {
-    if (imageModal.open) {
+    if (!imageModalParams.file) setUrl('');
+    getFileUrl(imageModalParams.file?.id ?? '').then((url) => setUrl(url));
+  }, [imageModalParams.file]);
+
+  useEffect(() => {
+    if (imageModalParams.open) {
       setIsLoading(true);
       updateDimensions();
     }
-  }, [imageModal.url]);
+  }, [url]);
 
   useEffect(() => {
-    if (imageModal.open) window.addEventListener('resize', updateDimensions);
+    if (imageModalParams.open)
+      window.addEventListener('resize', updateDimensions);
     else window.removeEventListener('resize', updateDimensions);
 
     return () => {
       window.removeEventListener('resize', updateDimensions);
     };
-  }, [imageModal.open]);
+  }, [imageModalParams.open]);
 
-  if (!imageModal.open) return null;
+  if (!imageModalParams.open) return null;
 
   const closeModal = () => {
     setImageDimensions({ width: 0, height: 0 });
-    setImageModal({ open: false, url: null });
+    setImageModalParams({ open: false, file: null });
     setIsLoading(false);
   };
 
@@ -99,7 +106,7 @@ const ImageModal = () => {
         }}
       >
         <img
-          src={imageModal.url ?? ''}
+          src={url}
           alt='Preview'
           className='m-auto'
           style={{

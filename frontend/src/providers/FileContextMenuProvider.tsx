@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { Item, ItemParams, Menu, useContextMenu } from 'react-contexify';
 import { useFilesystem } from './FilesystemProvider';
 import { CustomFile } from '@src/types';
-import { BiEdit } from 'react-icons/bi';
+import { BiDuplicate, BiEdit } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useAchievements } from 'milestone-components';
 
@@ -37,10 +37,11 @@ type Props = {
 
 export const ContextMenuProvider = ({ children }: Props) => {
   const {
-    imageModal: { open },
+    imageModalParams: { open },
     selectFileExclusively,
     promptRenameFile,
     deleteFiles,
+    duplicateFile,
   } = useFilesystem();
   const { unlockAchievementById } = useAchievements();
 
@@ -71,6 +72,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
       return;
     }
     if (id === 'rename') promptRenameFile(file.id);
+    if (id === 'duplicate') duplicateFile(file.id);
     if (id === 'delete') deleteFiles([file.id]);
   }
 
@@ -81,6 +83,12 @@ export const ContextMenuProvider = ({ children }: Props) => {
         <Menu id='file-context-menu'>
           <Item onClick={handleItemClick} id='rename'>
             <FileContextMenuItem icon={<BiEdit size={16} />} title='Rename' />
+          </Item>
+          <Item onClick={handleItemClick} id='duplicate'>
+            <FileContextMenuItem
+              icon={<BiDuplicate size={16} />}
+              title='Duplicate'
+            />
           </Item>
           <Item onClick={handleItemClick} id='delete'>
             <FileContextMenuItem

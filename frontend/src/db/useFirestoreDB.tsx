@@ -14,7 +14,7 @@ import {
 
 import { buildNewFile, buildNewFolder } from '../helpers';
 import { Database } from './Database';
-import { CustomFile } from '@src/types';
+import { CustomFile, CustomFileFields } from '@src/types';
 
 const useFirestoreDB = (uid: string): Database => {
   const firestore = getFirestore();
@@ -43,7 +43,7 @@ const useFirestoreDB = (uid: string): Database => {
     return snapshot.docs.map((doc) => doc.data() as CustomFile);
   };
 
-  const createFile = async (file: any): Promise<CustomFile> => {
+  const createFile = async (file: CustomFileFields): Promise<CustomFile> => {
     const authorizedFile = { ...file, uploadedBy: uid };
     const newFile = buildNewFile(authorizedFile);
     const docRef = doc(filesCollection, newFile.id);

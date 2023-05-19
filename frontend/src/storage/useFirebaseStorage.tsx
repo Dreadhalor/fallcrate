@@ -45,6 +45,39 @@ export const useFirebaseStorage = (): Storage => {
     });
   };
 
+  const uploadBlob = async (
+    blob: Blob,
+    path: string,
+    onProgress?: (snapshot: UploadTaskSnapshot) => void,
+    onError?: (error: StorageError) => void,
+    onComplete?: () => void
+  ): Promise<string> => {
+    const storageRef = ref(storage, path);
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        onProgress,
+        (error) => {
+          if (onError) {
+            onError(error);
+          }
+          reject(error);
+        },
+        async () => {
+          if (onComplete) {
+            onComplete();
+          }
+          const downloadURL = await firebaseGetDownloadURL(
+            uploadTask.snapshot.ref
+          );
+          resolve(downloadURL);
+        }
+      );
+    });
+  };
+
   const deleteFile = async (id: string) => {
     const path = `uploads/${id}`;
     const storageRef = ref(storage, path);
@@ -60,6 +93,7 @@ export const useFirebaseStorage = (): Storage => {
 
   return {
     uploadFile,
+    uploadBlob,
     deleteFiles,
     getDownloadURL,
   };

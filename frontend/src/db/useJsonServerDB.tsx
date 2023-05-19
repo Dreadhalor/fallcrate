@@ -1,4 +1,4 @@
-import { CustomFile } from '@src/types';
+import { CustomFile, CustomFileFields } from '@src/types';
 import { buildNewFile, buildNewFolder } from '@src/helpers';
 import { Database } from './Database';
 
@@ -8,7 +8,7 @@ const useJsonServerDB = (uid: string): Database => {
     return fetch('http://localhost:3000/files').then((res) => res.json());
   };
 
-  const createFile = async (file: CustomFile): Promise<CustomFile> => {
+  const createFile = async (file: CustomFileFields): Promise<CustomFile> => {
     const newFile: CustomFile = { ...file, uploadedBy: uid };
     // make a post request to localhost:3000/files
     return fetch('http://localhost:3000/files', {

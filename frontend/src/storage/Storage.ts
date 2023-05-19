@@ -8,6 +8,14 @@ export interface Storage {
     onError?: (error: StorageError) => void,
     onComplete?: () => void
   ) => Promise<string>;
+  uploadBlob: (
+    blob: Blob,
+    path: string,
+    onProgress?: (snapshot: UploadTaskSnapshot) => void,
+    onError?: (error: StorageError) => void,
+    onComplete?: () => void
+  ) => Promise<string>;
+
   deleteFiles: (file_ids: string[]) => Promise<void[]>;
   getDownloadURL: (path: string) => Promise<string>;
 }
