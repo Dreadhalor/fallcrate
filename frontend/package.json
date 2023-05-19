@@ -23,7 +23,6 @@
     "react-icons": "^4.8.0",
     "react-spinners": "^0.13.8",
     "react-tooltip": "^5.11.1",
-    "reactfire": "^4.2.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

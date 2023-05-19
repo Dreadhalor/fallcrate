@@ -8,3 +8,4 @@
 * for the breadcrumb:
   * calculate the longest path that can be displayed without truncationg & display it
   * everything else, compile into an ellipsis in the breadcrumb base with a dropdown menu
+* the dropdown menu for the upload button doesn't go away when opening a context menu, but the UserMenu button does - what's up with that?

@@ -6,7 +6,6 @@ export interface CustomFileFields {
   type: string;
   size?: number;
   parent: string | null;
-  url?: string;
   createdAt: Timestamp;
 }
 export interface CustomFile extends CustomFileFields {

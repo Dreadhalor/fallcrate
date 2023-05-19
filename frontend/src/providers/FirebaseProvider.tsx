@@ -1,11 +1,6 @@
 import { getStorage, connectStorageEmulator } from 'firebase/storage'; // Firebase v9+
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'; // Firebase v9+
-import {
-  FirebaseAppProvider,
-  StorageProvider,
-  FirestoreProvider,
-  useFirebaseApp,
-} from 'reactfire';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 
 // Firebase v9+: pull from .env
 const firebaseConfig = {
@@ -22,8 +17,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-function FirebaseComponents({ children }: Props) {
-  const app = useFirebaseApp();
+export const FirebaseProvider = ({ children }: Props) => {
+  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
   const storage = getStorage(app);
   const db = getFirestore(app);
@@ -34,17 +29,5 @@ function FirebaseComponents({ children }: Props) {
     connectFirestoreEmulator(db, 'localhost', 8080);
   }
 
-  return (
-    <StorageProvider sdk={storage}>
-      <FirestoreProvider sdk={db}>{children}</FirestoreProvider>
-    </StorageProvider>
-  );
-}
-
-export const FirebaseProvider = ({ children }: Props) => {
-  return (
-    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <FirebaseComponents>{children}</FirebaseComponents>
-    </FirebaseAppProvider>
-  );
+  return <>{children}</>;
 };

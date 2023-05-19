@@ -16,9 +16,7 @@ export const FallcrateProviders: React.FC<Props> = ({ children }) => {
       <MilestoneProvider app='fallcrate'>
         <FilesystemProvider>
           <DndProvider backend={HTML5Backend}>
-            <ContextMenuProvider>
-              <>{children}</>
-            </ContextMenuProvider>
+            <ContextMenuProvider>{children}</ContextMenuProvider>
           </DndProvider>
         </FilesystemProvider>
       </MilestoneProvider>

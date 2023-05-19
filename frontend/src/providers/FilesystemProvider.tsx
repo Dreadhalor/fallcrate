@@ -21,6 +21,7 @@ import { CustomFile, CustomFileFields } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
+import { message } from 'antd';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -38,6 +39,8 @@ interface FilesystemContextValue {
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
   uploadFile: (file: File) => void;
+  promptUploadFiles: () => void;
+  promptUploadFolder: () => void;
   imageModalParams: { open: boolean; file: CustomFile | null };
   setImageModalParams: React.Dispatch<
     React.SetStateAction<{ open: boolean; file: CustomFile | null }>
@@ -86,8 +89,8 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
 
   // Helper functions
-  const handleOperationError = (message: string) => {
-    alert(message);
+  const handleOperationError = (text: string) => {
+    message.error(text);
   };
 
   const getParent = (file: CustomFile) => {
@@ -320,7 +323,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       type: 'file',
       size: file.size,
       parent: currentDirectory ?? null,
-      url: await storage.getDownloadURL(path),
       createdAt: Timestamp.now(),
     };
 
@@ -328,6 +330,31 @@ export const FilesystemProvider = ({ children }: Props) => {
       .createFile(newFile)
       .then((_) => unlockAchievementById('upload_file'));
   };
+  const promptUploadFiles = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.onchange = () => {
+      if (!input.files) return;
+      const files = Array.from(input.files);
+      files.forEach((file) => uploadFile(file));
+    };
+    input.click();
+  };
+
+  const promptUploadFolder = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.webkitdirectory = true;
+    input.onchange = () => {
+      if (!input.files) return;
+      const files = Array.from(input.files);
+      console.log(files);
+      // files.forEach((file) => uploadFile(file));
+    };
+    input.click();
+  };
+
   const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
     let new_name = name;
     let i = 1;
@@ -472,6 +499,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptRenameFile,
         moveFiles,
         uploadFile,
+        promptUploadFiles,
+        promptUploadFolder,
         imageModalParams,
         setImageModalParams,
         openImageModal,

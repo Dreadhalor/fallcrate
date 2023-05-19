@@ -23,13 +23,12 @@ export const buildNewFolder = ({
 };
 
 export const buildNewFile = (file: CustomFile) => {
-  const { id, name, size, parent, url, uploadedBy, createdAt, type } = file;
+  const { id, name, size, parent, uploadedBy, createdAt, type } = file;
   return {
     id: id ?? uuid(),
     name: name ?? '',
     type: type ?? 'file',
     size: size ?? 0,
-    url: url ?? '',
     parent: parent ?? null,
     uploadedBy: uploadedBy ?? '',
     createdAt: createdAt ?? Timestamp.now(),

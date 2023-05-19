@@ -3,20 +3,21 @@ import { FaFolderPlus } from 'react-icons/fa';
 import { IoDuplicate } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import { RiEditBoxFill } from 'react-icons/ri';
+import UploadButton from './UploadButton';
 
 type ButtonProps = {
-  title: string;
+  title: React.ReactNode;
   icon: React.ReactNode;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: 'primary' | 'secondary' | 'warning';
   className?: string;
 };
-const MainContentMenuButton = ({
+export const MainContentMenuButton = ({
   title,
   icon,
-  onClick,
+  onClick = () => {},
   type = 'secondary',
-  className,
+  className = '',
 }: ButtonProps) => {
   const typeClassMap = {
     secondary: 'border border-gray-300 bg-white hover:bg-gray-100',
@@ -28,10 +29,10 @@ const MainContentMenuButton = ({
 
   return (
     <button
-      className={`flex items-center justify-center gap-[8px] rounded-sm  py-[5px] px-[15px] ${typeClasses} ${className}`}
+      className={`flex items-center justify-center gap-[8px] whitespace-nowrap rounded-sm py-[5px] px-[15px] ${typeClasses} ${className}`}
       onClick={onClick}
     >
-      {icon}
+      <span className='flex-shrink-0'>{icon}</span>
       {title}
     </button>
   );
@@ -49,13 +50,13 @@ const MainContentToolbar = () => {
   return (
     <div
       id='content-toolbar'
-      className='flex min-h-[60px] flex-row gap-[10px] py-[10px] px-[20px]'
+      className='flex min-h-[60px] flex-row gap-[10px] overflow-auto py-[10px] px-[20px]'
     >
+      <UploadButton />
       <MainContentMenuButton
         title='Create Folder'
         icon={<FaFolderPlus />}
         onClick={promptNewFolder}
-        type='primary'
       />
       {selectedFiles.length > 0 && (
         <>
