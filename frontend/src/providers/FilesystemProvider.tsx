@@ -31,7 +31,7 @@ interface FilesystemContextValue {
   currentDirectoryFiles: CustomFile[];
   openDirectory: (directory_id: string | null) => void;
   selectFile: (file_id: string) => void;
-  selectFileExclusively: (file_id: string) => void;
+  selectFileExclusively: (file_id: string, overrideDirectoryRestriction?: boolean) => void;
   massToggleSelectFiles: () => void;
   openFile: (file_id?: string) => void;
   createFolder: (name: string) => void;
@@ -153,9 +153,9 @@ export const FilesystemProvider = ({ children }: Props) => {
     });
   };
   // doesn't trigger the achievement for selecting a file - this is intentional
-  const selectFileExclusively = (file_id: string) => {
+  const selectFileExclusively = (file_id: string, overrideDirectoryRestriction = false) => {
     // if the currentDirectoryFiles does not include the file_id, bail
-    if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
+    if (!overrideDirectoryRestriction && !currentDirectoryFiles.find((file) => file.id === file_id)) return;
     setSelectedFiles([file_id]);
   };
   const getNestedSelectedFiles = () => {

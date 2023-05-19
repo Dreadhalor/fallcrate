@@ -29,7 +29,7 @@ const Searchbar = () => {
     if (file.type === 'directory') openFile(value);
     else {
       openDirectory(getParent(file)?.id ?? null);
-      selectFileExclusively(file.id);
+      selectFileExclusively(file.id, true);
       openFile(file.id);
       unlockAchievementById('find_in_search');
     }

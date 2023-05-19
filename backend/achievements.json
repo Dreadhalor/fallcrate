@@ -1,114 +1,126 @@
 {
   "all_folders": {
-    "title": "Oops! All Folders",
-    "description": "Have a folder with 20 or more subfolders in it & no files"
+    "description": "Have a folder with 20 or more subfolders in it & no files",
+    "title": "Oops! All Folders"
   },
   "breadcrumb_navigation": {
-    "title": "Birds of a Feather",
-    "description": "Navigate back using the breadcrumb"
+    "description": "Navigate back using the breadcrumb",
+    "title": "Birds of a Feather"
   },
   "collapse_sidebar": {
-    "title": "Sidebar? We Don't Need No Stinkin' Sidebar!",
-    "description": "Collapse the sidebar"
-  },
-  "create_folder": {
-    "title": "Folder? I Hardly Know 'er!",
-    "description": "Create a folder"
-  },
-  "delete_file": {
-    "title": "It's Not Me, It's You",
-    "description": "Delete a file or folder"
-  },
-  "download_file": {
-    "title": "I'll Be Taking That Now",
-    "description": "Download a file"
-  },
-  "duplicate_file": {
-    "title": "Dupliciticitous",
-    "description": "Duplicate a file"
-  },
-  "expand_all": {
-    "title": "To Infinity & Beyond",
-    "description": "Click the \"Expand All\" button in the sidebar"
-  },
-  "expand_folder": {
-    "title": "Is That a Folder in Your Sidebar or Are You Just Happy to See Me?",
-    "description": "Expand a folder in the sidebar"
-  },
-  "folder_into_folder": {
-    "title": "Inception",
-    "description": "Move a folder into a folder"
-  },
-  "mass_delete": {
-    "title": "The Marie Condo",
-    "description": "Delete 5 or more files or folders at once"
-  },
-  "mass_undelete": {
-    "title": "The Marie Condon't",
-    "description": "Undelete 5 or more files or folders at once"
-  },
-  "file_into_file": {
-    "title": "Hey, I Don't Work Here",
-    "description": "Attempt to move a folder or file into a file"
-  },
-  "filename_conflict": {
-    "title": "I'm Spartacus!",
-    "description": "Attempt to name a file the same name as another file"
-  },
-  "navigation_depth": {
-    "title": "We Need to Go Deeper",
-    "description": "Navigate to a folder 7 levels deep"
-  },
-  "nested_delete": {
-    "title": "Baby with the Bathwater",
-    "description": "Delete a folder with a file in it"
-  },
-  "find_in_search": {
-    "title": "There You Are!",
-    "description": "Open a file after finding it in search"
-  },
-  "open_sidebar": {
-    "title": "Show Me the Sidebar!",
-    "description": "Open the sidebar"
-  },
-  "parent_into_child": {
-    "title": "I'm My Own Grandpa",
-    "description": "Attempt to move a folder into its own subfolder"
-  },
-  "preview_image": {
-    "title": "The Oracle",
-    "description": "Preview an image"
-  },
-  "rename_file": {
-    "title": "The Rename-aissance",
-    "description": "Rename a file or folder"
-  },
-  "resize_sidebar": {
-    "title": "Resize Me Like One of Your French Sidebars",
-    "description": "Resize the sidebar"
-  },
-  "upload_file": {
-    "title": "Let There Be Bytes",
-    "description": "Upload a file"
-  },
-  "zoom_into_preview": {
-    "title": "Enhance!",
-    "description": "Zoom into a previewed image"
-  },
-  "mass_select": {
-    "title": "You're ALL My Favorite",
-    "description": "Use the column header checkbox to select all files in the current directory at once"
-  },
-  "select_file": {
-    "title": "Random File, I Choose You!",
-    "description": "Use the checkbox to select one file or folder"
+    "description": "Collapse the sidebar",
+    "title": "Sidebar? We Don't Need No Stinkin' Sidebar!"
   },
   "collapse_sidebar_by_dragging": {
-    "title": "Collapse Sidebar by Dragging",
-    "description": "Collapse the sidebar by dragging the resize handle until it snaps closed"
+    "description": "Collapse the sidebar by dragging the resize handle until it snaps closed",
+    "title": "Collapse Sidebar by Dragging"
+  },
+  "context_menu": {
+    "description": "Open the file context menu",
+    "title": "In Context"
+  },
+  "create_folder": {
+    "description": "Create a folder",
+    "title": "Folder? I Hardly Know 'er!"
+  },
+  "delete_file": {
+    "description": "Delete a file or folder",
+    "title": "It's Not Me, It's You"
+  },
+  "download_file": {
+    "description": "Download a file",
+    "title": "I'll Be Taking That Now"
+  },
+  "duplicate_file": {
+    "description": "Duplicate a file",
+    "title": "Dupliciticitous"
+  },
+  "duplicate_folder": {
+    "description": "Duplicate a folder",
+    "title": "Duplicate Folder"
+  },
+  "expand_all": {
+    "description": "Click the \"Expand All\" button in the sidebar",
+    "title": "To Infinity & Beyond"
+  },
+  "expand_folder": {
+    "description": "Expand a folder in the sidebar",
+    "title": "Is That a Folder in Your Sidebar or Are You Just Happy to See Me?"
+  },
+  "file_into_file": {
+    "description": "Attempt to move a folder or file into a file",
+    "title": "Hey, I Don't Work Here"
+  },
+  "filename_conflict": {
+    "description": "Attempt to name a file the same name as another file",
+    "title": "I'm Spartacus! (1)"
+  },
+  "find_in_search": {
+    "description": "Open a file after finding it in search",
+    "title": "There You Are!"
+  },
+  "folder_into_folder": {
+    "description": "Move a folder into a folder",
+    "title": "Inception"
+  },
+  "mass_delete": {
+    "description": "Delete 5 or more files or folders at once",
+    "title": "The Marie Condo"
+  },
+  "mass_select": {
+    "description": "Select all files in the current directory at once using the header checkbox",
+    "title": "You're ALL My Favorite"
+  },
+  "mass_undelete": {
+    "description": "Undelete 5 or more files or folders at once",
+    "title": "The Marie Condon't"
+  },
+  "navigation_depth": {
+    "description": "Navigate to a folder 7 levels deep",
+    "title": "We Need to Go Deeper"
+  },
+  "nested_delete": {
+    "description": "Delete a folder with a file in it",
+    "title": "Baby with the Bathwater"
+  },
+  "open_sidebar": {
+    "description": "Unhide the sidebar",
+    "title": "Show Me the Sidebar!"
+  },
+  "parent_into_child": {
+    "description": "Attempt to move a folder into its own subfolder",
+    "title": "I'm My Own Grandpa"
+  },
+  "preview_image": {
+    "description": "Preview an image",
+    "title": "The Oracle"
+  },
+  "rename_file": {
+    "description": "Rename a file or folder",
+    "title": "The Rename-aissance"
+  },
+  "resize_sidebar": {
+    "description": "Resize the sidebar",
+    "title": "Resize Me Like One of Your French Sidebars"
+  },
+  "select_file": {
+    "description": "Use the checkbox to select one file or folder",
+    "title": "Random File, I Choose You!"
   },
   "sidebar_pixel_perfect": {
-    "title": "It's Not a Bug, It's an Achievement",
-    "description": "Drop the sidebar resize handle perfectly balanced between open and closed"
+    "description": "Drop the sidebar resize handle perfectly balanced between open and closed",
+    "title": "It's Not a Bug, It's an Achievement!"
+  },
+  "upload_file": {
+    "description": "Upload a file",
+    "title": "Let There Be Bytes"
+  },
+  "upload_folder": {
+    "description": "Lol you have no idea how hard this was",
+    "title": "Upload Folder"
+  },
+  "zoom_into_preview": {
+    "description": "Zoom into a previewed image",
+    "title": "Enhance!"
   }
 }
