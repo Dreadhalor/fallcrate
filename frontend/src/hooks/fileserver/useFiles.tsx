@@ -21,6 +21,7 @@ export const useFiles = () => {
     };
   }, [uid]);
 
+  // I don't think this actually writes state anymore so fix that
   useEffect(() => {
     clearSelfParents(files);
     resetOrphanBranches(files);

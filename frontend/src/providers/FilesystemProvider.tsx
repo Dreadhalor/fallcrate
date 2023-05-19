@@ -8,7 +8,6 @@ import React, {
 import {
   checkDirectoryForNameConflict,
   checkFilesForNameConflict,
-  checkForCircularBranch,
   checkForCircularReference,
   getNestedFiles,
   getUnionFileDeleteTreeIDs,
@@ -16,15 +15,15 @@ import {
   parseFileArray,
   sortFiles,
 } from '@src/helpers';
-import { useDB } from '@src/hooks/useDB';
-import { useStorage } from '@src/hooks/useStorage';
+import { useDB } from '@hooks/useDB';
+import { useStorage } from '@hooks/useStorage';
+import { useFiles } from '@hooks/fileserver/useFiles';
 import { CustomFile, CustomFileFields, CustomUploadFields } from '@src/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useAchievements, useAuth } from 'milestone-components';
 import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
-import JSZip from 'jszip';
-import { useFiles } from '@src/hooks/fileserver/useFiles';
+import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -72,6 +71,7 @@ type Props = {
 export const FilesystemProvider = ({ children }: Props) => {
   const { files } = useFiles();
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
+  const { downloadFilesOrFolders } = useDownloadFilesOrFolders(currentDirectory);
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<
     CustomFile[]
   >([]);
@@ -107,28 +107,6 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
   const getFile = (file_id: string) =>
     files.find((file) => file.id === file_id) ?? null;
-
-
-  const resetOrphanBranches = (files: CustomFile[]) => {
-    files.forEach((file) => {
-      if (file.parent === null) return;
-      if (!files.find((candidate) => candidate.id === file.parent)) {
-        console.log('relocating orphaned file:', file);
-        moveFiles([file.id], null, false);
-      }
-    });
-    return files;
-  };
-  const resetCircularBranches = (files: CustomFile[]) => {
-    files.forEach((file) => {
-      const branch = checkForCircularBranch(file.id, files);
-      if (branch.length > 0) {
-        console.log('relocating circular branch:', branch);
-        moveFiles(branch, null, false);
-      }
-    });
-    return files;
-  };
 
   // Directory and file management functions
   const openDirectory = (directory_id: string | null) => {
@@ -376,111 +354,6 @@ export const FilesystemProvider = ({ children }: Props) => {
       uploadFolder(parsedFiles);
     };
     input.click();
-  };
-
-  const addFileToZip = async (file: CustomFile, parentZip: JSZip) => {
-    const url = await storage.getDownloadURL(`uploads/${file.id}`);
-    const response = await fetch(url);
-    const blob = await response.blob();
-    parentZip.file(file.name, blob);
-  };
-
-  const addDirectoryToZip = async (directory: CustomFile, parentZip: JSZip) => {
-    const subZip = parentZip.folder(directory.name) as JSZip; // it won't be null because we're creating it
-    const subFiles = files.filter((file) => file.parent === directory.id);
-    for (const file of subFiles) {
-      if (file.type === 'file') {
-        await addFileToZip(file, subZip);
-      } else if (file.type === 'directory') {
-        await addDirectoryToZip(file, subZip);
-      }
-    }
-  };
-  const downloadFilesOrFolders = async (file_ids: string[]) => {
-    if (file_ids.length === 1) {
-      const fileBlob = await downloadFileOrFolder(file_ids[0]);
-      const fileOrFolder = files.find((file) => file.id === file_ids[0]);
-
-      if (fileBlob && fileOrFolder) {
-        const blobUrl = URL.createObjectURL(fileBlob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = `${fileOrFolder.name}${fileOrFolder.type === 'file' ? '' : '.zip'}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      }
-    } else {
-      const zip = new JSZip();
-
-      for (const file_id of file_ids) {
-        const fileOrFolder = files.find((file) => file.id === file_id);
-        if (fileOrFolder?.type === 'file') {
-          const fileBlob = await downloadFileOrFolder(file_id);
-          if (fileBlob) {
-            zip.file(fileOrFolder.name, fileBlob);
-          }
-        } else if (fileOrFolder?.type === 'directory') {
-          await addDirectoryToZip(fileOrFolder, zip);
-        }
-      }
-
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-
-      const blobUrl = URL.createObjectURL(zipBlob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      const currentDirectoryName = files.find((file) => file.id === currentDirectory)?.name ?? 'Fallcrate';
-      a.download = `${currentDirectoryName}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-    }
-  };
-
-  const downloadFileOrFolder = async (file_id: string) => {
-    const file = files.find((file) => file.id === file_id);
-    if (file?.type !== 'file') return downloadDirectory(file_id, true);
-
-    const url = await storage.getDownloadURL(`uploads/${file_id}`);
-
-    const response = await fetch(url);
-    const blob = await response.blob();
-
-    unlockAchievementById('download_file');
-
-    return blob;
-  };
-  const downloadDirectory = async (directory_id: string, returnZipBlob = false) => {
-    const directory = files.find((file) => file.id === directory_id);
-    if (directory?.type !== 'directory') return;
-
-    const zip = new JSZip();
-
-    await addDirectoryToZip(directory, zip);
-
-    const is_all_folders = Object.values(zip.files).every((file) => file.dir);
-
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-
-    if (returnZipBlob) {
-      return zipBlob;
-    } else {
-      const blobUrl = URL.createObjectURL(zipBlob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = `${directory.name}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-      if (is_all_folders) unlockAchievementById('all_folders');
-      unlockAchievementById('download_folder');
-    }
   };
 
   const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
