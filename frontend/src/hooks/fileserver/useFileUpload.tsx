@@ -54,8 +54,6 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     const folder = files[0];
     folder.parent = currentDirectory ?? null;
     // sanitize the folder name
-    console.log('currentDirectory', currentDirectory)
-    console.log('currentDirectoryFiles', currentDirectoryFiles)
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
     files.forEach((file) => uploadCustomUploadFields(file));
     unlockAchievementById('upload_folder');
@@ -80,7 +78,6 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     input.onchange = async () => {
       if (!input.files) return;
       const files = Array.from(input.files);
-      console.log('files', files)
       const parsedFiles = parseFileArray(files);
       uploadFolder(parsedFiles);
     };
