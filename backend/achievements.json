@@ -1,6 +1,6 @@
 {
   "all_folders": {
-    "description": "Have a folder with 20 or more subfolders in it & no files",
+    "description": "Download a folder with nothing in it but more nested folders",
     "title": "Oops! All Folders"
   },
   "breadcrumb_navigation": {
@@ -30,6 +30,10 @@
   "download_file": {
     "description": "Download a file",
     "title": "I'll Be Taking That Now"
+  },
+  "download_folder": {
+    "description": "Download a folder",
+    "title": "Download Folder"
   },
   "duplicate_file": {
     "description": "Duplicate a file",

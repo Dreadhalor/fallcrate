@@ -61,7 +61,7 @@ const getFileDeleteTreeIDs = (
 ): string[] => {
   const file = files.find((file) => file.id === file_id);
   if (!file) return [];
-  return [file, ...getNestedFiles(file.id, files)].map((file) => file.id);
+  return [file, ...getNestedFilesOnly(file.id, files)].map((file) => file.id);
 };
 export const getUnionFileDeleteTreeIDs = (
   file_ids: string[],
@@ -73,14 +73,42 @@ export const getUnionFileDeleteTreeIDs = (
   return [...new Set(list)]; // shouldn't need to do this but just in case
 };
 
-export const getNestedFiles = (
+function deduplicateByProperty(array: CustomFileFields[], property: keyof CustomFileFields) {
+  const seen = new Set();
+  return array.filter(item => {
+    const value = item[property];
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    return true;
+  });
+}
+const getFileTree = (
+  file_id: string,
+  files: CustomFile[]
+): CustomFileFields[] => {
+  const file = files.find((file) => file.id === file_id);
+  if (!file) return [];
+  return [file, ...getNestedFilesOnly(file.id, files)];
+};
+export const getUnionFileTree = (
+  file_ids: string[],
+  files: CustomFile[]
+): CustomFileFields[] => {
+  const list = file_ids.flatMap((file_id) => getFileTree(file_id, files));
+  const result = deduplicateByProperty(list, 'id');
+  return result;
+};
+
+export const getNestedFilesOnly = (
   file_id: string | null,
   files: CustomFileFields[]
 ): CustomFileFields[] => {
   const nestedFiles = files.filter((file) => file.parent === file_id);
   return nestedFiles.flatMap((file) => [
     file,
-    ...getNestedFiles(file.id, files),
+    ...getNestedFilesOnly(file.id, files),
   ]);
 };
 
@@ -162,7 +190,7 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   );
   for (const directory of directories) {
     orderedFiles.push(directory);
-    const nestedFiles = getNestedFiles(directory.id, filesWithoutDirectories);
+    const nestedFiles = getNestedFilesOnly(directory.id, filesWithoutDirectories);
     orderedFiles.push(...nestedFiles);
   }
   return orderedFiles;

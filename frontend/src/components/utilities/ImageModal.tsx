@@ -77,7 +77,10 @@ const ImageModal = () => {
   useEffect(() => {
     if (open)
       window.addEventListener('resize', updateDimensions);
-    else window.removeEventListener('resize', updateDimensions);
+    else {
+      window.removeEventListener('resize', updateDimensions);
+      setIsLoading(true);
+    }
 
     return () => {
       window.removeEventListener('resize', updateDimensions);

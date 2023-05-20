@@ -3,11 +3,34 @@ import { CustomFile } from "@src/types";
 import JSZip from "jszip";
 import { useFiles } from "./useFiles";
 import { useAchievements } from "milestone-components";
+import { getUnionFileTree } from "@src/helpers";
 
 export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
   const storage = useStorage();
   const { files } = useFiles();
-  const { unlockAchievementById } = useAchievements();
+  const { unlockAchievementById, isUnlockable } = useAchievements();
+
+  const startDownload = async (fileBlob: Blob, filename: string) => {
+    const blobUrl = URL.createObjectURL(fileBlob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  }
+  const unlockAchievements = (file_ids: string[]) => {
+    const tree = getUnionFileTree(file_ids, files);
+    if (isUnlockable('download_file') && tree.some(file => file.type === 'file'))
+      unlockAchievementById('download_file');
+    if (isUnlockable('download_folder') && tree.some(file => file.type === 'directory'))
+      unlockAchievementById('download_folder');
+    if (isUnlockable('download_multiple_items') && file_ids.length > 1)
+      unlockAchievementById('download_multiple_items');
+    if (isUnlockable('all_folders') && tree.length > 1 && tree.every(file => file.type === 'directory'))
+      unlockAchievementById('all_folders');
+  }
 
   const addFileToZip = async (file: CustomFile, parentZip: JSZip) => {
     const url = await storage.getDownloadURL(`uploads/${file.id}`);
@@ -17,8 +40,9 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
   };
 
   const addDirectoryToZip = async (directory: CustomFile, parentZip: JSZip) => {
-    const subZip = parentZip.folder(directory.name) as JSZip; // it won't be null because we're creating it
+    const subZip = parentZip.folder(directory.name) as JSZip;
     const subFiles = files.filter((file) => file.parent === directory.id);
+
     for (const file of subFiles) {
       if (file.type === 'file') {
         await addFileToZip(file, subZip);
@@ -28,19 +52,14 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
     }
   };
   const downloadFilesOrFolders = async (file_ids: string[]) => {
+    unlockAchievements(file_ids);
     if (file_ids.length === 1) {
       const fileBlob = await downloadFileOrFolder(file_ids[0]);
       const fileOrFolder = files.find((file) => file.id === file_ids[0]);
 
       if (fileBlob && fileOrFolder) {
-        const blobUrl = URL.createObjectURL(fileBlob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = `${fileOrFolder.name}${fileOrFolder.type === 'file' ? '' : '.zip'}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
+        const filename = `${fileOrFolder.name}${fileOrFolder.type === 'file' ? '' : '.zip'}`;
+        startDownload(fileBlob, filename);
       }
     } else {
       const zip = new JSZip();
@@ -58,17 +77,9 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
-
-      const blobUrl = URL.createObjectURL(zipBlob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
       const currentDirectoryName = files.find((file) => file.id === currentDirectory)?.name ?? 'Fallcrate';
-      a.download = `${currentDirectoryName}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
+      const filename = `${currentDirectoryName}.zip`;
+      startDownload(zipBlob, filename);
     }
   };
 
@@ -81,8 +92,6 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
     const response = await fetch(url);
     const blob = await response.blob();
 
-    unlockAchievementById('download_file');
-
     return blob;
   };
   const downloadDirectory = async (directory_id: string, returnZipBlob = false) => {
@@ -93,24 +102,13 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
 
     await addDirectoryToZip(directory, zip);
 
-    const is_all_folders = Object.values(zip.files).every((file) => file.dir);
-
     const zipBlob = await zip.generateAsync({ type: 'blob' });
 
     if (returnZipBlob) {
       return zipBlob;
     } else {
-      const blobUrl = URL.createObjectURL(zipBlob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = `${directory.name}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-      if (is_all_folders) unlockAchievementById('all_folders');
-      unlockAchievementById('download_folder');
+      const filename = `${directory.name}.zip`;
+      startDownload(zipBlob, filename);
     }
   };
 

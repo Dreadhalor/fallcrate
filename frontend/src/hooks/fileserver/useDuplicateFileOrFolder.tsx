@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getValidDuplicatedName } from './helpers';
 import { useAchievements, useAuth } from 'milestone-components';
 import { useDB } from '@hooks/useDB';
-import { getNestedFiles, orderFilesByDirectory } from '@src/helpers';
+import { getNestedFilesOnly, orderFilesByDirectory } from '@src/helpers';
 import { useFiles } from './useFiles';
 
 export const useDuplicateFileOrFolder = () => {
@@ -71,7 +71,7 @@ export const useDuplicateFileOrFolder = () => {
     const duplication_map = new Map<string, CustomFileFields>();
     const reverse_duplication_map = new Map<string, CustomFileFields>();
 
-    const nestedFiles = getNestedFiles(folder.id, files);
+    const nestedFiles = getNestedFilesOnly(folder.id, files);
 
     // Added the new folder as an entry in the duplication map
     const initial_folder = { ...folder, id: uuidv4(), name: new_name };

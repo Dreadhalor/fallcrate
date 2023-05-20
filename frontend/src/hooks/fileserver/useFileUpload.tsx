@@ -26,7 +26,7 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     await db.createFile(fields);
   }
 
-  const uploadFile = async (file: File) => {
+  const uploadFileOrFolder = async (file: File) => {
     // Generate a unique id for the file
     const id = uuidv4();
 
@@ -37,7 +37,7 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     // Create a file entry in the database
     const newFile: CustomFileFields = {
       id,
-      name: file.name,
+      name: getValidDuplicatedName(file.name, currentDirectoryFiles),
       type: 'file',
       size: file.size,
       parent: currentDirectory ?? null,
@@ -55,37 +55,40 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     folder.parent = currentDirectory ?? null;
     // sanitize the folder name
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
-    files.forEach((file) => uploadCustomUploadFields(file));
+    const uploadPromises = files.map((file) => uploadCustomUploadFields(file));
+    await Promise.all(uploadPromises);
     unlockAchievementById('upload_folder');
   };
 
-  const promptUploadFiles = () => {
+  const promptUpload = (isDirectory: boolean, callback: (files: File[]) => void) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.multiple = true;
+    input.webkitdirectory = isDirectory;
     input.onchange = () => {
       if (!input.files) return;
       const files = Array.from(input.files);
-      files.forEach((file) => uploadFile(file));
+      callback(files);
     };
     input.click();
+  };
+
+  const promptUploadFiles = () => {
+    promptUpload(false, (files) => {
+      const uploadPromises = files.map((file) => uploadFileOrFolder(file));
+      Promise.all(uploadPromises);
+    });
   };
 
   const promptUploadFolder = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.webkitdirectory = true;
-    input.onchange = async () => {
-      if (!input.files) return;
-      const files = Array.from(input.files);
+    promptUpload(true, (files) => {
       const parsedFiles = parseFileArray(files);
       uploadFolder(parsedFiles);
-    };
-    input.click();
+    });
   };
 
   return {
-    uploadFile,
+    uploadFile: uploadFileOrFolder,
     promptUploadFiles,
     promptUploadFolder,
   };

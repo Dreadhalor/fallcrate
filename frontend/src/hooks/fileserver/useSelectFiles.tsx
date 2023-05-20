@@ -1,4 +1,4 @@
-import { getNestedFiles } from "@src/helpers";
+import { getNestedFilesOnly } from "@src/helpers";
 import { CustomFile } from "@src/types";
 import { useAchievements } from "milestone-components";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -50,7 +50,7 @@ export const useSelectFiles = (currentDirectory: string | null, currentDirectory
   const getNestedSelectedFiles = () => {
     const nestedFiles = new Set<string>();
     selectedFiles.map((file_id) =>
-      getNestedFiles(file_id, files).forEach((file) => nestedFiles.add(file.id))
+      getNestedFilesOnly(file_id, files).forEach((file) => nestedFiles.add(file.id))
     );
     return Array.from(nestedFiles);
   };
