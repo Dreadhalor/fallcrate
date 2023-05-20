@@ -49,7 +49,6 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     const uploadPromises = files.map((file) => uploadCustomUploadFields(file));
     await Promise.all(uploadPromises);
     unlockAchievementById('upload_folder');
-    console.log('folder', folder)
     return Promise.resolve([folder.id]);
   };
 
