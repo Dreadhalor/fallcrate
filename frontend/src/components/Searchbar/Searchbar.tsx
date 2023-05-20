@@ -17,7 +17,7 @@ const Searchbar = () => {
     getParent,
     openFile,
     openDirectory,
-    selectFileExclusively,
+    selectFilesExclusively,
   } = useFilesystem();
   const { unlockAchievementById } = useAchievements();
   const formRef = useRef<FormInstance>(null);
@@ -29,7 +29,7 @@ const Searchbar = () => {
     if (file.type === 'directory') openFile(value);
     else {
       openDirectory(getParent(file)?.id ?? null);
-      selectFileExclusively(file.id, true);
+      selectFilesExclusively([file.id], true);
       openFile(file.id);
       unlockAchievementById('find_in_search');
     }

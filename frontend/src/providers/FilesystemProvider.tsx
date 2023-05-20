@@ -32,12 +32,12 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { unlockAchievementById, isUnlockable } = useAchievements();
   // why did I need to make a context for imageModal shenanigans again??
   const { openImageModal } = useImageModal();
-  const { uploadFileOrFolder, promptUploadFiles, promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
+  const { uploadFileOrFolder: _uploadFileOrFolder, promptUploadFiles: _promptUploadFiles, promptUploadFolder: _promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const { selectedFiles,
     nestedSelectedFiles,
     selectFile,
-    selectFileExclusively,
+    selectFilesExclusively,
     massToggleSelectFiles,
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
 
@@ -191,6 +191,31 @@ export const FilesystemProvider = ({ children }: Props) => {
     }
   };
 
+  const uploadFileOrFolder = async (file: File) => {
+    return _uploadFileOrFolder(file).then((uploaded_id) => {
+      if (uploaded_id) {
+        selectFilesExclusively([uploaded_id]);
+      };
+      return uploaded_id;
+    });
+  };
+  const promptUploadFiles = async () => {
+    return _promptUploadFiles().then((uploaded_ids) => {
+      if (uploaded_ids.length > 0) {
+        selectFilesExclusively(uploaded_ids);
+      };
+      return uploaded_ids;
+    });
+  };
+  const promptUploadFolder = async () => {
+    return _promptUploadFolder().then((uploaded_id_but_as_an_array_of_one) => {
+      if (uploaded_id_but_as_an_array_of_one) {
+        selectFilesExclusively(uploaded_id_but_as_an_array_of_one);
+      };
+      return uploaded_id_but_as_an_array_of_one;
+    });
+  };
+
   return (
     <FilesystemContext.Provider
       value={{
@@ -200,7 +225,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         currentDirectoryFiles,
         openDirectory,
         selectFile,
-        selectFileExclusively,
+        selectFilesExclusively,
         massToggleSelectFiles,
         openFile,
         createFolder,
@@ -208,7 +233,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptNewFolder,
         promptRenameFile,
         moveFiles,
-        uploadFile: uploadFileOrFolder,
+        uploadFileOrFolder,
         promptUploadFiles,
         promptUploadFolder,
         openImageModal,

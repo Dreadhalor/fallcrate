@@ -42,11 +42,9 @@ export const useSelectFiles = (currentDirectory: string | null, currentDirectory
   };
 
   // doesn't trigger the achievement for selecting a file - this is intentional
-  const selectFileExclusively = (file_id: string, overrideDirectoryRestriction = false) => {
-    // if the currentDirectoryFiles does not include the file_id, bail
-    if (!overrideDirectoryRestriction && !currentDirectoryFiles.find((file) => file.id === file_id)) return;
-    setSelectedFiles([file_id]);
-  };
+  const selectFilesExclusively = (file_ids: string[]) =>
+    setSelectedFiles(file_ids);
+
   const getNestedSelectedFiles = () => {
     const nestedFiles = new Set<string>();
     selectedFiles.map((file_id) =>
@@ -66,7 +64,7 @@ export const useSelectFiles = (currentDirectory: string | null, currentDirectory
     selectedFiles,
     nestedSelectedFiles,
     selectFile,
-    selectFileExclusively,
+    selectFilesExclusively,
     getNestedSelectedFiles,
     massToggleSelectFiles,
   };

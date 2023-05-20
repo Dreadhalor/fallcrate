@@ -13,28 +13,21 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
   const db = useDB(uid);
   const storage = useStorage();
 
-  const uploadCustomUploadFields = async (fields: CustomUploadFields) => {
-    // Generate a unique id for the file
+  const uploadCustomUploadFields = async (fields: CustomUploadFields): Promise<string> => {
     const { id, file } = fields;
-
-    // If not a folder, upload the file to storage
-    if (fields.type === 'file' && file) { // redundant but Typescript doesn't know that
+    if (fields.type === 'file' && file) {
       const path = `uploads/${id}`;
       await storage.uploadFile(file, path);
     }
-
     await db.createFile(fields);
+    return id;
   }
 
-  const uploadFileOrFolder = async (file: File) => {
-    // Generate a unique id for the file
+  const uploadFileOrFolder = async (file: File): Promise<string> => {
     const id = uuidv4();
-
-    // Upload the file to storage
     const path = `uploads/${id}`;
     await storage.uploadFile(file, path);
 
-    // Create a file entry in the database
     const newFile: CustomFileFields = {
       id,
       name: getValidDuplicatedName(file.name, currentDirectoryFiles),
@@ -44,46 +37,62 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
       createdAt: Timestamp.now(),
     };
 
-    await db
-      .createFile(newFile)
-      .then((_) => unlockAchievementById('upload_file'));
+    await db.createFile(newFile);
+    unlockAchievementById('upload_file');
+    return id;
   };
 
-  const uploadFolder = async (files: CustomUploadFields[]) => {
-    // we assume that the folder is the first file in the array
+  const uploadFolder = async (files: CustomUploadFields[]): Promise<string[]> => {
     const folder = files[0];
     folder.parent = currentDirectory ?? null;
-    // sanitize the folder name
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
     const uploadPromises = files.map((file) => uploadCustomUploadFields(file));
     await Promise.all(uploadPromises);
     unlockAchievementById('upload_folder');
+    console.log('folder', folder)
+    return Promise.resolve([folder.id]);
   };
 
-  const promptUpload = (isDirectory: boolean, callback: (files: File[]) => void) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.webkitdirectory = isDirectory;
-    input.onchange = () => {
-      if (!input.files) return;
-      const files = Array.from(input.files);
-      callback(files);
-    };
-    input.click();
-  };
-
-  const promptUploadFiles = () => {
-    promptUpload(false, (files) => {
-      const uploadPromises = files.map((file) => uploadFileOrFolder(file));
-      Promise.all(uploadPromises);
+  const promptUpload = (isDirectory: boolean, callback: (files: File[]) => Promise<string[]>): Promise<string[]> => {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.multiple = true;
+      input.webkitdirectory = isDirectory;
+      input.onchange = async () => {
+        if (!input.files) {
+          resolve([]);
+        } else {
+          try {
+            const files = Array.from(input.files);
+            const result = await callback(files);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        }
+      };
+      input.onerror = (error) => {
+        reject(error);
+      };
+      input.click();
     });
   };
 
-  const promptUploadFolder = () => {
-    promptUpload(true, (files) => {
+
+  const promptUploadFiles = (): Promise<string[]> => {
+    return promptUpload(false, async (files) => {
+      const uploadPromises = files.map((file) => uploadFileOrFolder(file));
+      const ids = await Promise.all(uploadPromises);
+      return ids;
+    });
+  };
+
+  const promptUploadFolder = (): Promise<string[]> => {
+    return promptUpload(true, async (files) => {
       const parsedFiles = parseFileArray(files);
-      uploadFolder(parsedFiles);
+      const ids = await uploadFolder(parsedFiles);
+      return ids;
     });
   };
 

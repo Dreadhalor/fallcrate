@@ -38,8 +38,7 @@ type Props = {
 
 export const ContextMenuProvider = ({ children }: Props) => {
   const {
-
-    selectFileExclusively,
+    selectFilesExclusively,
     promptRenameFile,
     deleteFiles,
     duplicateFileOrFolder,
@@ -56,7 +55,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     file: CustomFile,
     selectFile = false // this isn't used anymore but let's keep it in case I wanna use it later
   ) => {
-    if (selectFile) selectFileExclusively(file.id);
+    if (selectFile) selectFilesExclusively([file.id]);
     unlockAchievementById('context_menu');
     show({
       event,
