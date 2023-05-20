@@ -88,7 +88,7 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
   };
 
   return {
-    uploadFile: uploadFileOrFolder,
+    uploadFileOrFolder,
     promptUploadFiles,
     promptUploadFolder,
   };

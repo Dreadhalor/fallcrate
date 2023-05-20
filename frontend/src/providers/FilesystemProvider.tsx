@@ -32,7 +32,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { unlockAchievementById, isUnlockable } = useAchievements();
   // why did I need to make a context for imageModal shenanigans again??
   const { openImageModal } = useImageModal();
-  const { uploadFile, promptUploadFiles, promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
+  const { uploadFileOrFolder, promptUploadFiles, promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const { selectedFiles,
     nestedSelectedFiles,
@@ -208,7 +208,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptNewFolder,
         promptRenameFile,
         moveFiles,
-        uploadFile,
+        uploadFile: uploadFileOrFolder,
         promptUploadFiles,
         promptUploadFolder,
         openImageModal,
