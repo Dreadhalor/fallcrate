@@ -1,6 +1,4 @@
-import React, {
-  useEffect,
-} from 'react';
+import React from 'react';
 import {
   checkDirectoryForNameConflict,
   checkForCircularReference,
@@ -42,10 +40,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     selectFileExclusively,
     massToggleSelectFiles,
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
-
-  useEffect(() => {
-    openDirectory(currentDirectory);
-  }, [files]);
 
   // Helper functions
   const handleOperationError = (text: string) => {
