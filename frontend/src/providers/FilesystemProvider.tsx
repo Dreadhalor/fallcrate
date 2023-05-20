@@ -1,12 +1,9 @@
 import React, {
   useEffect,
-  useLayoutEffect,
-  useState,
 } from 'react';
 import {
   checkDirectoryForNameConflict,
   checkForCircularReference,
-  getNestedFiles,
   getUnionFileDeleteTreeIDs,
 } from '@src/helpers';
 import { useDB } from '@hooks/useDB';
@@ -21,16 +18,13 @@ import { FilesystemContext } from '@src/contexts/FileSystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
 import { useFileUpload } from '@hooks/fileserver/useFileUpload';
+import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
 
 type Props = {
   children: React.ReactNode;
 };
 
 export const FilesystemProvider = ({ children }: Props) => {
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-  const [nestedSelectedFiles, setNestedSelectedFiles] = useState<string[]>([]);
-
-
   const { uid } = useAuth();
   const db = useDB(uid);
   const storage = useStorage();
@@ -42,6 +36,12 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { openImageModal } = useImageModal();
   const { uploadFile, promptUploadFiles, promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
+  const { selectedFiles,
+    nestedSelectedFiles,
+    selectFile,
+    selectFileExclusively,
+    massToggleSelectFiles,
+  } = useSelectFiles(currentDirectory, currentDirectoryFiles);
 
   useEffect(() => {
     openDirectory(currentDirectory);
@@ -58,51 +58,6 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
   const getFile = (file_id: string) =>
     files.find((file) => file.id === file_id) ?? null;
-
-  useEffect(() => {
-    // reset selectedFiles if the currentDirectory changes
-    // but not if we're in the middle of hopping to the directory of a file we're selecting
-    setSelectedFiles((prev) => prev.filter((file_id) => currentDirectoryFiles.find((file) => file.id === file_id)));
-  }, [currentDirectory]);
-
-
-  const selectFile = (file_id: string) => {
-    // if the currentDirectoryFiles does not include the file_id, bail
-    if (!currentDirectoryFiles.find((file) => file.id === file_id)) return;
-    setSelectedFiles((prev) => {
-      if (prev.includes(file_id))
-        return prev.filter((candidate_id) => candidate_id !== file_id);
-      else {
-        unlockAchievementById('select_file');
-        return [...prev, file_id];
-      }
-    });
-  };
-  // doesn't trigger the achievement for selecting a file - this is intentional
-  const selectFileExclusively = (file_id: string, overrideDirectoryRestriction = false) => {
-    // if the currentDirectoryFiles does not include the file_id, bail
-    if (!overrideDirectoryRestriction && !currentDirectoryFiles.find((file) => file.id === file_id)) return;
-    setSelectedFiles([file_id]);
-  };
-  const getNestedSelectedFiles = () => {
-    const nestedFiles = new Set<string>();
-    selectedFiles.map((file_id) =>
-      getNestedFiles(file_id, files).forEach((file) => nestedFiles.add(file.id))
-    );
-    return Array.from(nestedFiles);
-  };
-
-  useLayoutEffect(() => {
-    setNestedSelectedFiles(getNestedSelectedFiles());
-  }, [selectedFiles]);
-
-  const massToggleSelectFiles = () => {
-    if (selectedFiles.length > 0) setSelectedFiles([]);
-    else {
-      setSelectedFiles(currentDirectoryFiles.map((file) => file.id));
-      unlockAchievementById('mass_select');
-    }
-  };
 
   const openFile = (file_id?: string) => {
     if (!file_id) return;
@@ -139,7 +94,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     //get the blob ids before deleting the files from the database
     const blob_ids = filterBlobStorageIds(files, delete_tree);
     // optimistically remove the files from the selected files array to avoid an awkward delay
-    setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
+    // setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
     const deleted_ids = await db.deleteFiles(delete_tree);
     // only delete the files from storage if they were successfully deleted from the database
     await storage
@@ -225,11 +180,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         return;
       }
 
-      db.moveFile(file_id, parent_id).then((data) => {
-        // if the file was moved to a different directory, deselect it
-        if (parent_id !== currentDirectory)
-          setSelectedFiles((prev) => prev.filter((id) => id !== file_id));
-        if (achievementsEnabled && parent_id)
+      db.moveFile(file_id, parent_id).then((file) => {
+        if (achievementsEnabled && parent_id && file.type === 'directory')
           unlockAchievementById('folder_into_folder');
       });
     });
