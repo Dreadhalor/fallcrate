@@ -42,7 +42,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     selectFileExclusively,
     promptRenameFile,
     deleteFiles,
-    duplicateFile,
+    duplicateFileOrFolder,
   } = useFilesystem();
   const { open } = useImageModal();
   const { unlockAchievementById } = useAchievements();
@@ -74,7 +74,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
       return;
     }
     if (id === 'rename') promptRenameFile(file.id);
-    if (id === 'duplicate') duplicateFile(file.id);
+    if (id === 'duplicate') duplicateFileOrFolder(file.id);
     if (id === 'delete') deleteFiles([file.id]);
   }
 

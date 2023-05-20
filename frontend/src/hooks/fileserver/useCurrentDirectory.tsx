@@ -3,10 +3,14 @@ import { CustomFile } from '@src/types';
 import { useState, useEffect } from 'react';
 import { useFiles } from './useFiles';
 
+// okay pretty sure the only reason stuff like this is kosher as a hook instead of a context is because it's
+// only instantiated once thru FilesystemProvider & then that instance is passed to every other component that needs it
 export const useCurrentDirectory = () => {
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null);
   const [currentDirectoryFiles, setCurrentDirectoryFiles] = useState<CustomFile[]>([]);
 
+  // which also means useFiles is dangerous but since all instances use Firestore as the source of truth it's fine
+  // FOR NOW
   const { files } = useFiles();
 
   useEffect(() => {
@@ -23,9 +27,7 @@ export const useCurrentDirectory = () => {
 
   return {
     currentDirectory,
-    setCurrentDirectory,
     currentDirectoryFiles,
-    setCurrentDirectoryFiles,
     openDirectory
   }
 }

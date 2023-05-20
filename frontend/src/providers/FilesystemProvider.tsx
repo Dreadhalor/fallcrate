@@ -5,25 +5,22 @@ import React, {
 } from 'react';
 import {
   checkDirectoryForNameConflict,
-  checkFilesForNameConflict,
   checkForCircularReference,
   getNestedFiles,
   getUnionFileDeleteTreeIDs,
-  orderFilesByDirectory,
-  parseFileArray,
 } from '@src/helpers';
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { useFiles } from '@hooks/fileserver/useFiles';
-import { CustomFile, CustomFileFields, CustomUploadFields } from '@src/types';
-import { v4 as uuidv4 } from 'uuid';
+import { CustomFile } from '@src/types';
 import { useAchievements, useAuth } from 'milestone-components';
-import { Timestamp } from 'firebase/firestore';
 import { message } from 'antd';
 import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
 import { useImageModal } from '@providers/ImageModalProvider';
 import { FilesystemContext } from '@src/contexts/FileSystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
+import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
+import { useFileUpload } from '@hooks/fileserver/useFileUpload';
 
 type Props = {
   children: React.ReactNode;
@@ -41,7 +38,10 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { currentDirectory, currentDirectoryFiles, openDirectory } = useCurrentDirectory();
   const { downloadFilesOrFolders } = useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
+  // why did I need to make a context for imageModal shenanigans again??
   const { openImageModal } = useImageModal();
+  const { uploadFile, promptUploadFiles, promptUploadFolder } = useFileUpload(currentDirectory, currentDirectoryFiles);
+  const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
 
   useEffect(() => {
     openDirectory(currentDirectory);
@@ -235,173 +235,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     });
   };
 
-  const uploadCustomUploadFields = async (fields: CustomUploadFields) => {
-    // Generate a unique id for the file
-    const { id, file } = fields;
-
-    // If not a folder, upload the file to storage
-    if (fields.type === 'file' && file) { // redundant but Typescript doesn't know that
-      const path = `uploads/${id}`;
-      await storage.uploadFile(file, path);
-    }
-
-    await db.createFile(fields);
-  }
-  const uploadFile = async (file: File) => {
-    // Generate a unique id for the file
-    const id = uuidv4();
-
-    // Upload the file to storage
-    const path = `uploads/${id}`;
-    await storage.uploadFile(file, path);
-
-    // Create a file entry in the database
-    const newFile: CustomFileFields = {
-      id,
-      name: file.name,
-      type: 'file',
-      size: file.size,
-      parent: currentDirectory ?? null,
-      createdAt: Timestamp.now(),
-    };
-
-    await db
-      .createFile(newFile)
-      .then((_) => unlockAchievementById('upload_file'));
-  };
-  const promptUploadFiles = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.onchange = () => {
-      if (!input.files) return;
-      const files = Array.from(input.files);
-      files.forEach((file) => uploadFile(file));
-    };
-    input.click();
-  };
-
-  const uploadFolder = async (files: CustomUploadFields[]) => {
-    // we assume that the folder is the first file in the array
-    const folder = files[0];
-    folder.parent = currentDirectory ?? null;
-    // sanitize the folder name
-    folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
-    files.forEach((file) => uploadCustomUploadFields(file));
-    unlockAchievementById('upload_folder');
-  };
-  const promptUploadFolder = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.webkitdirectory = true;
-    input.onchange = async () => {
-      if (!input.files) return;
-      const files = Array.from(input.files);
-      const parsedFiles = parseFileArray(files);
-      uploadFolder(parsedFiles);
-    };
-    input.click();
-  };
-
-  const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
-    let new_name = name;
-    let i = 1;
-    while (checkFilesForNameConflict(new_name, files) && i < 100) {
-      // check if the name already has a number in parentheses
-      if (new_name.match(/\(\d+\)/)) {
-        // if it does, increment the number
-        new_name = new_name.replace(/\(\d+\)/, `(${i})`);
-      } else new_name = `${name} (${i})`;
-      i++;
-    }
-    return new_name;
-  };
-  const duplicateBlob = async (
-    old_file_id: string,
-    duplicated_file: CustomFile
-  ) => {
-    if (duplicated_file.type !== 'file') return;
-    const blob = await storage
-      .getDownloadURL(`uploads/${old_file_id}`)
-      .then((url) => fetch(url).then((r) => r.blob()));
-    const path = `uploads/${duplicated_file.id}`;
-    await storage.uploadBlob(blob, path);
-  };
-  const duplicateFile = async (file_id: string) => {
-    const file = files.find((file) => file.id === file_id);
-    if (!file) return;
-    const parent = file.parent;
-    const directoryFiles = files.filter((file) => file.parent === parent);
-    const new_name = getValidDuplicatedName(file.name, directoryFiles);
-    if (file.type === 'directory') {
-      duplicateFolderWithName(file, new_name);
-      unlockAchievementById('duplicate_folder');
-    } else {
-      duplicateSingleFileWithName(file, new_name);
-      unlockAchievementById('duplicate_file');
-    }
-  };
-
-  const saveDuplicatedFile = async (
-    old_id: string,
-    new_file: CustomFileFields
-  ) => {
-    if (!new_file || new_file.type !== 'file') return;
-    await db
-      .createFile(new_file)
-      .then((created_file) => duplicateBlob(old_id, created_file));
-  };
-
-  const duplicateSingleFileWithName = async (
-    file: CustomFile,
-    new_name: string
-  ) => {
-    if (!file || file.type !== 'file') return;
-    const new_file = { ...file, name: new_name, id: uuidv4() };
-    saveDuplicatedFile(file.id, new_file);
-  };
-
-  const duplicateFolderWithName = async (
-    folder: CustomFile,
-    new_name: string
-  ) => {
-    if (!folder || folder.type !== 'directory') return;
-
-    const duplication_map = new Map<string, CustomFileFields>();
-    const reverse_duplication_map = new Map<string, CustomFileFields>();
-
-    const nestedFiles = getNestedFiles(folder.id, files);
-
-    // Added the new folder as an entry in the duplication map
-    const initial_folder = { ...folder, id: uuidv4(), name: new_name };
-    duplication_map.set(folder.id, initial_folder);
-    reverse_duplication_map.set(initial_folder.id, folder);
-
-    nestedFiles.forEach((file) => {
-      const new_file = { ...file, id: uuidv4() };
-      duplication_map.set(file.id, new_file);
-      reverse_duplication_map.set(new_file.id, file);
-    });
-
-    duplication_map.forEach((file) => {
-      file.parent = duplication_map.get(file.parent || '')?.id || null;
-    });
-
-    const orderedFiles = orderFilesByDirectory(
-      Array.from(duplication_map.values())
-    );
-
-    await Promise.all(
-      orderedFiles.map((file) => {
-        if (file.type === 'directory') return db.createFile(file);
-        else {
-          const old_id = reverse_duplication_map.get(file.id)?.id;
-          return saveDuplicatedFile(old_id || '', file);
-        }
-      })
-    );
-  };
-
   const getFileUrl = async (file_id: string) => {
     const file = files.find((file) => file.id === file_id);
     if (!file) return 'https://via.placeholder.com/256';
@@ -436,7 +269,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         getParent,
         getFile,
         nestedSelectedFiles,
-        duplicateFile,
+        duplicateFileOrFolder,
         getFileUrl,
         downloadFilesOrFolders,
       }}

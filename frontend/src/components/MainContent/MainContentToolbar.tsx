@@ -45,7 +45,7 @@ const MainContentToolbar = () => {
     deleteFiles,
     promptNewFolder,
     promptRenameFile,
-    duplicateFile,
+    duplicateFileOrFolder,
     downloadFilesOrFolders,
   } = useFilesystem();
 
@@ -77,7 +77,7 @@ const MainContentToolbar = () => {
               <MainContentMenuButton
                 title='Duplicate'
                 icon={<IoDuplicate size={18} />}
-                onClick={() => duplicateFile(selectedFiles[0])}
+                onClick={() => duplicateFileOrFolder(selectedFiles[0])}
               />
             </>
           )}

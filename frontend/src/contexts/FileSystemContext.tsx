@@ -23,7 +23,7 @@ interface FilesystemContextValue {
   getParent: (file: CustomFile) => CustomFile | null;
   getFile: (file_id: string) => CustomFile | null;
   nestedSelectedFiles: string[];
-  duplicateFile: (file_id: string) => Promise<void>;
+  duplicateFileOrFolder: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
 }

@@ -1,3 +1,4 @@
+import { checkFilesForNameConflict } from "@src/helpers";
 import { CustomFile } from "@src/types";
 
 export const clearSelfParents = (files: CustomFile[]) => {
@@ -51,4 +52,18 @@ const checkForCircularBranch = (
     }
   }
   return [];
+};
+
+export const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
+  let new_name = name;
+  let i = 1;
+  while (checkFilesForNameConflict(new_name, files) && i < 100) {
+    // check if the name already has a number in parentheses
+    if (new_name.match(/\(\d+\)/)) {
+      // if it does, increment the number
+      new_name = new_name.replace(/\(\d+\)/, `(${i})`);
+    } else new_name = `${name} (${i})`;
+    i++;
+  }
+  return new_name;
 };
