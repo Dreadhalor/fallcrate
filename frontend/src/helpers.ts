@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFile, CustomFileFields, CustomUploadFields } from './types';
+import { CustomFile, CustomFileFields, FileUploadData } from './types';
 import { Timestamp } from 'firebase/firestore';
 
 export const buildNewFolder = ({
@@ -73,9 +73,12 @@ export const getUnionFileDeleteTreeIDs = (
   return [...new Set(list)]; // shouldn't need to do this but just in case
 };
 
-function deduplicateByProperty(array: CustomFileFields[], property: keyof CustomFileFields) {
+function deduplicateByProperty(
+  array: CustomFileFields[],
+  property: keyof CustomFileFields
+) {
   const seen = new Set();
-  return array.filter(item => {
+  return array.filter((item) => {
     const value = item[property];
     if (seen.has(value)) {
       return false;
@@ -190,17 +193,18 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   );
   for (const directory of directories) {
     orderedFiles.push(directory);
-    const nestedFiles = getNestedFilesOnly(directory.id, filesWithoutDirectories);
+    const nestedFiles = getNestedFilesOnly(
+      directory.id,
+      filesWithoutDirectories
+    );
     orderedFiles.push(...nestedFiles);
   }
   return orderedFiles;
 };
 
-
-
-export function parseFileArray(files: File[]): CustomUploadFields[] {
-  const parsed_files: CustomUploadFields[] = [];
-  const fileMap: { [key: string]: CustomUploadFields } = {};
+export function parseFileArray(files: File[]): FileUploadData[] {
+  const parsed_files: FileUploadData[] = [];
+  const fileMap: { [key: string]: FileUploadData } = {};
 
   for (const file of files) {
     // Split the path into segments
@@ -217,14 +221,14 @@ export function parseFileArray(files: File[]): CustomUploadFields[] {
         // Generate a UUID for the item
         const id = uuidv4();
 
-        const file_fields: CustomUploadFields = {
+        const file_fields: FileUploadData = {
           id,
           parent: parentId,
           type: isFile ? 'file' : 'directory',
           name: segment,
           createdAt: Timestamp.now(),
           ...(isFile ? { size: file.size } : {}),
-          ...(isFile ? { file } : {})
+          ...(isFile ? { file } : {}),
         };
 
         fileMap[key] = file_fields;

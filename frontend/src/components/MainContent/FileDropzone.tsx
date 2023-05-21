@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { useAchievements } from 'milestone-components';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFileFields, CustomUploadFields } from '@src/types';
+import { CustomFileFields, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 
 const FileDropzone = () => {
@@ -49,9 +49,9 @@ const FileDropzone = () => {
   );
 
   const handleFolderUpload = useCallback(
-    (item: any, parent: string | null): Promise<CustomUploadFields[]> => {
+    (item: any, parent: string | null): Promise<FileUploadData[]> => {
       return new Promise((resolve) => {
-        let files: CustomUploadFields[] = [];
+        let files: FileUploadData[] = [];
 
         if (item.isFile) {
           item.file((f: File) => {
@@ -88,7 +88,7 @@ const FileDropzone = () => {
       const itemPromises = Array.from(items).map((item: any) => {
         let entry = item.webkitGetAsEntry();
         if (entry.isFile) {
-          return new Promise<CustomUploadFields[]>((resolve) =>
+          return new Promise<FileUploadData[]>((resolve) =>
             entry.file((file: File) => resolve(handleUpload(file, null)))
           );
         } else if (entry.isDirectory) {

@@ -1,7 +1,7 @@
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFile, CustomFileFields, CustomUploadFields } from '@src/types';
+import { CustomFile, CustomFileFields, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 import { useAchievements, useAuth } from 'milestone-components';
 import { getValidDuplicatedName } from './helpers';
@@ -17,7 +17,7 @@ export const useFileUpload = (
   const storage = useStorage();
 
   const uploadCustomUploadFields = async (
-    fields: CustomUploadFields
+    fields: FileUploadData
   ): Promise<string> => {
     const { id, file, type } = fields;
     if (type === 'file' && file) {
@@ -29,7 +29,7 @@ export const useFileUpload = (
   };
 
   const uploadFilesOrFolders = async (
-    items: CustomUploadFields[]
+    items: FileUploadData[]
   ): Promise<string[]> => {
     // order items by directory structure
     const orderedItems = orderFilesByDirectory(items);
@@ -63,9 +63,7 @@ export const useFileUpload = (
     return id;
   };
 
-  const uploadFolder = async (
-    files: CustomUploadFields[]
-  ): Promise<string[]> => {
+  const uploadFolder = async (files: FileUploadData[]): Promise<string[]> => {
     const folder = files[0];
     folder.parent = currentDirectory ?? null;
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
@@ -127,7 +125,6 @@ export const useFileUpload = (
     uploadFileOrFolder,
     promptUploadFiles,
     promptUploadFolder,
-    uploadFolder,
     uploadFilesOrFolders,
   };
 };

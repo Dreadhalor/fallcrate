@@ -1,4 +1,4 @@
-import { CustomFile, CustomUploadFields } from '@src/types';
+import { CustomFile, FileUploadData } from '@src/types';
 import { createContext } from 'react';
 
 interface FilesystemContextValue {
@@ -23,7 +23,7 @@ interface FilesystemContextValue {
     file: File,
     achievementsEnabled?: boolean
   ) => Promise<string>;
-  uploadFilesOrFolders: (files: CustomUploadFields[]) => Promise<string[]>;
+  uploadFilesOrFolders: (files: FileUploadData[]) => Promise<string[]>;
   promptUploadFiles: () => Promise<string[]>;
   promptUploadFolder: () => Promise<string[]>;
   openImageModal: (file: CustomFile) => void;
