@@ -2,8 +2,8 @@ import { useFilesystem } from '@hooks/useFilesystem';
 import { FileUpload } from '@src/types';
 import { IoCheckmarkCircleOutline } from 'react-icons/io5';
 import { DotLoader } from 'react-spinners';
-import './styles.scss';
 import { MdClear } from 'react-icons/md';
+import './styles.scss';
 
 type Props = {
   upload: FileUpload;
@@ -15,26 +15,27 @@ export const FileUploadProgressBar = ({
   const { getParent, dequeueCompletedUpload, openDirectory } = useFilesystem();
   const percent = bytesUploaded / totalBytes;
   const truncatedPercent = Math.trunc(percent * 100 * 100) / 100;
-  // const complete = percent === 1;
-  // const complete = false;
-  const complete = true;
+  const complete = percent === 1;
   const parent = getParent(uploadData);
 
   return (
     <div className='queue-item flex items-center py-[10px]'>
-      <div className='flex items-center justify-center px-[10px]'>
+      <div className='flex w-[36px] items-center justify-center'>
         <button
-          className='group'
+          className='group relative flex'
           onClick={() => dequeueCompletedUpload(uploadData.id)}
         >
-          <MdClear className='hidden group-hover:block' />
-          <span className='group-hover:hidden'>
+          <MdClear className='opacity-0' />
+          <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100'>
+            <MdClear />
+          </div>
+          <div className='absolute inset-0 flex group-hover:opacity-0'>
             {complete ? (
               <IoCheckmarkCircleOutline size={16} />
             ) : (
               <DotLoader size={12} />
             )}
-          </span>
+          </div>
         </button>
       </div>
 
