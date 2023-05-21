@@ -47,7 +47,10 @@ export const useFileUpload = (
   ): Promise<string> => {
     const id = uuidv4();
     const path = `uploads/${id}`;
-    await storage.uploadFile(file, path);
+    await storage.uploadFile(file, path, (snapshot) => {
+      const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + percent + '% done');
+    });
 
     const newFile: CustomFileFields = {
       id,

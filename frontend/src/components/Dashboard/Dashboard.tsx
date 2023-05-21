@@ -8,6 +8,7 @@ import './Dashboard.scss';
 import { useAchievements } from 'milestone-components';
 import { FaChevronLeft } from 'react-icons/fa';
 import { MouseEvent } from 'react';
+import { StorageUsedBar } from '@components/StorageUsedBar';
 
 const Dashboard = () => {
   const { unlockAchievementById } = useAchievements();
@@ -157,6 +158,7 @@ const Dashboard = () => {
           }}
         >
           <AllFilesMenu />
+          <StorageUsedBar />
         </div>
       </Resizable>
       <MainContent />
