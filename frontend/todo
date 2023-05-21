@@ -10,3 +10,4 @@
   * everything else, compile into an ellipsis in the breadcrumb base with a dropdown menu
 * the dropdown menu for the upload button doesn't go away when opening a context menu, but the UserMenu button does - what's up with that?
 * fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
+* sometimes uploading a series of files at once doesn't select the files at the end or give the achievement - presumably something goes wrong but we'll find out once we have progress bars

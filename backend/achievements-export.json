@@ -35,6 +35,10 @@
     "description": "Download a folder",
     "title": "Download Folder"
   },
+  "download_multiple_items": {
+    "description": "Download multiple files or folders at once",
+    "title": "Download Multiple Items"
+  },
   "duplicate_file": {
     "description": "Duplicate a file",
     "title": "Dupliciticitous"

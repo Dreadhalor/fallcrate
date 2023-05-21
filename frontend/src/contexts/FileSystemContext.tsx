@@ -1,5 +1,5 @@
-import { CustomFile } from "@src/types";
-import { createContext } from "react";
+import { CustomFile } from '@src/types';
+import { createContext } from 'react';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -8,7 +8,10 @@ interface FilesystemContextValue {
   currentDirectoryFiles: CustomFile[];
   openDirectory: (directory_id: string | null) => void;
   selectFile: (file_id: string) => void;
-  selectFilesExclusively: (file_ids: string[], overrideDirectoryRestriction?: boolean) => void;
+  selectFilesExclusively: (
+    file_ids: string[],
+    overrideDirectoryRestriction?: boolean
+  ) => void;
   massToggleSelectFiles: () => void;
   openFile: (file_id?: string) => void;
   createFolder: (name: string) => void;
@@ -16,7 +19,10 @@ interface FilesystemContextValue {
   promptNewFolder: () => void;
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
-  uploadFileOrFolder: (file: File) => Promise<string>;
+  uploadFileOrFolder: (
+    file: File,
+    achievementsEnabled?: boolean
+  ) => Promise<string>;
   promptUploadFiles: () => Promise<string[]>;
   promptUploadFolder: () => Promise<string[]>;
   openImageModal: (file: CustomFile) => void;

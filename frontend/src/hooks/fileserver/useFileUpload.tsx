@@ -7,13 +7,18 @@ import { useAchievements, useAuth } from 'milestone-components';
 import { getValidDuplicatedName } from './helpers';
 import { parseFileArray } from '@src/helpers';
 
-export const useFileUpload = (currentDirectory: string | null, currentDirectoryFiles: CustomFile[]) => {
+export const useFileUpload = (
+  currentDirectory: string | null,
+  currentDirectoryFiles: CustomFile[]
+) => {
   const { uid } = useAuth();
   const { unlockAchievementById } = useAchievements();
   const db = useDB(uid);
   const storage = useStorage();
 
-  const uploadCustomUploadFields = async (fields: CustomUploadFields): Promise<string> => {
+  const uploadCustomUploadFields = async (
+    fields: CustomUploadFields
+  ): Promise<string> => {
     const { id, file } = fields;
     if (fields.type === 'file' && file) {
       const path = `uploads/${id}`;
@@ -21,9 +26,12 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     }
     await db.createFile(fields);
     return id;
-  }
+  };
 
-  const uploadFileOrFolder = async (file: File): Promise<string> => {
+  const uploadFileOrFolder = async (
+    file: File,
+    achievementsEnabled = true
+  ): Promise<string> => {
     const id = uuidv4();
     const path = `uploads/${id}`;
     await storage.uploadFile(file, path);
@@ -38,11 +46,13 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     };
 
     await db.createFile(newFile);
-    unlockAchievementById('upload_file');
+    if (achievementsEnabled) unlockAchievementById('upload_file');
     return id;
   };
 
-  const uploadFolder = async (files: CustomUploadFields[]): Promise<string[]> => {
+  const uploadFolder = async (
+    files: CustomUploadFields[]
+  ): Promise<string[]> => {
     const folder = files[0];
     folder.parent = currentDirectory ?? null;
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
@@ -52,7 +62,10 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     return Promise.resolve([folder.id]);
   };
 
-  const promptUpload = (isDirectory: boolean, callback: (files: File[]) => Promise<string[]>): Promise<string[]> => {
+  const promptUpload = (
+    isDirectory: boolean,
+    callback: (files: File[]) => Promise<string[]>
+  ): Promise<string[]> => {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -78,11 +91,13 @@ export const useFileUpload = (currentDirectory: string | null, currentDirectoryF
     });
   };
 
-
   const promptUploadFiles = (): Promise<string[]> => {
     return promptUpload(false, async (files) => {
-      const uploadPromises = files.map((file) => uploadFileOrFolder(file));
+      const uploadPromises = files.map((file) =>
+        uploadFileOrFolder(file, false)
+      );
       const ids = await Promise.all(uploadPromises);
+      unlockAchievementById('upload_file');
       return ids;
     });
   };

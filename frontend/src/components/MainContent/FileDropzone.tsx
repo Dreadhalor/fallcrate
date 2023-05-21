@@ -1,32 +1,35 @@
 // FileDropzone.tsx
 import React, { useCallback } from 'react';
 import { useFilesystem } from '@hooks/useFilesystem';
+import { useAchievements } from 'milestone-components';
 
 const FileDropzone = () => {
-  const { uploadFile } = useFilesystem();
+  const { uploadFileOrFolder, selectFilesExclusively } = useFilesystem();
+  const { unlockAchievementById } = useAchievements();
 
   const handleUpload = useCallback(
-    async (file: File) => uploadFile(file), // Use the uploadFile method from the useFilesystem hook
-    [uploadFile] // Update the dependency array to include currentDirectory
+    async (file: File) => uploadFileOrFolder(file, false), // Use the uploadFile method from the useFilesystem hook
+    [uploadFileOrFolder] // Update the dependency array to include currentDirectory <--- what???
   );
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
-      // e.stopPropagation();
 
       const files = e.dataTransfer.files;
 
-      for (let i = 0; i < files.length; i++) {
-        handleUpload(files[i]);
-      }
+      Promise.all(Array.from(files).map((file) => handleUpload(file))).then(
+        (uploaded_ids) => {
+          selectFilesExclusively(uploaded_ids);
+          unlockAchievementById('upload_file');
+        }
+      );
     },
     [handleUpload]
   );
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    // e.stopPropagation();
   };
 
   return (
