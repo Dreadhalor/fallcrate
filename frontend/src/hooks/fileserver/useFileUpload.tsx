@@ -19,8 +19,8 @@ export const useFileUpload = (
   const uploadCustomUploadFields = async (
     fields: CustomUploadFields
   ): Promise<string> => {
-    const { id, file } = fields;
-    if (fields.type === 'file' && file) {
+    const { id, file, type } = fields;
+    if (type === 'file' && file) {
       const path = `uploads/${id}`;
       await storage.uploadFile(file, path);
     }
@@ -114,5 +114,6 @@ export const useFileUpload = (
     uploadFileOrFolder,
     promptUploadFiles,
     promptUploadFolder,
+    uploadFolder,
   };
 };
