@@ -1,4 +1,3 @@
-* check on type-safeness of file:any in Database.ts
 * maybe fix weird race condition bug with A->B->C where moving C into A sometimes leaves a blank space below C
 * if possible, define styles externally so that we have one source of truth for both tailwind.config.cjs & index.scss
 * fix the flash of loading screen on opening a modal that loads quickly - also, let "loading..." appear on top of the modal for a moment after load, it looks nice
@@ -6,8 +5,9 @@
 * Eventually: put in easter eggs for achievements
 * truncate long names in the middle
 * for the breadcrumb:
-  * calculate the longest path that can be displayed without truncationg & display it
+  * calculate the longest path that can be displayed without truncating & display it
   * everything else, compile into an ellipsis in the breadcrumb base with a dropdown menu
 * the dropdown menu for the upload button doesn't go away when opening a context menu, but the UserMenu button does - what's up with that?
 * fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
 * sometimes uploading a series of files at once doesn't select the files at the end or give the achievement - presumably something goes wrong but we'll find out once we have progress bars
+* when signing out/in, revert to the root directory
