@@ -38,6 +38,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     uploadFileOrFolder: _uploadFileOrFolder,
     promptUploadFiles: _promptUploadFiles,
     promptUploadFolder: _promptUploadFolder,
+    uploadFilesOrFolders,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const {
@@ -245,6 +246,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptNewFolder,
         promptRenameFile,
         moveFiles,
+        uploadFilesOrFolders,
         uploadFileOrFolder,
         promptUploadFiles,
         promptUploadFolder,

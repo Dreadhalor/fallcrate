@@ -5,7 +5,7 @@ import { CustomFile, CustomFileFields, CustomUploadFields } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 import { useAchievements, useAuth } from 'milestone-components';
 import { getValidDuplicatedName } from './helpers';
-import { parseFileArray } from '@src/helpers';
+import { orderFilesByDirectory, parseFileArray } from '@src/helpers';
 
 export const useFileUpload = (
   currentDirectory: string | null,
@@ -26,6 +26,19 @@ export const useFileUpload = (
     }
     await db.createFile(fields);
     return id;
+  };
+
+  const uploadFilesOrFolders = async (
+    items: CustomUploadFields[]
+  ): Promise<string[]> => {
+    // order items by directory structure
+    const orderedItems = orderFilesByDirectory(items);
+
+    const uploadPromises = orderedItems.map((item) =>
+      uploadCustomUploadFields(item)
+    );
+    const ids = await Promise.all(uploadPromises);
+    return ids;
   };
 
   const uploadFileOrFolder = async (
@@ -115,5 +128,6 @@ export const useFileUpload = (
     promptUploadFiles,
     promptUploadFolder,
     uploadFolder,
+    uploadFilesOrFolders,
   };
 };

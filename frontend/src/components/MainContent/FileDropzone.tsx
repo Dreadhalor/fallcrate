@@ -2,11 +2,12 @@ import React, { useCallback } from 'react';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { useAchievements } from 'milestone-components';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFileFields } from '@src/types';
+import { CustomFileFields, CustomUploadFields } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 
 const FileDropzone = () => {
-  const { uploadFileOrFolder, selectFilesExclusively } = useFilesystem();
+  const { uploadFileOrFolder, selectFilesExclusively, uploadFilesOrFolders } =
+    useFilesystem();
   const { unlockAchievementById } = useAchievements();
 
   const createFileObject = (
@@ -34,35 +35,48 @@ const FileDropzone = () => {
 
   const handleUpload = useCallback(
     async (file: File, parent: string | null) => {
-      const fileObject = createFileObject(file, parent);
-      console.log(fileObject);
-      const uploadedId = await uploadFileOrFolder(file, false);
-      return uploadedId || null;
+      if (file) {
+        // check if file is defined
+        const fileObject = createFileObject(file, parent);
+        const uploadedId = await uploadFileOrFolder(file, false);
+
+        // If uploaded successfully, return the fileObject with file included, otherwise an empty array
+        return uploadedId ? [{ ...fileObject, file }] : [];
+      }
+      return [];
     },
-    [uploadFileOrFolder]
+    [uploadFileOrFolder, createFileObject]
   );
 
   const handleFolderUpload = useCallback(
-    async (item: any, parent: string | null): Promise<string | null> => {
-      if (item.isFile) {
-        return new Promise((resolve) => {
+    (item: any, parent: string | null): Promise<CustomUploadFields[]> => {
+      return new Promise((resolve) => {
+        let files: CustomUploadFields[] = [];
+
+        if (item.isFile) {
           item.file((f: File) => {
-            resolve(handleUpload(f, parent));
+            if (f) {
+              // check if file is defined
+              const fileObject = createFileObject(f, parent);
+              files.push({ ...fileObject, file: f }); // include file blob data
+            }
+            resolve(files);
           });
-        });
-      } else if (item.isDirectory) {
-        const dirObject = createDirectoryObject(item.name, parent);
-        console.log(dirObject);
-        let directoryReader = item.createReader();
-        directoryReader.readEntries((entries: any) => {
-          return Promise.all(
-            entries.map((entry: any) => handleFolderUpload(entry, dirObject.id))
-          );
-        });
-      }
-      return null;
+        } else if (item.isDirectory) {
+          const dirObject = createDirectoryObject(item.name, parent);
+          files.push(dirObject);
+          let directoryReader = item.createReader();
+          directoryReader.readEntries(async (entries: any) => {
+            for (const entry of entries) {
+              const nestedFiles = await handleFolderUpload(entry, dirObject.id);
+              files = files.concat(nestedFiles);
+            }
+            resolve(files);
+          });
+        }
+      });
     },
-    [handleUpload]
+    [createFileObject, createDirectoryObject]
   );
 
   const handleDrop = useCallback(
@@ -71,17 +85,37 @@ const FileDropzone = () => {
 
       let items = e.dataTransfer.items;
 
-      Promise.all(
-        Array.from(items).map((item: any) =>
-          handleFolderUpload(item.webkitGetAsEntry(), null)
-        )
-      ).then((uploaded_ids) => {
-        const nonNullIds = uploaded_ids.filter((id) => id !== null);
-        selectFilesExclusively(nonNullIds as string[]);
-        unlockAchievementById('upload_file');
+      const itemPromises = Array.from(items).map((item: any) => {
+        let entry = item.webkitGetAsEntry();
+        if (entry.isFile) {
+          return new Promise<CustomUploadFields[]>((resolve) =>
+            entry.file((file: File) => resolve(handleUpload(file, null)))
+          );
+        } else if (entry.isDirectory) {
+          return handleFolderUpload(entry, null);
+        }
+        // Provide a fallback return
+        return Promise.resolve([]);
+      });
+
+      Promise.all(itemPromises).then((uploaded_files) => {
+        const nonEmptyFiles = uploaded_files
+          .flat()
+          .filter((file) => file && file.id !== null);
+        uploadFilesOrFolders(nonEmptyFiles).then((uploaded_ids) => {
+          const nonNullIds = uploaded_ids.filter((id) => id !== null);
+          selectFilesExclusively(nonNullIds as string[]);
+          unlockAchievementById('upload_file');
+        });
       });
     },
-    [handleUpload, handleFolderUpload]
+    [
+      handleFolderUpload,
+      handleUpload,
+      uploadFilesOrFolders,
+      selectFilesExclusively,
+      unlockAchievementById,
+    ]
   );
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
