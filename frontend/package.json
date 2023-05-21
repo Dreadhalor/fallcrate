@@ -13,6 +13,7 @@
     "antd": "^5.5.0",
     "firebase": "^9.20.0",
     "jszip": "^3.10.1",
+    "parse-unit": "^1.0.1",
     "pretty-bytes": "^6.1.0",
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
@@ -27,6 +28,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/parse-unit": "^1.0.1",
     "@types/react": "^18.0.24",
     "@types/react-collapse": "^5.0.1",
     "@types/react-dom": "^18.0.8",

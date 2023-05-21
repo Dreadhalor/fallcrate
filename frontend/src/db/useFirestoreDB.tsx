@@ -47,7 +47,9 @@ const useFirestoreDB = (uid: string): Database => {
     const authorizedFile = { ...file, uploadedBy: uid };
     const newFile = buildNewFile(authorizedFile);
     const docRef = doc(filesCollection, newFile.id);
+    // console.log('about to create file:', file.name);
     await setDoc(docRef, newFile);
+    // console.log('created file:', file.name);
     return newFile;
   };
 

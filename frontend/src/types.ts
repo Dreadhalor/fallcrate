@@ -14,6 +14,13 @@ export interface CustomFile extends CustomFileFields {
 export interface FileUploadData extends CustomFileFields {
   file?: File;
 }
+
+export interface FileUpload {
+  uploadData: FileUploadData;
+  status: 'waiting' | 'uploading' | 'complete';
+  bytesUploaded: number;
+  totalBytes: number;
+}
 export interface DraggedItem {
   id: string;
 }

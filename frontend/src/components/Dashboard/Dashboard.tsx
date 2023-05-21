@@ -1,6 +1,5 @@
 // Dashboard.tsx
 import { Resizable } from 're-resizable';
-import AllFilesMenu from '../AllFilesMenu';
 import MainContent from '../MainContent/MainContent';
 import { useRef, useState } from 'react';
 
@@ -8,7 +7,7 @@ import './Dashboard.scss';
 import { useAchievements } from 'milestone-components';
 import { FaChevronLeft } from 'react-icons/fa';
 import { MouseEvent } from 'react';
-import { StorageUsedBar } from '@components/StorageUsedBar';
+import Sidebar from './Sidebar';
 
 const Dashboard = () => {
   const { unlockAchievementById } = useAchievements();
@@ -60,9 +59,13 @@ const Dashboard = () => {
   };
 
   const [width, setWidth] = useState(default_width);
-  const sidebarRef = useRef<HTMLDivElement>(null);
   // for tracking whether the sidebar is already collapsed
   const [lastStaticWidth, setLastStaticWidth] = useState(default_width);
+
+  const sidebarStyle: React.CSSProperties = {
+    opacity: width > schwarzchild_width ? 1 : 0,
+    pointerEvents: width > schwarzchild_width ? 'auto' : 'none',
+  };
 
   return (
     <div id='dashboard' className='flex flex-1 flex-row overflow-hidden'>
@@ -148,18 +151,7 @@ const Dashboard = () => {
           }
         }}
       >
-        <div
-          id='sidebar'
-          ref={sidebarRef}
-          className='h-full w-full transition-[opacity]'
-          style={{
-            opacity: width > schwarzchild_width ? 1 : 0,
-            pointerEvents: width > schwarzchild_width ? 'auto' : 'none',
-          }}
-        >
-          <AllFilesMenu />
-          <StorageUsedBar />
-        </div>
+        <Sidebar style={sidebarStyle} />
       </Resizable>
       <MainContent />
     </div>

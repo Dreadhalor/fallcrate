@@ -1,4 +1,9 @@
-import { CustomFile, FileUploadData } from '@src/types';
+import {
+  CustomFile,
+  CustomFileFields,
+  FileUpload,
+  FileUploadData,
+} from '@src/types';
 import { createContext } from 'react';
 
 interface FilesystemContextValue {
@@ -27,12 +32,14 @@ interface FilesystemContextValue {
   promptUploadFiles: () => Promise<string[]>;
   promptUploadFolder: () => Promise<string[]>;
   openImageModal: (file: CustomFile) => void;
-  getParent: (file: CustomFile) => CustomFile | null;
+  getParent: (file: CustomFileFields) => CustomFileFields | null;
   getFile: (file_id: string) => CustomFile | null;
   nestedSelectedFiles: string[];
   duplicateFileOrFolder: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
+  uploadQueue: FileUpload[];
+  dequeueCompletedUpload: (id: string) => void;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

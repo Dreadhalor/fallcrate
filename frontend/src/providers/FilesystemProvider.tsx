@@ -7,12 +7,12 @@ import {
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { useFiles } from '@hooks/fileserver/useFiles';
-import { CustomFile } from '@src/types';
+import { CustomFile, CustomFileFields } from '@src/types';
 import { useAchievements, useAuth } from 'milestone-components';
 import { message } from 'antd';
 import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
 import { useImageModal } from '@providers/ImageModalProvider';
-import { FilesystemContext } from '@src/contexts/FileSystemContext';
+import { FilesystemContext } from '@src/contexts/FilesystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
 import { useFileUpload } from '@hooks/fileserver/useFileUpload';
@@ -39,6 +39,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     promptUploadFiles: _promptUploadFiles,
     promptUploadFolder: _promptUploadFolder,
     uploadFilesOrFolders,
+    uploadQueue,
+    dequeueCompletedUpload,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const {
@@ -54,7 +56,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     message.error(text);
   };
 
-  const getParent = (file: CustomFile) => {
+  const getParent = (file: CustomFileFields) => {
     if (file.parent === null) return null;
     return files.find((candidate) => candidate.id === file.parent) ?? null;
   };
@@ -212,14 +214,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       }
     );
   };
-  const promptUploadFiles = async () => {
-    return _promptUploadFiles().then((uploaded_ids) => {
-      if (uploaded_ids.length > 0) {
-        selectFilesExclusively(uploaded_ids);
-      }
-      return uploaded_ids;
-    });
-  };
+  const promptUploadFiles = _promptUploadFiles;
   const promptUploadFolder = async () => {
     return _promptUploadFolder().then((uploaded_id_but_as_an_array_of_one) => {
       if (uploaded_id_but_as_an_array_of_one) {
@@ -250,6 +245,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         uploadFileOrFolder,
         promptUploadFiles,
         promptUploadFolder,
+        uploadQueue,
+        dequeueCompletedUpload,
         openImageModal,
         getParent,
         getFile,

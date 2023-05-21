@@ -18,15 +18,20 @@ export const useFirebaseStorage = (): Storage => {
     onProgress?: (snapshot: UploadTaskSnapshot) => void,
     onError?: (error: StorageError) => void,
     onComplete?: () => void
-  ): Promise<string> => {
+  ): Promise<void> => {
     const storageRef = ref(storage, path);
     const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.then(
+      (snapshot) => console.log('success I guess?'),
+      (rejected) => console.log('rejected:', rejected)
+    );
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
         'state_changed',
         onProgress,
         (error) => {
+          console.log('errorCallback:', error);
           if (onError) {
             onError(error);
           }
@@ -36,10 +41,7 @@ export const useFirebaseStorage = (): Storage => {
           if (onComplete) {
             onComplete();
           }
-          const downloadURL = await firebaseGetDownloadURL(
-            uploadTask.snapshot.ref
-          );
-          resolve(downloadURL);
+          resolve();
         }
       );
     });
@@ -51,7 +53,7 @@ export const useFirebaseStorage = (): Storage => {
     onProgress?: (snapshot: UploadTaskSnapshot) => void,
     onError?: (error: StorageError) => void,
     onComplete?: () => void
-  ): Promise<string> => {
+  ): Promise<void> => {
     const storageRef = ref(storage, path);
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
@@ -69,10 +71,7 @@ export const useFirebaseStorage = (): Storage => {
           if (onComplete) {
             onComplete();
           }
-          const downloadURL = await firebaseGetDownloadURL(
-            uploadTask.snapshot.ref
-          );
-          resolve(downloadURL);
+          resolve();
         }
       );
     });

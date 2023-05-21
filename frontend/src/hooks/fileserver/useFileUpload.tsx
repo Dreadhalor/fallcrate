@@ -1,11 +1,17 @@
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFile, CustomFileFields, FileUploadData } from '@src/types';
+import {
+  CustomFile,
+  CustomFileFields,
+  FileUpload,
+  FileUploadData,
+} from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 import { useAchievements, useAuth } from 'milestone-components';
 import { getValidDuplicatedName } from './helpers';
 import { orderFilesByDirectory, parseFileArray } from '@src/helpers';
+import { useEffect, useState } from 'react';
 
 export const useFileUpload = (
   currentDirectory: string | null,
@@ -16,7 +22,64 @@ export const useFileUpload = (
   const db = useDB(uid);
   const storage = useStorage();
 
-  const uploadCustomUploadFields = async (
+  const [uploadQueue, setUploadQueue] = useState([] as FileUpload[]);
+  const addToUploadQueue = (file: FileUploadData) => {
+    const newUpload: FileUpload = {
+      uploadData: file,
+      bytesUploaded: 0,
+      totalBytes: file.size ?? 0,
+      status: 'waiting',
+    };
+    setUploadQueue((prev) => [newUpload, ...prev]);
+  };
+  const dequeueCompletedUpload = (id: string) => {
+    setUploadQueue((prev) =>
+      prev.filter((upload) => upload.uploadData.id !== id)
+    );
+  };
+
+  useEffect(() => {
+    const waitingUploads = uploadQueue.filter(
+      (upload) => upload.status === 'waiting'
+    );
+    waitingUploads.forEach(startUpload);
+  }, [uploadQueue]);
+
+  const startUpload = async (upload: FileUpload) => {
+    upload.status = 'uploading';
+    const { uploadData } = upload;
+    const { id, file, type } = uploadData;
+    if (type === 'file' && file) {
+      const path = `uploads/${id}`;
+      await storage.uploadFile(
+        file,
+        path,
+        (snapshot) => {
+          // console.log(
+          //   `${
+          //     Math.trunc(
+          //       (snapshot.bytesTransferred / snapshot.totalBytes) * 100 * 100
+          //     ) / 100
+          //   }%: ${file.name}`
+          // );
+          upload.totalBytes = snapshot.totalBytes;
+          upload.bytesUploaded = snapshot.bytesTransferred;
+        },
+        (error) => console.log(`Error (${file.name}:`, error),
+        async () => {
+          upload.status = 'complete';
+          // console.log('about to upload:', upload.uploadData.name);
+          await db.createFile(uploadData);
+          // console.log('completed upload:', upload.uploadData.name);
+          // .then((_) => console.log('created:', file.name));
+        }
+      );
+    }
+
+    return id;
+  };
+
+  const uploadSingleFileUploadData = async (
     fields: FileUploadData
   ): Promise<string> => {
     const { id, file, type } = fields;
@@ -28,6 +91,24 @@ export const useFileUpload = (
     return id;
   };
 
+  const uploadFilesOrFolders2 = async (
+    items: FileUploadData[]
+  ): Promise<string[]> => {
+    // order items by directory structure
+    const orderedItems = orderFilesByDirectory(items);
+    const topLevelItems = orderedItems.filter((item) => item.parent === null);
+    topLevelItems.forEach((item) => {
+      item.parent = currentDirectory ?? null;
+      item.name = getValidDuplicatedName(item.name, currentDirectoryFiles);
+    });
+
+    const uploadPromises = orderedItems.map(
+      async (item) => await uploadSingleFileUploadData(item)
+    );
+    const ids = await Promise.all(uploadPromises);
+    return ids;
+  };
+
   const uploadFilesOrFolders = async (
     items: FileUploadData[]
   ): Promise<string[]> => {
@@ -35,10 +116,24 @@ export const useFileUpload = (
     const orderedItems = orderFilesByDirectory(items);
 
     const uploadPromises = orderedItems.map((item) =>
-      uploadCustomUploadFields(item)
+      uploadSingleFileUploadData(item)
     );
     const ids = await Promise.all(uploadPromises);
     return ids;
+  };
+
+  const parseFile = (file: File) => {
+    const id = uuidv4();
+    const fields: FileUploadData = {
+      id,
+      name: file.name,
+      type: 'file',
+      size: file.size,
+      parent: currentDirectory ?? null, // do we even need this null coalescer?
+      createdAt: Timestamp.now(),
+      file,
+    };
+    return fields;
   };
 
   const uploadFileOrFolder = async (
@@ -47,10 +142,7 @@ export const useFileUpload = (
   ): Promise<string> => {
     const id = uuidv4();
     const path = `uploads/${id}`;
-    await storage.uploadFile(file, path, (snapshot) => {
-      const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + percent + '% done');
-    });
+    await storage.uploadFile(file, path);
 
     const newFile: CustomFileFields = {
       id,
@@ -70,7 +162,9 @@ export const useFileUpload = (
     const folder = files[0];
     folder.parent = currentDirectory ?? null;
     folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
-    const uploadPromises = files.map((file) => uploadCustomUploadFields(file));
+    const uploadPromises = files.map((file) =>
+      uploadSingleFileUploadData(file)
+    );
     await Promise.all(uploadPromises);
     unlockAchievementById('upload_folder');
     return Promise.resolve([folder.id]);
@@ -105,7 +199,7 @@ export const useFileUpload = (
     });
   };
 
-  const promptUploadFiles = (): Promise<string[]> => {
+  const promptUploadFiles2 = (): Promise<string[]> => {
     return promptUpload(false, async (files) => {
       const uploadPromises = files.map((file) =>
         uploadFileOrFolder(file, false)
@@ -116,10 +210,36 @@ export const useFileUpload = (
     });
   };
 
+  const promptUploadFiles = async () => {
+    return new Promise<FileUploadData[]>((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.multiple = true;
+      input.onchange = async () => {
+        if (!input.files) {
+          resolve([]);
+        } else {
+          try {
+            const files = Array.from(input.files);
+            const result = files.map(parseFile);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        }
+      };
+      input.onerror = (error) => reject(error);
+
+      input.click();
+    }).then((uploadDataPlural: FileUploadData[]) => {
+      uploadDataPlural.forEach(addToUploadQueue);
+    });
+  };
+
   const promptUploadFolder = (): Promise<string[]> => {
     return promptUpload(true, async (files) => {
       const parsedFiles = parseFileArray(files);
-      const ids = await uploadFolder(parsedFiles);
+      const ids = await uploadFilesOrFolders2(parsedFiles);
       return ids;
     });
   };
@@ -129,5 +249,7 @@ export const useFileUpload = (
     promptUploadFiles,
     promptUploadFolder,
     uploadFilesOrFolders,
+    uploadQueue,
+    dequeueCompletedUpload,
   };
 };

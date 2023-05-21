@@ -187,10 +187,13 @@ export const checkFilesForNameConflict = (
 // order the given files such that parent directories are before their children
 export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   const orderedFiles = [];
+  // console.log('orderFiles - input:', files);
   const directories = files.filter((file) => file.type === 'directory');
+  // console.log('orderFiles - directories:', directories);
   const filesWithoutDirectories = files.filter(
     (file) => file.type !== 'directory'
   );
+  // console.log('orderFiles - non-directories:', filesWithoutDirectories);
   for (const directory of directories) {
     orderedFiles.push(directory);
     const nestedFiles = getNestedFilesOnly(
@@ -199,6 +202,7 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
     );
     orderedFiles.push(...nestedFiles);
   }
+  orderedFiles.push(...filesWithoutDirectories);
   return orderedFiles;
 };
 
