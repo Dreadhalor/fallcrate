@@ -40,6 +40,8 @@ interface FilesystemContextValue {
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
   uploadQueue: FileUpload[];
   dequeueCompletedUpload: (id: string) => void;
+  showUploadModal: boolean;
+  setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

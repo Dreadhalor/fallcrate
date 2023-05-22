@@ -41,6 +41,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     uploadFilesOrFolders,
     uploadQueue,
     dequeueCompletedUpload,
+    showUploadModal,
+    setShowUploadModal,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const {
@@ -215,14 +217,15 @@ export const FilesystemProvider = ({ children }: Props) => {
     );
   };
   const promptUploadFiles = _promptUploadFiles;
-  const promptUploadFolder = async () => {
-    return _promptUploadFolder().then((uploaded_id_but_as_an_array_of_one) => {
-      if (uploaded_id_but_as_an_array_of_one) {
-        selectFilesExclusively(uploaded_id_but_as_an_array_of_one);
-      }
-      return uploaded_id_but_as_an_array_of_one;
-    });
-  };
+  // const promptUploadFolder = async () => {
+  //   return _promptUploadFolder().then((uploaded_id_but_as_an_array_of_one) => {
+  //     if (uploaded_id_but_as_an_array_of_one) {
+  //       selectFilesExclusively(uploaded_id_but_as_an_array_of_one);
+  //     }
+  //     return uploaded_id_but_as_an_array_of_one;
+  //   });
+  // };
+  const promptUploadFolder = _promptUploadFolder;
 
   return (
     <FilesystemContext.Provider
@@ -254,6 +257,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         duplicateFileOrFolder,
         getFileUrl,
         downloadFilesOrFolders,
+        showUploadModal,
+        setShowUploadModal,
       }}
     >
       {children}

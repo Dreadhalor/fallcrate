@@ -7,22 +7,27 @@ import './styles.scss';
 type Props = {};
 
 export const UploadQueuePane = (props: Props) => {
-  const [hidden, setHidden] = useState(true);
-  const { uploadQueue } = useFilesystem();
+  const { uploadQueue, showUploadModal, setShowUploadModal } = useFilesystem();
+  const comletedUploads = uploadQueue.filter(
+    (upload) => upload.status === 'complete'
+  ).length;
+  const totalUploads = uploadQueue.length;
 
-  const innerHeight = hidden ? 0 : 350;
+  const innerHeight = showUploadModal ? 350 : 0;
 
   return (
     <div className='fixed bottom-0 right-[40px] z-10 flex w-[400px] flex-col border-[1px] bg-white'>
-      <div className='flex flex-shrink-0 items-center justify-between border-b-[1px] bg-faded_bg py-[5px] px-[20px]'>
-        Uploads
+      <div className='flex flex-shrink-0 items-center justify-between border-b-[1px] bg-faded_bg py-[5px] px-[20px] text-sm'>
+        {totalUploads === 0
+          ? 'Uploads'
+          : `${comletedUploads} of ${totalUploads} uploads complete`}
         <button
           className='text-gray-500 hover:text-gray-800'
-          onClick={() => setHidden((prev) => !prev)}
+          onClick={() => setShowUploadModal((prev) => !prev)}
         >
           <FaChevronUp
             className='transition-transform'
-            style={hidden ? {} : { transform: 'rotate(180deg)' }}
+            style={showUploadModal ? { transform: 'rotate(180deg)' } : {}}
           />
         </button>
       </div>

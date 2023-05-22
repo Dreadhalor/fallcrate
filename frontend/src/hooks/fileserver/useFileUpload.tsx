@@ -23,6 +23,7 @@ export const useFileUpload = (
   const storage = useStorage();
 
   const [uploadQueue, setUploadQueue] = useState([] as FileUpload[]);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const addToUploadQueue = (file: FileUploadData) => {
     const newUpload: FileUpload = {
       uploadData: file,
@@ -44,6 +45,7 @@ export const useFileUpload = (
         (upload) => upload.status === 'waiting'
       );
       for (const upload of waitingUploads) {
+        setShowUploadModal(true);
         await startUpload(upload);
       }
     };
@@ -243,8 +245,16 @@ export const useFileUpload = (
   const promptUploadFolder = (): Promise<string[]> => {
     return promptUpload(true, async (files) => {
       const parsedFiles = parseFileArray(files);
-      const ids = await uploadFilesOrFolders2(parsedFiles);
-      return ids;
+      console.log('parsedFiles:', parsedFiles);
+      const directories = parsedFiles.filter(
+        (file) => file.type === 'directory'
+      );
+      directories.forEach((directory) => {
+        directory.parent = currentDirectory ?? null;
+        db.createFile(directory);
+      });
+      const _files = parsedFiles.filter((file) => file.type === 'file');
+      _files.forEach(addToUploadQueue);
     });
   };
 
@@ -255,5 +265,7 @@ export const useFileUpload = (
     uploadFilesOrFolders,
     uploadQueue,
     dequeueCompletedUpload,
+    showUploadModal,
+    setShowUploadModal,
   };
 };
