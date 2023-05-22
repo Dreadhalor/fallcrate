@@ -60,7 +60,7 @@ export const FileUploadProgressBar = ({
                 </button>
               </span>
             </div>
-            {truncatedPercent}%
+            <span className='ml-[10px]'>{truncatedPercent}%</span>
           </div>
         </div>
       </div>

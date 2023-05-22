@@ -97,23 +97,23 @@ export const useFileUpload = (
     return id;
   };
 
-  const uploadFilesOrFolders2 = async (
-    items: FileUploadData[]
-  ): Promise<string[]> => {
-    // order items by directory structure
-    const orderedItems = orderFilesByDirectory(items);
-    const topLevelItems = orderedItems.filter((item) => item.parent === null);
-    topLevelItems.forEach((item) => {
-      item.parent = currentDirectory ?? null;
-      item.name = getValidDuplicatedName(item.name, currentDirectoryFiles);
-    });
+  // const uploadFilesOrFolders2 = async (
+  //   items: FileUploadData[]
+  // ): Promise<string[]> => {
+  //   // order items by directory structure
+  //   const orderedItems = orderFilesByDirectory(items);
+  //   const topLevelItems = orderedItems.filter((item) => item.parent === null);
+  //   topLevelItems.forEach((item) => {
+  //     item.parent = currentDirectory ?? null;
+  //     item.name = getValidDuplicatedName(item.name, currentDirectoryFiles);
+  //   });
 
-    const uploadPromises = orderedItems.map(
-      async (item) => await uploadSingleFileUploadData(item)
-    );
-    const ids = await Promise.all(uploadPromises);
-    return ids;
-  };
+  //   const uploadPromises = orderedItems.map(
+  //     async (item) => await uploadSingleFileUploadData(item)
+  //   );
+  //   const ids = await Promise.all(uploadPromises);
+  //   return ids;
+  // };
 
   const uploadFilesOrFolders = async (
     items: FileUploadData[]
@@ -164,22 +164,22 @@ export const useFileUpload = (
     return id;
   };
 
-  const uploadFolder = async (files: FileUploadData[]): Promise<string[]> => {
-    const folder = files[0];
-    folder.parent = currentDirectory ?? null;
-    folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
-    const uploadPromises = files.map((file) =>
-      uploadSingleFileUploadData(file)
-    );
-    await Promise.all(uploadPromises);
-    unlockAchievementById('upload_folder');
-    return Promise.resolve([folder.id]);
-  };
+  // const uploadFolder = async (files: FileUploadData[]): Promise<string[]> => {
+  //   const folder = files[0];
+  //   folder.parent = currentDirectory ?? null;
+  //   folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
+  //   const uploadPromises = files.map((file) =>
+  //     uploadSingleFileUploadData(file)
+  //   );
+  //   await Promise.all(uploadPromises);
+  //   unlockAchievementById('upload_folder');
+  //   return Promise.resolve([folder.id]);
+  // };
 
   const promptUpload = (
     isDirectory: boolean,
-    callback: (files: File[]) => Promise<string[]>
-  ): Promise<string[]> => {
+    callback: (files: File[]) => Promise<FileUploadData[]>
+  ): Promise<FileUploadData[]> => {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -205,58 +205,31 @@ export const useFileUpload = (
     });
   };
 
-  const promptUploadFiles2 = (): Promise<string[]> => {
-    return promptUpload(false, async (files) => {
-      const uploadPromises = files.map((file) =>
-        uploadFileOrFolder(file, false)
-      );
-      const ids = await Promise.all(uploadPromises);
-      unlockAchievementById('upload_file');
-      return ids;
-    });
-  };
-
-  const promptUploadFiles = async () => {
-    return new Promise<FileUploadData[]>((resolve, reject) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.multiple = true;
-      input.onchange = async () => {
-        if (!input.files) {
-          resolve([]);
-        } else {
-          try {
-            const files = Array.from(input.files);
-            const result = files.map(parseFile);
-            resolve(result);
-          } catch (error) {
-            reject(error);
-          }
-        }
-      };
-      input.onerror = (error) => reject(error);
-
-      input.click();
-    }).then((uploadDataPlural: FileUploadData[]) => {
+  const promptUploadFiles = async (): Promise<void> => {
+    promptUpload(false, (files) => {
+      const result = files.map(parseFile);
+      return Promise.resolve(result);
+    }).then((uploadDataPlural) => {
       uploadDataPlural.forEach(addToUploadQueue);
     });
   };
 
-  const promptUploadFolder = async (): Promise<string[]> => {
-    return promptUpload(true, async (files) => {
-      const parsedFiles = parseFileArray(files);
-      console.log('parsedFiles:', parsedFiles);
-      const directories = parsedFiles.filter(
-        (file) => file.type === 'directory'
-      );
-      const _files = parsedFiles.filter((file) => file.type === 'file');
-      console.log(_files);
-      directories.forEach(async (directory) => {
-        directory.parent = currentDirectory ?? null;
-        await db.createFile(directory);
-      });
-      _files.forEach(addToUploadQueue);
-    });
+  const promptUploadFolder = async (): Promise<void> => {
+    promptUpload(true, parseFileArray).then(
+      (uploadDataPlural: FileUploadData[]) => {
+        const directories = uploadDataPlural.filter(
+          (uploadData) => uploadData.type === 'directory'
+        );
+        directories.forEach(async (directory) => {
+          if (!directory.parent) directory.parent = currentDirectory ?? null;
+          await db.createFile(directory);
+        });
+        const files = uploadDataPlural.filter(
+          (uploadData) => uploadData.type === 'file'
+        );
+        files.forEach(addToUploadQueue);
+      }
+    );
   };
 
   return {

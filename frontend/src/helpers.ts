@@ -104,17 +104,6 @@ export const getUnionFileTree = (
   return result;
 };
 
-export const getNestedFilesOnly = (
-  file_id: string | null,
-  files: CustomFileFields[]
-): CustomFileFields[] => {
-  const nestedFiles = files.filter((file) => file.parent === file_id);
-  return nestedFiles.flatMap((file) => [
-    file,
-    ...getNestedFilesOnly(file.id, files),
-  ]);
-};
-
 export const createDragImage = (name: string) => {
   const dragImage = document.createElement('div');
   dragImage.style.position = 'absolute';
@@ -184,6 +173,31 @@ export const checkFilesForNameConflict = (
   return files.some((file) => file.name === name);
 };
 
+export const getNestedFilesOnly = (
+  parentId: string | null,
+  files: CustomFileFields[]
+): CustomFileFields[] => {
+  const nestedFiles: CustomFileFields[] = [];
+  const queue: CustomFileFields[] = files.filter(
+    (file) => file.parent === parentId
+  );
+
+  while (queue.length > 0) {
+    const currentFile = queue.shift();
+    if (currentFile) {
+      nestedFiles.push(currentFile);
+      if (currentFile.type === 'directory') {
+        const childFiles = files.filter(
+          (file) => file.parent === currentFile.id
+        );
+        queue.push(...childFiles);
+      }
+    }
+  }
+
+  return nestedFiles;
+};
+
 // order the given files such that parent directories are before their children
 export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   const orderedFiles = [];
@@ -199,10 +213,7 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   const topLevelDirectories = directories.filter(isTopLevelNode);
   for (const directory of topLevelDirectories) {
     orderedFiles.push(directory);
-    const nestedFiles = getNestedFilesOnly(
-      directory.id,
-      filesWithoutDirectories
-    );
+    const nestedFiles = getNestedFilesOnly(directory.id, files); // pass all files, not just filesWithoutDirectories
     orderedFiles.push(...nestedFiles);
   }
 
@@ -213,45 +224,47 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   return orderedFiles;
 };
 
-export function parseFileArray(files: File[]): FileUploadData[] {
-  const parsed_files: FileUploadData[] = [];
-  const fileMap: { [key: string]: FileUploadData } = {};
+export function parseFileArray(files: File[]): Promise<FileUploadData[]> {
+  return new Promise((resolve, reject) => {
+    try {
+      const parsed_files: FileUploadData[] = [];
+      const fileMap: { [key: string]: FileUploadData } = {};
 
-  for (const file of files) {
-    // Split the path into segments
-    const pathSegments = file.webkitRelativePath.split('/');
-    let parentId: string | null = null;
+      for (const file of files) {
+        const pathSegments = file.webkitRelativePath.split('/');
+        let parentId: string | null = null;
 
-    for (let i = 0; i < pathSegments.length; i++) {
-      const segment = pathSegments[i];
-      const isFile = i === pathSegments.length - 1;
+        for (let i = 0; i < pathSegments.length; i++) {
+          const segment = pathSegments[i];
+          const isFile = i === pathSegments.length - 1;
 
-      // Generate a key from the parent id and the segment name
-      const key: string = `${parentId}-${segment}`;
-      if (!fileMap[key]) {
-        // Generate a UUID for the item
-        const id = uuidv4();
+          const key: string = `${parentId}-${segment}`;
+          if (!fileMap[key]) {
+            const id = uuidv4();
 
-        const file_fields: FileUploadData = {
-          id,
-          parent: parentId,
-          type: isFile ? 'file' : 'directory',
-          name: segment,
-          createdAt: Timestamp.now(),
-          ...(isFile ? { size: file.size } : {}),
-          ...(isFile ? { file } : {}),
-        };
+            const file_fields: FileUploadData = {
+              id,
+              parent: parentId,
+              type: isFile ? 'file' : 'directory',
+              name: segment,
+              createdAt: Timestamp.now(),
+              ...(isFile ? { size: file.size } : {}),
+              ...(isFile ? { file } : {}),
+            };
 
-        fileMap[key] = file_fields;
-        parsed_files.push(file_fields);
+            fileMap[key] = file_fields;
+            parsed_files.push(file_fields);
+          }
+
+          if (!isFile) {
+            parentId = fileMap[key].id;
+          }
+        }
       }
 
-      // If the current segment is a directory, update the parentId for the next iteration
-      if (!isFile) {
-        parentId = fileMap[key].id;
-      }
+      resolve(orderFilesByDirectory(parsed_files));
+    } catch (error) {
+      reject(error);
     }
-  }
-
-  return orderFilesByDirectory(parsed_files);
+  });
 }
