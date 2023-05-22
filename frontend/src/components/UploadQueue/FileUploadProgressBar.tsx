@@ -29,7 +29,7 @@ export const FileUploadProgressBar = ({
   );
 
   return (
-    <div className='queue-item flex flex-col gap-[6px] pt-[10px]'>
+    <div className='queue-item flex flex-col gap-[8px] pt-[10px]'>
       <div className='flex items-center'>
         <div className='flex w-[36px] flex-shrink-0 items-center justify-center'>
           <button
@@ -51,7 +51,7 @@ export const FileUploadProgressBar = ({
             <div className='flex min-w-0 flex-col gap-[2px] text-xs'>
               <TruncatedText text={uploadData.name} />
               <span className='text-gray-500'>
-                Uploaded to&nbsp;
+                {complete ? 'Uploaded to' : 'Uploading to'}&nbsp;
                 <button
                   className='cursor-pointer underline hover:text-black'
                   onClick={() => openDirectory(parent?.id ?? null)}

@@ -11,4 +11,4 @@
 * fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
 * sometimes uploading a series of files at once doesn't select the files at the end or give the achievement - presumably something goes wrong but we'll find out once we have progress bars
 * when signing out/in, revert to the root directory
-* what the HELL is going on with file uploads when using the queue
+* when deleting an upload's parent folder after upload but before clearing the completed task, the parent shows up as 'All Files' - not a big deal, but maybe a lil odd

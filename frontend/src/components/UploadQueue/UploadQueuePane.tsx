@@ -12,15 +12,19 @@ export const UploadQueuePane = (props: Props) => {
     (upload) => upload.status === 'complete'
   ).length;
   const totalUploads = uploadQueue.length;
+  const title =
+    totalUploads === 0
+      ? 'Uploads'
+      : comletedUploads === totalUploads
+      ? `${comletedUploads} of ${totalUploads} uploads complete`
+      : `Uploading ${comletedUploads} of ${totalUploads} files`;
 
   const innerHeight = showUploadModal ? 350 : 0;
 
   return (
     <div className='fixed bottom-0 right-[40px] z-10 flex w-[400px] flex-col border-[1px] bg-white'>
-      <div className='flex flex-shrink-0 items-center justify-between border-b-[1px] bg-faded_bg py-[5px] px-[20px] text-sm'>
-        {totalUploads === 0
-          ? 'Uploads'
-          : `${comletedUploads} of ${totalUploads} uploads complete`}
+      <div className='flex flex-shrink-0 items-center justify-between border-b-[1px] bg-faded_bg py-[8px] px-[20px] text-sm'>
+        {title}
         <button
           className='text-gray-500 hover:text-gray-800'
           onClick={() => setShowUploadModal((prev) => !prev)}
