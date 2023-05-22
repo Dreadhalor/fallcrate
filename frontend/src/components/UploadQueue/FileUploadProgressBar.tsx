@@ -2,7 +2,7 @@ import { useFilesystem } from '@hooks/useFilesystem';
 import { FileUpload } from '@src/types';
 import { IoCheckmarkCircleOutline } from 'react-icons/io5';
 import { DotLoader } from 'react-spinners';
-import { MdClear } from 'react-icons/md';
+import { MdOutlineCancel } from 'react-icons/md';
 import './styles.scss';
 
 type Props = {
@@ -25,11 +25,11 @@ export const FileUploadProgressBar = ({
           className='group relative flex'
           onClick={() => dequeueCompletedUpload(uploadData.id)}
         >
-          <MdClear className='opacity-0' />
+          <MdOutlineCancel className='opacity-0' />
           <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100'>
-            <MdClear />
+            <MdOutlineCancel />
           </div>
-          <div className='absolute inset-0 flex group-hover:opacity-0'>
+          <div className='absolute inset-0 flex items-center justify-center group-hover:opacity-0'>
             {complete ? (
               <IoCheckmarkCircleOutline size={16} />
             ) : (
