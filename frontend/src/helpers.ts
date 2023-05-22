@@ -187,14 +187,17 @@ export const checkFilesForNameConflict = (
 // order the given files such that parent directories are before their children
 export const orderFilesByDirectory = (files: CustomFileFields[]) => {
   const orderedFiles = [];
-  // console.log('orderFiles - input:', files);
   const directories = files.filter((file) => file.type === 'directory');
-  // console.log('orderFiles - directories:', directories);
   const filesWithoutDirectories = files.filter(
     (file) => file.type !== 'directory'
   );
-  // console.log('orderFiles - non-directories:', filesWithoutDirectories);
-  for (const directory of directories) {
+
+  // Define a helper function to check whether a file is a top-level node (has no parent)
+  const isTopLevelNode = (file: CustomFileFields) => file.parent === null;
+
+  // First, push all top-level directories
+  const topLevelDirectories = directories.filter(isTopLevelNode);
+  for (const directory of topLevelDirectories) {
     orderedFiles.push(directory);
     const nestedFiles = getNestedFilesOnly(
       directory.id,
@@ -202,7 +205,11 @@ export const orderFilesByDirectory = (files: CustomFileFields[]) => {
     );
     orderedFiles.push(...nestedFiles);
   }
-  orderedFiles.push(...filesWithoutDirectories);
+
+  // Then, push all top-level files
+  const topLevelFiles = filesWithoutDirectories.filter(isTopLevelNode);
+  orderedFiles.push(...topLevelFiles);
+
   return orderedFiles;
 };
 

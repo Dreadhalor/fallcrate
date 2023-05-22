@@ -242,18 +242,19 @@ export const useFileUpload = (
     });
   };
 
-  const promptUploadFolder = (): Promise<string[]> => {
+  const promptUploadFolder = async (): Promise<string[]> => {
     return promptUpload(true, async (files) => {
       const parsedFiles = parseFileArray(files);
       console.log('parsedFiles:', parsedFiles);
       const directories = parsedFiles.filter(
         (file) => file.type === 'directory'
       );
-      directories.forEach((directory) => {
-        directory.parent = currentDirectory ?? null;
-        db.createFile(directory);
-      });
       const _files = parsedFiles.filter((file) => file.type === 'file');
+      console.log(_files);
+      directories.forEach(async (directory) => {
+        directory.parent = currentDirectory ?? null;
+        await db.createFile(directory);
+      });
       _files.forEach(addToUploadQueue);
     });
   };

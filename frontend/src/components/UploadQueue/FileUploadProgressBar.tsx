@@ -29,7 +29,7 @@ export const FileUploadProgressBar = ({
   );
 
   return (
-    <div className='queue-item flex flex-col gap-[8px] pt-[10px]'>
+    <div className='queue-item flex flex-col gap-[7px] pt-[10px]'>
       <div className='flex items-center'>
         <div className='flex w-[36px] flex-shrink-0 items-center justify-center'>
           <button
