@@ -39,44 +39,48 @@ export const useFileUpload = (
   };
 
   useEffect(() => {
-    const waitingUploads = uploadQueue.filter(
-      (upload) => upload.status === 'waiting'
-    );
-    waitingUploads.forEach(startUpload);
+    const processQueue = async () => {
+      const waitingUploads = uploadQueue.filter(
+        (upload) => upload.status === 'waiting'
+      );
+      for (const upload of waitingUploads) {
+        await startUpload(upload);
+      }
+    };
+    processQueue();
   }, [uploadQueue]);
 
-  const startUpload = async (upload: FileUpload) => {
-    upload.status = 'uploading';
-    const { uploadData } = upload;
-    const { id, file, type } = uploadData;
-    if (type === 'file' && file) {
-      const path = `uploads/${id}`;
-      await storage.uploadFile(
-        file,
-        path,
-        (snapshot) => {
-          // console.log(
-          //   `${
-          //     Math.trunc(
-          //       (snapshot.bytesTransferred / snapshot.totalBytes) * 100 * 100
-          //     ) / 100
-          //   }%: ${file.name}`
-          // );
-          upload.totalBytes = snapshot.totalBytes;
-          upload.bytesUploaded = snapshot.bytesTransferred;
-        },
-        (error) => console.log(`Error (${file.name}:`, error),
-        async () => {
-          upload.status = 'complete';
-          // console.log('about to upload:', upload.uploadData.name);
-          await db.createFile(uploadData);
-          // console.log('completed upload:', upload.uploadData.name);
-          // .then((_) => console.log('created:', file.name));
+  const startUpload = (upload: FileUpload) => {
+    return new Promise(async (resolve, reject) => {
+      upload.status = 'uploading';
+      const { uploadData } = upload;
+      const { id, file, type } = uploadData;
+      if (type === 'file' && file) {
+        const path = `uploads/${id}`;
+        try {
+          await storage.uploadFile(
+            file,
+            path,
+            (snapshot) => {
+              upload.totalBytes = snapshot.totalBytes;
+              upload.bytesUploaded = snapshot.bytesTransferred;
+            },
+            (error) => {
+              console.log(`Error (${file.name}:`, error);
+              reject(error);
+            },
+            async () => {
+              upload.status = 'complete';
+              await db.createFile(uploadData);
+              resolve(id);
+            }
+          );
+        } catch (error) {
+          console.log('Upload error:', error);
+          reject(error);
         }
-      );
-    }
-
-    return id;
+      }
+    });
   };
 
   const uploadSingleFileUploadData = async (

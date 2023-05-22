@@ -21,10 +21,6 @@ export const useFirebaseStorage = (): Storage => {
   ): Promise<void> => {
     const storageRef = ref(storage, path);
     const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.then(
-      (snapshot) => console.log('success I guess?'),
-      (rejected) => console.log('rejected:', rejected)
-    );
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
