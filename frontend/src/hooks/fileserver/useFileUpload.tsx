@@ -65,7 +65,6 @@ export const useFileUpload = (
             file,
             path,
             (snapshot) => {
-              console.log('snapshot', snapshot);
               if (!progressRefs.current.has(id)) {
                 progressRefs.current.set(id, {
                   id,
