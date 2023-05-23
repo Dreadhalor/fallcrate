@@ -1,12 +1,12 @@
 import { FileUploadProgressBar } from '@components/UploadQueue/FileUploadProgressBar';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { FaChevronUp } from 'react-icons/fa';
-import './styles.scss';
 
 export const UploadQueuePane = () => {
-  const { uploadQueue, showUploadModal, setShowUploadModal } = useFilesystem();
+  const { uploadQueue, showUploadModal, setShowUploadModal, getUploadStatus } =
+    useFilesystem();
   const completedUploads = uploadQueue.filter(
-    (upload) => upload.status === 'complete'
+    (uploadData) => getUploadStatus(uploadData.id) === 'success'
   ).length;
   const totalUploads = uploadQueue.length;
   const title =
@@ -33,11 +33,11 @@ export const UploadQueuePane = () => {
         </button>
       </div>
       <div
-        className='queue-body flex flex-1 flex-col overflow-auto transition-all duration-200'
+        className='flex flex-1 flex-col overflow-auto transition-all duration-200'
         style={{ maxHeight: `${innerHeight}px`, minHeight: `${innerHeight}px` }}
       >
-        {uploadQueue.map((upload) => (
-          <FileUploadProgressBar upload={upload} key={upload.uploadData.id} />
+        {uploadQueue.map((uploadData) => (
+          <FileUploadProgressBar uploadData={uploadData} key={uploadData.id} />
         ))}
       </div>
     </div>

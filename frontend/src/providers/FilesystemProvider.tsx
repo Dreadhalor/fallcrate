@@ -43,6 +43,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     setShowUploadModal,
     processDragNDrop,
     progressRefs,
+    getUploadStatus,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const {
@@ -235,6 +236,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         setShowUploadModal,
         processDragNDrop,
         progressRefs,
+        getUploadStatus,
       }}
     >
       {children}

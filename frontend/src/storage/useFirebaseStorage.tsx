@@ -27,7 +27,6 @@ export const useFirebaseStorage = (): Storage => {
         'state_changed',
         onProgress,
         (error) => {
-          console.log('errorCallback:', error);
           if (onError) {
             onError(error);
           }

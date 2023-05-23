@@ -1,7 +1,7 @@
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { v4 as uuidv4 } from 'uuid';
-import { CustomFile, FileUpload, FileUploadData } from '@src/types';
+import { CustomFile, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
 import { useAuth } from 'milestone-components';
 // import { getValidDuplicatedName } from './helpers';
@@ -9,11 +9,13 @@ import { parseFileArray } from '@src/helpers';
 import { useEffect, useState } from 'react';
 
 import { useRef } from 'react';
+import { TaskState } from 'firebase/storage';
 
 export type UploadProgress = {
   id: string;
   progress: number;
   lastFrame: number;
+  state: TaskState | null;
 };
 
 export const useFileUpload = (
@@ -24,26 +26,26 @@ export const useFileUpload = (
   const db = useDB(uid);
   const storage = useStorage();
 
-  const [uploadQueue, setUploadQueue] = useState([] as FileUpload[]);
+  const [uploadQueue, setUploadQueue] = useState([] as FileUploadData[]);
   const progressRefs = useRef(new Map<string, UploadProgress>());
   const [showUploadModal, setShowUploadModal] = useState(false);
   const addToUploadQueue = (file: FileUploadData) => {
-    const newUpload: FileUpload = {
-      uploadData: file,
-      status: 'waiting',
-    };
-    setUploadQueue((prev) => [newUpload, ...prev]);
+    setUploadQueue((prev) => [file, ...prev]);
   };
   const dequeueCompletedUpload = (id: string) => {
-    setUploadQueue((prev) =>
-      prev.filter((upload) => upload.uploadData.id !== id)
-    );
+    setUploadQueue((prev) => prev.filter((uploadData) => uploadData.id !== id));
+  };
+
+  const getUploadStatus = (id: string) => {
+    const progressRef = progressRefs.current.get(id);
+    if (progressRef) return progressRef.state;
+    return null;
   };
 
   useEffect(() => {
     const processQueue = async () => {
       const waitingUploads = uploadQueue.filter(
-        (upload) => upload.status === 'waiting'
+        (uploadData) => getUploadStatus(uploadData.id) === null
       );
       for (const upload of waitingUploads) {
         setShowUploadModal(true);
@@ -53,10 +55,8 @@ export const useFileUpload = (
     processQueue();
   }, [uploadQueue]);
 
-  const startUpload = (upload: FileUpload) => {
+  const startUpload = (uploadData: FileUploadData) => {
     return new Promise(async (resolve, reject) => {
-      upload.status = 'uploading';
-      const { uploadData } = upload;
       const { id, file, type } = uploadData;
       if (type === 'file' && file) {
         const path = `uploads/${id}`;
@@ -70,6 +70,7 @@ export const useFileUpload = (
                   id,
                   progress: 0,
                   lastFrame: 0,
+                  state: snapshot.state,
                 });
               }
 
@@ -85,7 +86,10 @@ export const useFileUpload = (
               reject(error);
             },
             async () => {
-              upload.status = 'complete'; // probably make this a state change?
+              const progressRef = progressRefs.current.get(id);
+              if (progressRef) {
+                progressRef.state = 'success';
+              }
               await db.createFile(uploadData);
               resolve(id);
             }
@@ -260,5 +264,6 @@ export const useFileUpload = (
     setShowUploadModal,
     processDragNDrop,
     progressRefs,
+    getUploadStatus,
   };
 };

@@ -1,41 +1,26 @@
 import { useFilesystem } from '@hooks/useFilesystem';
-import { FileUpload } from '@src/types';
 import { IoCheckmarkCircleOutline } from 'react-icons/io5';
 import { DotLoader } from 'react-spinners';
 import { MdOutlineCancel } from 'react-icons/md';
 import { AiOutlineClockCircle } from 'react-icons/ai';
-import './styles.scss';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { useEffect } from 'react';
+import { FileUploadData } from '@src/types';
 
 type Props = {
-  upload: FileUpload;
+  uploadData: FileUploadData;
 };
 
-export const FileUploadProgressBar = ({
-  upload: { uploadData, status },
-}: Props) => {
+export const FileUploadProgressBar = ({ uploadData }: Props) => {
   const { getParent, dequeueCompletedUpload, openDirectory, progressRefs } =
     useFilesystem();
-  const waiting = status === 'waiting';
-  const complete = status === 'complete';
   const parent = getParent(uploadData);
-  const icon = waiting ? (
-    <AiOutlineClockCircle />
-  ) : complete ? (
-    <IoCheckmarkCircleOutline size={16} />
-  ) : (
-    <DotLoader size={12} />
-  );
 
   useEffect(() => {
     requestAnimationFrame(animate);
 
     return () => {
-      const i = progressRefs.current.delete(uploadData.id);
-      if (i) {
-        console.log(`deleted progress ref for ${uploadData.id}`);
-      }
+      progressRefs.current.delete(uploadData.id);
     };
   }, []);
 
@@ -44,27 +29,60 @@ export const FileUploadProgressBar = ({
       lastFrame: 0,
       progress: 0,
       id: uploadData.id,
+      state: null,
     };
-    const { lastFrame, progress, id } = progressRef;
-    console.log(`progress ${uploadData.name}:`, progress);
+    const { lastFrame, progress, id, state } = progressRef;
+    const waitingIcon = document.getElementById(`waiting-icon-${id}`);
+    const loadingIcon = document.getElementById(`loading-icon-${id}`);
+    const successIcon = document.getElementById(`success-icon-${id}`);
+    const hasIcons = waitingIcon && loadingIcon && successIcon;
+    const progressBarContainer = document.getElementById(
+      `progress-bar-container-${id}`
+    );
     if (lastFrame !== progress) {
       const progressBar = document.getElementById(`progress-bar-${id}`);
-      const percentLabel = document.getElementById(`percent-label-${id}`);
       if (progressBar) {
         progressBar.style.width = `${progress * 100}%`;
       }
+      const percentLabel = document.getElementById(`percent-label-${id}`);
       if (percentLabel) {
         percentLabel.innerText = `${Math.trunc(progress * 100 * 100) / 100}%`;
       }
+
+      if (hasIcons) {
+        if (!state || state === 'paused') {
+          waitingIcon.style.display = 'flex';
+          loadingIcon.style.display = 'none';
+          successIcon.style.display = 'none';
+        }
+        if (state === 'running') {
+          waitingIcon.style.display = 'none';
+          loadingIcon.style.display = 'flex';
+          successIcon.style.display = 'none';
+        }
+      }
       progressRef.lastFrame = progress;
     }
-    if (progress !== 1) {
+    if (state !== 'success') {
       requestAnimationFrame(animate);
+    } else {
+      if (hasIcons) {
+        waitingIcon.style.display = 'none';
+        loadingIcon.style.display = 'none';
+        successIcon.style.display = 'flex';
+      }
+      if (progressBarContainer) {
+        progressBarContainer.style.opacity = '0';
+      }
+      const uploadingToLabel = document.getElementById(`uploading-to-${id}`);
+      if (uploadingToLabel) {
+        uploadingToLabel.innerText = 'Uploaded to';
+      }
     }
   };
 
   return (
-    <div className='queue-item flex flex-col gap-[7px] pt-[10px]'>
+    <div className='flex flex-col gap-[7px] border-b-[1px] border-b-[#e0e0e0] pt-[10px]'>
       <div className='flex items-center'>
         <div className='flex w-[36px] flex-shrink-0 items-center justify-center'>
           <button
@@ -75,8 +93,26 @@ export const FileUploadProgressBar = ({
             <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100'>
               <MdOutlineCancel />
             </div>
-            <div className='absolute inset-0 flex items-center justify-center group-hover:opacity-0'>
-              {icon}
+            <div
+              id={`waiting-icon-${uploadData.id}`}
+              style={{ display: 'flex' }}
+              className='absolute inset-0 flex items-center justify-center group-hover:opacity-0'
+            >
+              <AiOutlineClockCircle />
+            </div>
+            <div
+              id={`loading-icon-${uploadData.id}`}
+              style={{ display: 'none' }}
+              className='absolute inset-0 flex items-center justify-center group-hover:opacity-0'
+            >
+              <DotLoader size={12} />
+            </div>
+            <div
+              id={`success-icon-${uploadData.id}`}
+              style={{ display: 'none' }}
+              className='absolute inset-0 flex items-center justify-center group-hover:opacity-0'
+            >
+              <IoCheckmarkCircleOutline size={16} />
             </div>
           </button>
         </div>
@@ -86,7 +122,8 @@ export const FileUploadProgressBar = ({
             <div className='flex min-w-0 flex-col gap-[2px] text-xs'>
               <TruncatedText text={uploadData.name} />
               <span className='text-gray-500'>
-                {complete ? 'Uploaded to' : 'Uploading to'}&nbsp;
+                <span id={`uploading-to-${uploadData.id}`}>Uploading to</span>
+                &nbsp;
                 <button
                   className='cursor-pointer underline hover:text-black'
                   onClick={() => openDirectory(parent?.id ?? null)}
@@ -102,9 +139,8 @@ export const FileUploadProgressBar = ({
         </div>
       </div>
       <div
-        className={`relative h-[4px] w-full bg-gray-200 ${
-          complete ? 'opacity-0' : 'opacity-100'
-        }`}
+        id={`progress-bar-container-${uploadData.id}`}
+        className='relative h-[4px] w-full bg-gray-200'
       >
         <div
           id={`progress-bar-${uploadData.id}`}

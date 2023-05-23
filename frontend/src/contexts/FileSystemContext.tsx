@@ -1,5 +1,6 @@
 import { UploadProgress } from '@hooks/fileserver/useFileUpload';
-import { CustomFile, CustomFileFields, FileUpload } from '@src/types';
+import { CustomFile, CustomFileFields, FileUploadData } from '@src/types';
+import { TaskState } from 'firebase/storage';
 import { MutableRefObject, createContext } from 'react';
 
 interface FilesystemContextValue {
@@ -29,12 +30,13 @@ interface FilesystemContextValue {
   duplicateFileOrFolder: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
-  uploadQueue: FileUpload[];
+  uploadQueue: FileUploadData[];
   dequeueCompletedUpload: (id: string) => void;
   showUploadModal: boolean;
   setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>;
   processDragNDrop: (items: DataTransferItemList) => Promise<void>;
   progressRefs: MutableRefObject<Map<string, UploadProgress>>;
+  getUploadStatus: (id: string) => TaskState | null;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

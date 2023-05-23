@@ -15,10 +15,6 @@ export interface FileUploadData extends CustomFileFields {
   file?: File;
 }
 
-export interface FileUpload {
-  uploadData: FileUploadData;
-  status: 'waiting' | 'uploading' | 'complete';
-}
 export interface DraggedItem {
   id: string;
 }
