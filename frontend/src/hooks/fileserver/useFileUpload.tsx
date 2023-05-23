@@ -29,11 +29,22 @@ export const useFileUpload = (
   const [uploadQueue, setUploadQueue] = useState([] as FileUploadData[]);
   const progressRefs = useRef(new Map<string, UploadProgress>());
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [removeUploadModal, setRemoveUploadModal] = useState(true);
   const addToUploadQueue = (file: FileUploadData) => {
     setUploadQueue((prev) => [file, ...prev]);
   };
   const dequeueCompletedUpload = (id: string) => {
     setUploadQueue((prev) => prev.filter((uploadData) => uploadData.id !== id));
+  };
+
+  const toggleUploadModal = (show: boolean) => {
+    if (show) {
+      setShowUploadModal(true);
+      setRemoveUploadModal(false);
+    } else {
+      setShowUploadModal(false);
+      setRemoveUploadModal(true);
+    }
   };
 
   const getUploadStatus = (id: string) => {
@@ -48,7 +59,7 @@ export const useFileUpload = (
         (uploadData) => getUploadStatus(uploadData.id) === null
       );
       for (const upload of waitingUploads) {
-        setShowUploadModal(true);
+        toggleUploadModal(true);
         await startUpload(upload);
       }
     };
@@ -262,6 +273,8 @@ export const useFileUpload = (
     dequeueCompletedUpload,
     showUploadModal,
     setShowUploadModal,
+    removeUploadModal,
+    toggleUploadModal,
     processDragNDrop,
     progressRefs,
     getUploadStatus,

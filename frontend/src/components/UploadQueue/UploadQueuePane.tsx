@@ -1,10 +1,16 @@
 import { FileUploadProgressBar } from '@components/UploadQueue/FileUploadProgressBar';
 import { useFilesystem } from '@hooks/useFilesystem';
-import { FaChevronUp } from 'react-icons/fa';
+import { FaChevronUp, FaTimes } from 'react-icons/fa';
 
 export const UploadQueuePane = () => {
-  const { uploadQueue, showUploadModal, setShowUploadModal, getUploadStatus } =
-    useFilesystem();
+  const {
+    uploadQueue,
+    showUploadModal,
+    setShowUploadModal,
+    getUploadStatus,
+    removeUploadModal,
+    toggleUploadModal,
+  } = useFilesystem();
   const completedUploads = uploadQueue.filter(
     (uploadData) => getUploadStatus(uploadData.id) === 'success'
   ).length;
@@ -19,9 +25,21 @@ export const UploadQueuePane = () => {
   const innerHeight = showUploadModal ? 350 : 0;
 
   return (
-    <div className='fixed bottom-0 right-[40px] z-10 flex w-[400px] flex-col border-[1px] bg-white'>
-      <div className='flex flex-shrink-0 items-center justify-between border-b-[1px] bg-faded_bg py-[8px] px-[20px] text-sm'>
+    <div
+      className='fixed bottom-0 right-[40px] z-20 flex w-[400px] flex-col border-[1px] bg-white transition-all'
+      style={{
+        opacity: removeUploadModal ? 0 : 1,
+        pointerEvents: removeUploadModal ? 'none' : 'all',
+      }}
+    >
+      <div className='flex flex-shrink-0 items-center border-b-[1px] bg-faded_bg py-[8px] px-[20px] text-sm'>
         {title}
+        <button
+          className='ml-auto mr-[10px] text-gray-500 hover:text-gray-800'
+          onClick={() => toggleUploadModal(false)}
+        >
+          <FaTimes />
+        </button>
         <button
           className='text-gray-500 hover:text-gray-800'
           onClick={() => setShowUploadModal((prev) => !prev)}

@@ -34,6 +34,8 @@ interface FilesystemContextValue {
   dequeueCompletedUpload: (id: string) => void;
   showUploadModal: boolean;
   setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>;
+  removeUploadModal: boolean;
+  toggleUploadModal: (show: boolean) => void;
   processDragNDrop: (items: DataTransferItemList) => Promise<void>;
   progressRefs: MutableRefObject<Map<string, UploadProgress>>;
   getUploadStatus: (id: string) => TaskState | null;
