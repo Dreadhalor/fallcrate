@@ -1,15 +1,11 @@
 import AllFilesMenu from '@components/AllFilesMenu';
-import { FileUploadProgressBar } from '@components/UploadQueue/FileUploadProgressBar';
 import { StorageUsedBar } from '@components/StorageUsedBar';
-import { useFilesystem } from '@hooks/useFilesystem';
 
 type Props = {
   style: React.CSSProperties;
 };
 
 const Sidebar = ({ style }: Props) => {
-  // const { uploadQueue } = useFilesystem();
-
   return (
     <div
       id='sidebar'
@@ -18,9 +14,6 @@ const Sidebar = ({ style }: Props) => {
     >
       <AllFilesMenu />
       <StorageUsedBar />
-      {/* {uploadQueue.map((upload) => (
-        <FileUploadBar upload={upload} key={upload.uploadData.id} />
-      ))} */}
     </div>
   );
 };

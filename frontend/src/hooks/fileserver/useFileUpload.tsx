@@ -1,16 +1,11 @@
 import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  CustomFile,
-  CustomFileFields,
-  FileUpload,
-  FileUploadData,
-} from '@src/types';
+import { CustomFile, FileUpload, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
-import { useAchievements, useAuth } from 'milestone-components';
-import { getValidDuplicatedName } from './helpers';
-import { orderFilesByDirectory, parseFileArray } from '@src/helpers';
+import { useAuth } from 'milestone-components';
+// import { getValidDuplicatedName } from './helpers';
+import { parseFileArray } from '@src/helpers';
 import { useEffect, useState } from 'react';
 
 export const useFileUpload = (
@@ -18,7 +13,6 @@ export const useFileUpload = (
   currentDirectoryFiles: CustomFile[]
 ) => {
   const { uid } = useAuth();
-  const { unlockAchievementById } = useAchievements();
   const db = useDB(uid);
   const storage = useStorage();
 
@@ -85,96 +79,22 @@ export const useFileUpload = (
     });
   };
 
-  const uploadSingleFileUploadData = async (
-    fields: FileUploadData
-  ): Promise<string> => {
-    const { id, file, type } = fields;
-    if (type === 'file' && file) {
-      const path = `uploads/${id}`;
-      await storage.uploadFile(file, path);
-    }
-    await db.createFile(fields);
-    return id;
-  };
-
-  // const uploadFilesOrFolders2 = async (
-  //   items: FileUploadData[]
-  // ): Promise<string[]> => {
-  //   // order items by directory structure
-  //   const orderedItems = orderFilesByDirectory(items);
-  //   const topLevelItems = orderedItems.filter((item) => item.parent === null);
-  //   topLevelItems.forEach((item) => {
-  //     item.parent = currentDirectory ?? null;
-  //     item.name = getValidDuplicatedName(item.name, currentDirectoryFiles);
-  //   });
-
-  //   const uploadPromises = orderedItems.map(
-  //     async (item) => await uploadSingleFileUploadData(item)
-  //   );
-  //   const ids = await Promise.all(uploadPromises);
-  //   return ids;
-  // };
-
-  const uploadFilesOrFolders = async (
-    items: FileUploadData[]
-  ): Promise<string[]> => {
-    // order items by directory structure
-    const orderedItems = orderFilesByDirectory(items);
-
-    const uploadPromises = orderedItems.map((item) =>
-      uploadSingleFileUploadData(item)
-    );
-    const ids = await Promise.all(uploadPromises);
-    return ids;
-  };
-
-  const parseFile = (file: File) => {
+  const parseFile = (
+    file: File,
+    parent: string | null = currentDirectory
+  ): FileUploadData => {
     const id = uuidv4();
     const fields: FileUploadData = {
       id,
       name: file.name,
       type: 'file',
       size: file.size,
-      parent: currentDirectory ?? null, // do we even need this null coalescer?
+      parent: parent ?? null, // do we even need this null coalescer?
       createdAt: Timestamp.now(),
       file,
     };
     return fields;
   };
-
-  const uploadFileOrFolder = async (
-    file: File,
-    achievementsEnabled = true
-  ): Promise<string> => {
-    const id = uuidv4();
-    const path = `uploads/${id}`;
-    await storage.uploadFile(file, path);
-
-    const newFile: CustomFileFields = {
-      id,
-      name: getValidDuplicatedName(file.name, currentDirectoryFiles),
-      type: 'file',
-      size: file.size,
-      parent: currentDirectory ?? null,
-      createdAt: Timestamp.now(),
-    };
-
-    await db.createFile(newFile);
-    if (achievementsEnabled) unlockAchievementById('upload_file');
-    return id;
-  };
-
-  // const uploadFolder = async (files: FileUploadData[]): Promise<string[]> => {
-  //   const folder = files[0];
-  //   folder.parent = currentDirectory ?? null;
-  //   folder.name = getValidDuplicatedName(folder.name, currentDirectoryFiles);
-  //   const uploadPromises = files.map((file) =>
-  //     uploadSingleFileUploadData(file)
-  //   );
-  //   await Promise.all(uploadPromises);
-  //   unlockAchievementById('upload_folder');
-  //   return Promise.resolve([folder.id]);
-  // };
 
   const promptUpload = (
     isDirectory: boolean,
@@ -207,7 +127,7 @@ export const useFileUpload = (
 
   const promptUploadFiles = async (): Promise<void> => {
     promptUpload(false, (files) => {
-      const result = files.map(parseFile);
+      const result = files.map((file) => parseFile(file, currentDirectory));
       return Promise.resolve(result);
     }).then((uploadDataPlural) => {
       uploadDataPlural.forEach(addToUploadQueue);
@@ -215,31 +135,110 @@ export const useFileUpload = (
   };
 
   const promptUploadFolder = async (): Promise<void> => {
-    promptUpload(true, parseFileArray).then(
-      (uploadDataPlural: FileUploadData[]) => {
-        const directories = uploadDataPlural.filter(
-          (uploadData) => uploadData.type === 'directory'
-        );
-        directories.forEach(async (directory) => {
-          if (!directory.parent) directory.parent = currentDirectory ?? null;
-          await db.createFile(directory);
-        });
-        const files = uploadDataPlural.filter(
-          (uploadData) => uploadData.type === 'file'
-        );
-        files.forEach(addToUploadQueue);
-      }
+    promptUpload(true, parseFileArray)
+      .then((uploadDataPlural: FileUploadData[]) =>
+        processOutDirectories(uploadDataPlural)
+      )
+      .then((uploadDataPlural) => {
+        uploadDataPlural.forEach(addToUploadQueue);
+      });
+  };
+
+  const processOutDirectories = async (
+    uploadDataPlural: FileUploadData[]
+  ): Promise<FileUploadData[]> => {
+    const directories = uploadDataPlural.filter(
+      (uploadData) => uploadData.type === 'directory'
     );
+    directories.forEach(async (directory) => {
+      if (!directory.parent) directory.parent = currentDirectory ?? null;
+      await db.createFile(directory);
+    });
+    return uploadDataPlural.filter((uploadData) => uploadData.type === 'file');
+  };
+
+  const processDragNDrop = async (
+    items: DataTransferItemList
+  ): Promise<void> => {
+    const itemPromises = Array.from(items).map((item) => {
+      let entry = item.webkitGetAsEntry();
+      if (entry) {
+        if (entry.isFile) {
+          return new Promise<FileUploadData[]>((resolve) =>
+            (entry as any).file((file: File) => {
+              const fields = parseFile(file);
+              resolve([fields]);
+            })
+          );
+        } else if (entry.isDirectory) {
+          return parseDirectoryEntry(entry as any, null);
+        }
+      }
+      // Provide a fallback return
+      return Promise.resolve([]);
+    });
+
+    Promise.all(itemPromises)
+      .then((uploadDataPlural: FileUploadData[][]) => {
+        const nonEmptyFiles = uploadDataPlural
+          .flat()
+          .filter((file) => file && file.id !== null);
+        return nonEmptyFiles;
+      })
+      .then((uploadDataPlural) => processOutDirectories(uploadDataPlural))
+      .then((uploadDataPlural) => {
+        uploadDataPlural.forEach(addToUploadQueue);
+      });
+  };
+
+  const parseDirectoryEntry = (
+    entry: any,
+    parent: string | null
+  ): Promise<FileUploadData[]> => {
+    return new Promise((resolve) => {
+      let files: FileUploadData[] = [];
+
+      if (entry.isFile) {
+        entry.file((file: File) => {
+          if (file) {
+            // check if file is defined
+            const fileFields = parseFile(file, parent);
+            files.push(fileFields);
+          }
+          resolve(files);
+        });
+      } else if (entry.isDirectory) {
+        const id = uuidv4();
+        const dirFields: FileUploadData = {
+          id,
+          name: entry.name,
+          type: 'directory',
+          parent: parent,
+          createdAt: Timestamp.now(),
+        };
+        files.push(dirFields);
+        let directoryReader = entry.createReader();
+        directoryReader.readEntries(async (entries: any) => {
+          for (const subEntry of entries) {
+            const nestedFiles = await parseDirectoryEntry(
+              subEntry,
+              dirFields.id
+            );
+            files = files.concat(nestedFiles);
+          }
+          resolve(files);
+        });
+      }
+    });
   };
 
   return {
-    uploadFileOrFolder,
     promptUploadFiles,
     promptUploadFolder,
-    uploadFilesOrFolders,
     uploadQueue,
     dequeueCompletedUpload,
     showUploadModal,
     setShowUploadModal,
+    processDragNDrop,
   };
 };

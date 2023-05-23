@@ -1,12 +1,5 @@
 import { useFilesystem } from '@hooks/useFilesystem';
 import prettyBytes from 'pretty-bytes';
-import { default as parse } from 'parse-unit';
-
-// const input = '15 gb';
-// const result = parse(input);
-// const [value, unit] = result;
-// const bytes = value * 1000 ** ['b', 'kb', 'mb', 'gb', 'tb'].indexOf(unit);
-// console.log(bytes);
 
 export const StorageUsedBar = () => {
   const { files } = useFilesystem();

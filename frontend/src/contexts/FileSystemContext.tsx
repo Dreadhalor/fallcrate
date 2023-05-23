@@ -1,9 +1,4 @@
-import {
-  CustomFile,
-  CustomFileFields,
-  FileUpload,
-  FileUploadData,
-} from '@src/types';
+import { CustomFile, CustomFileFields, FileUpload } from '@src/types';
 import { createContext } from 'react';
 
 interface FilesystemContextValue {
@@ -24,13 +19,8 @@ interface FilesystemContextValue {
   promptNewFolder: () => void;
   promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
-  uploadFileOrFolder: (
-    file: File,
-    achievementsEnabled?: boolean
-  ) => Promise<string>;
-  uploadFilesOrFolders: (files: FileUploadData[]) => Promise<string[]>;
-  promptUploadFiles: () => Promise<string[]>;
-  promptUploadFolder: () => Promise<string[]>;
+  promptUploadFiles: () => Promise<void>;
+  promptUploadFolder: () => Promise<void>;
   openImageModal: (file: CustomFile) => void;
   getParent: (file: CustomFileFields) => CustomFileFields | null;
   getFile: (file_id: string) => CustomFile | null;
@@ -42,6 +32,7 @@ interface FilesystemContextValue {
   dequeueCompletedUpload: (id: string) => void;
   showUploadModal: boolean;
   setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>;
+  processDragNDrop: (items: DataTransferItemList) => Promise<void>;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

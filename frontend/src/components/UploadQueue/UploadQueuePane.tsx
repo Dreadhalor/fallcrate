@@ -1,6 +1,5 @@
 import { FileUploadProgressBar } from '@components/UploadQueue/FileUploadProgressBar';
 import { useFilesystem } from '@hooks/useFilesystem';
-import { useState } from 'react';
 import { FaChevronUp } from 'react-icons/fa';
 import './styles.scss';
 

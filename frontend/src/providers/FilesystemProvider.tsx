@@ -35,14 +35,13 @@ export const FilesystemProvider = ({ children }: Props) => {
   // why did I need to make a context for imageModal shenanigans again??
   const { openImageModal } = useImageModal();
   const {
-    uploadFileOrFolder: _uploadFileOrFolder,
-    promptUploadFiles: _promptUploadFiles,
-    promptUploadFolder: _promptUploadFolder,
-    uploadFilesOrFolders,
+    promptUploadFiles,
+    promptUploadFolder,
     uploadQueue,
     dequeueCompletedUpload,
     showUploadModal,
     setShowUploadModal,
+    processDragNDrop,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
   const {
@@ -203,30 +202,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     }
   };
 
-  const uploadFileOrFolder = async (
-    file: File,
-    achievementsEnabled?: boolean
-  ) => {
-    return _uploadFileOrFolder(file, achievementsEnabled).then(
-      (uploaded_id) => {
-        if (uploaded_id) {
-          selectFilesExclusively([uploaded_id]);
-        }
-        return uploaded_id;
-      }
-    );
-  };
-  const promptUploadFiles = _promptUploadFiles;
-  // const promptUploadFolder = async () => {
-  //   return _promptUploadFolder().then((uploaded_id_but_as_an_array_of_one) => {
-  //     if (uploaded_id_but_as_an_array_of_one) {
-  //       selectFilesExclusively(uploaded_id_but_as_an_array_of_one);
-  //     }
-  //     return uploaded_id_but_as_an_array_of_one;
-  //   });
-  // };
-  const promptUploadFolder = _promptUploadFolder;
-
   return (
     <FilesystemContext.Provider
       value={{
@@ -244,8 +219,6 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptNewFolder,
         promptRenameFile,
         moveFiles,
-        uploadFilesOrFolders,
-        uploadFileOrFolder,
         promptUploadFiles,
         promptUploadFolder,
         uploadQueue,
@@ -259,6 +232,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         downloadFilesOrFolders,
         showUploadModal,
         setShowUploadModal,
+        processDragNDrop,
       }}
     >
       {children}
