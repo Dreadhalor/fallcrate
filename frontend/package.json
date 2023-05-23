@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-spring/web": "^9.7.2",
     "antd": "^5.5.0",
     "firebase": "^9.20.0",
     "jszip": "^3.10.1",

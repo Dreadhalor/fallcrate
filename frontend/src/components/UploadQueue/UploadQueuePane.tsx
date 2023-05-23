@@ -3,20 +3,18 @@ import { useFilesystem } from '@hooks/useFilesystem';
 import { FaChevronUp } from 'react-icons/fa';
 import './styles.scss';
 
-type Props = {};
-
-export const UploadQueuePane = (props: Props) => {
+export const UploadQueuePane = () => {
   const { uploadQueue, showUploadModal, setShowUploadModal } = useFilesystem();
-  const comletedUploads = uploadQueue.filter(
+  const completedUploads = uploadQueue.filter(
     (upload) => upload.status === 'complete'
   ).length;
   const totalUploads = uploadQueue.length;
   const title =
     totalUploads === 0
       ? 'Uploads'
-      : comletedUploads === totalUploads
-      ? `${comletedUploads} of ${totalUploads} uploads complete`
-      : `Uploading ${comletedUploads} of ${totalUploads} files`;
+      : completedUploads === totalUploads
+      ? `${completedUploads} of ${totalUploads} uploads complete`
+      : `Uploading ${completedUploads} of ${totalUploads} files`;
 
   const innerHeight = showUploadModal ? 350 : 0;
 

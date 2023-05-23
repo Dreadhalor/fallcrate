@@ -8,6 +8,14 @@ import { useAuth } from 'milestone-components';
 import { parseFileArray } from '@src/helpers';
 import { useEffect, useState } from 'react';
 
+import { useRef } from 'react';
+
+export type UploadProgress = {
+  id: string;
+  progress: number;
+  lastFrame: number;
+};
+
 export const useFileUpload = (
   currentDirectory: string | null,
   currentDirectoryFiles: CustomFile[]
@@ -17,12 +25,11 @@ export const useFileUpload = (
   const storage = useStorage();
 
   const [uploadQueue, setUploadQueue] = useState([] as FileUpload[]);
+  const progressRefs = useRef(new Map<string, UploadProgress>());
   const [showUploadModal, setShowUploadModal] = useState(false);
   const addToUploadQueue = (file: FileUploadData) => {
     const newUpload: FileUpload = {
       uploadData: file,
-      bytesUploaded: 0,
-      totalBytes: file.size ?? 0,
       status: 'waiting',
     };
     setUploadQueue((prev) => [newUpload, ...prev]);
@@ -58,15 +65,28 @@ export const useFileUpload = (
             file,
             path,
             (snapshot) => {
-              upload.totalBytes = snapshot.totalBytes;
-              upload.bytesUploaded = snapshot.bytesTransferred;
+              console.log('snapshot', snapshot);
+              if (!progressRefs.current.has(id)) {
+                progressRefs.current.set(id, {
+                  id,
+                  progress: 0,
+                  lastFrame: 0,
+                });
+              }
+
+              const progressRef = progressRefs.current.get(id);
+
+              if (progressRef) {
+                progressRef.progress =
+                  snapshot.bytesTransferred / snapshot.totalBytes;
+              }
             },
             (error) => {
               console.log(`Error (${file.name}:`, error);
               reject(error);
             },
             async () => {
-              upload.status = 'complete';
+              upload.status = 'complete'; // probably make this a state change?
               await db.createFile(uploadData);
               resolve(id);
             }
@@ -240,5 +260,6 @@ export const useFileUpload = (
     showUploadModal,
     setShowUploadModal,
     processDragNDrop,
+    progressRefs,
   };
 };

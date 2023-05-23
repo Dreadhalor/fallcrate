@@ -6,19 +6,19 @@ import { MdOutlineCancel } from 'react-icons/md';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 import './styles.scss';
 import TruncatedText from '@components/utilities/TruncatedText';
+import { useEffect } from 'react';
 
 type Props = {
   upload: FileUpload;
 };
 
 export const FileUploadProgressBar = ({
-  upload: { bytesUploaded, totalBytes, uploadData, status },
+  upload: { uploadData, status },
 }: Props) => {
-  const { getParent, dequeueCompletedUpload, openDirectory } = useFilesystem();
-  const percent = bytesUploaded / totalBytes;
-  const truncatedPercent = Math.trunc(percent * 100 * 100) / 100;
+  const { getParent, dequeueCompletedUpload, openDirectory, progressRefs } =
+    useFilesystem();
   const waiting = status === 'waiting';
-  const complete = percent === 1;
+  const complete = status === 'complete';
   const parent = getParent(uploadData);
   const icon = waiting ? (
     <AiOutlineClockCircle />
@@ -27,6 +27,41 @@ export const FileUploadProgressBar = ({
   ) : (
     <DotLoader size={12} />
   );
+
+  useEffect(() => {
+    requestAnimationFrame(animate);
+
+    return () => {
+      const i = progressRefs.current.delete(uploadData.id);
+      if (i) {
+        console.log(`deleted progress ref for ${uploadData.id}`);
+      }
+    };
+  }, []);
+
+  const animate = () => {
+    const progressRef = progressRefs.current.get(uploadData.id) ?? {
+      lastFrame: 0,
+      progress: 0,
+      id: uploadData.id,
+    };
+    const { lastFrame, progress, id } = progressRef;
+    console.log(`progress ${uploadData.name}:`, progress);
+    if (lastFrame !== progress) {
+      const progressBar = document.getElementById(`progress-bar-${id}`);
+      const percentLabel = document.getElementById(`percent-label-${id}`);
+      if (progressBar) {
+        progressBar.style.width = `${progress * 100}%`;
+      }
+      if (percentLabel) {
+        percentLabel.innerText = `${Math.trunc(progress * 100 * 100) / 100}%`;
+      }
+      progressRef.lastFrame = progress;
+    }
+    if (progress !== 1) {
+      requestAnimationFrame(animate);
+    }
+  };
 
   return (
     <div className='queue-item flex flex-col gap-[7px] pt-[10px]'>
@@ -60,7 +95,9 @@ export const FileUploadProgressBar = ({
                 </button>
               </span>
             </div>
-            <span className='ml-[10px]'>{truncatedPercent}%</span>
+            <span id={`percent-label-${uploadData.id}`} className='ml-[10px]'>
+              0%
+            </span>
           </div>
         </div>
       </div>
@@ -70,9 +107,10 @@ export const FileUploadProgressBar = ({
         }`}
       >
         <div
+          id={`progress-bar-${uploadData.id}`}
           className='absolute top-0 left-0 h-full bg-blue-500'
           style={{
-            width: `${percent * 100}%`,
+            width: 0,
           }}
         ></div>
       </div>

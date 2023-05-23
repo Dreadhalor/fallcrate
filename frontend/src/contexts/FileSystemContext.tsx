@@ -1,5 +1,6 @@
+import { UploadProgress } from '@hooks/fileserver/useFileUpload';
 import { CustomFile, CustomFileFields, FileUpload } from '@src/types';
-import { createContext } from 'react';
+import { MutableRefObject, createContext } from 'react';
 
 interface FilesystemContextValue {
   files: CustomFile[];
@@ -33,6 +34,7 @@ interface FilesystemContextValue {
   showUploadModal: boolean;
   setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>;
   processDragNDrop: (items: DataTransferItemList) => Promise<void>;
+  progressRefs: MutableRefObject<Map<string, UploadProgress>>;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(
