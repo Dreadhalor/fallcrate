@@ -108,7 +108,7 @@ export const FileUploadProgressBar = ({
       >
         <div
           id={`progress-bar-${uploadData.id}`}
-          className='absolute top-0 left-0 h-full bg-blue-500'
+          className='absolute top-0 left-0 h-full bg-blue-500 transition-[width] duration-75'
           style={{
             width: 0,
           }}
