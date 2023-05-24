@@ -4,6 +4,7 @@ export interface CustomFileFields {
   id: string;
   name: string;
   type: 'file' | 'directory';
+  mimeType?: string;
   size?: number;
   parent: string | null;
   createdAt: Timestamp;

@@ -79,7 +79,7 @@ const BrowserItem = ({ file }: Props) => {
   }, [file.id]);
 
   const handleClick = () => {
-    if (file.type === 'file' && !file.name.endsWith('.pdf'))
+    if (file.type === 'file' && file.mimeType?.startsWith('image'))
       return setPreview(true);
     openFile(file.id);
   };

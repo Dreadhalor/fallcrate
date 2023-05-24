@@ -28,6 +28,7 @@ export const buildNewFile = (file: CustomFile) => {
     id: id ?? uuidv4(),
     name: name ?? '',
     type: type ?? 'file',
+    mimeType: file.mimeType ?? '',
     size: size ?? 0,
     parent: parent ?? null,
     uploadedBy: uploadedBy ?? '',
@@ -248,8 +249,7 @@ export function parseFileArray(files: File[]): Promise<FileUploadData[]> {
               type: isFile ? 'file' : 'directory',
               name: segment,
               createdAt: Timestamp.now(),
-              ...(isFile ? { size: file.size } : {}),
-              ...(isFile ? { file } : {}),
+              ...(isFile ? { mimeType: file.type, size: file.size, file } : {}),
             };
 
             fileMap[key] = file_fields;

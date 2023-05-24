@@ -6,7 +6,7 @@ import { useImageModal } from '@providers/ImageModalProvider';
 import { Modal } from 'antd';
 
 const ImageViewerModal = () => {
-  const { open, setOpen, file, setFile, pdf } = useImageModal();
+  const { open, setOpen, file, setFile } = useImageModal();
   const { getFileUrl } = useFilesystem();
 
   const [imageDimensions, setImageDimensions] = useState({
@@ -132,7 +132,7 @@ const ImageViewerModal = () => {
 
   return (
     <Modal
-      open={open && !pdf}
+      open={open && !(file?.mimeType === 'application/pdf')}
       onCancel={closeModal}
       bodyStyle={{ marginInline: -1, padding: 0 }} // remove padding
       footer={null} // no footer

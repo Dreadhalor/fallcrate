@@ -122,6 +122,7 @@ export const useFileUpload = (
       id,
       name: file.name,
       type: 'file',
+      mimeType: file.type,
       size: file.size,
       parent: parent ?? null, // do we even need this null coalescer?
       createdAt: Timestamp.now(),

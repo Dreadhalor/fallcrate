@@ -5,7 +5,7 @@ import { PDFViewerToolbar } from './PDFViewerToolbar';
 import { PDFViewerContent } from './PDFViewerContent';
 
 export const PDFViewer = () => {
-  const { pdf, file, open } = useImageModal();
+  const { file, open } = useImageModal();
   const { getFileUrl } = useFilesystem();
   const [url, setUrl] = useState('');
 
@@ -41,12 +41,12 @@ export const PDFViewer = () => {
   }, []);
 
   useEffect(() => {
-    if (pdf) {
+    if (file?.mimeType === 'application/pdf') {
       getFileUrl(file?.id ?? '').then(async (url) => {
         setUrl(url);
       });
     }
-  }, [open, pdf, file]);
+  }, [open, file]);
 
   return (
     <div className='fixed inset-0 flex flex-col' id='pdf-container'>

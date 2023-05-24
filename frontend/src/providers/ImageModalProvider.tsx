@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { CustomFile } from '@src/types';
 import PDFViewerModal from '@components/utilities/PDFViewer/PDFViewerModal';
 
@@ -9,7 +9,6 @@ interface ImageModalContextProps {
   setFile: (file: CustomFile | null) => void;
   openImageModal: (file: CustomFile) => void;
   closeImageModal: () => void;
-  pdf: boolean;
   modal: JSX.Element;
 }
 
@@ -24,21 +23,10 @@ type Props = {
 export const ImageModalProvider = ({ children }: Props) => {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<CustomFile | null>(null);
-  const [pdf, setPdf] = useState(false);
-
-  useEffect(() => {
-    if (file) {
-      if (file.name.endsWith('.pdf')) {
-        setPdf(true);
-      } else {
-        setPdf(false);
-      }
-    }
-  }, [file]);
 
   const openImageModal = (file: CustomFile) => {
-    setOpen(true);
     setFile(file);
+    setOpen(true);
   };
   const closeImageModal = () => {
     setOpen(false);
@@ -55,7 +43,6 @@ export const ImageModalProvider = ({ children }: Props) => {
         setFile,
         openImageModal,
         closeImageModal,
-        pdf,
         modal,
       }}
     >

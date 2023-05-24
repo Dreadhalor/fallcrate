@@ -3,10 +3,10 @@ import { PDFViewer } from './PDFViewer';
 import { useImageModal } from '@providers/ImageModalProvider';
 
 const PDFViewerModal = () => {
-  const { open, setOpen, pdf } = useImageModal();
+  const { open, setOpen, file } = useImageModal();
   return (
     <Modal
-      open={open && pdf}
+      open={open && file?.mimeType === 'application/pdf'}
       onCancel={() => setOpen(false)}
       bodyStyle={{ marginInline: -1, padding: 0 }} // remove padding
       footer={null} // no footer
