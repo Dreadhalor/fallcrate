@@ -15,3 +15,5 @@
 * fix naming conflict checking, just too tired to do it now
 * re-up on the duplication logic
 * oh yeah fix achievements for uploads
+* fix the sidebar nav overflowing the sidebar vertically
+* quizás add file icons to the sidebar (but prolly not)
