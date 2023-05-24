@@ -15,9 +15,7 @@ export const useFiles = () => {
   const db = useDB(uid);
 
   useEffect(() => {
-    const userFilesUnsubscribe = db.subscribeToFiles((data) =>
-      setFiles(data)
-    );
+    const userFilesUnsubscribe = db.subscribeToFiles((data) => setFiles(data));
 
     return () => {
       userFilesUnsubscribe();

@@ -4,10 +4,11 @@ import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
 import { useImageModal } from '@providers/ImageModalProvider';
 
-
 const ImageModal = () => {
-  const { open, setOpen, file, setFile } = useImageModal();
+  const { open, setOpen, file, setFile, pdf } = useImageModal();
   const { getFileUrl } = useFilesystem();
+
+  if (pdf) return null;
 
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -75,8 +76,7 @@ const ImageModal = () => {
   }, [url]);
 
   useEffect(() => {
-    if (open)
-      window.addEventListener('resize', updateDimensions);
+    if (open) window.addEventListener('resize', updateDimensions);
     else {
       window.removeEventListener('resize', updateDimensions);
       setIsLoading(true);

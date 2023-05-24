@@ -23,7 +23,6 @@ interface FilesystemContextValue {
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
   promptUploadFiles: () => Promise<void>;
   promptUploadFolder: () => Promise<void>;
-  openImageModal: (file: CustomFile) => void;
   getParent: (file: CustomFileFields) => CustomFileFields | null;
   getFile: (file_id: string) => CustomFile | null;
   nestedSelectedFiles: string[];
@@ -39,6 +38,8 @@ interface FilesystemContextValue {
   processDragNDrop: (items: DataTransferItemList) => Promise<void>;
   progressRefs: MutableRefObject<Map<string, UploadProgress>>;
   getUploadStatus: (id: string) => TaskState | null;
+  openImageModal: (file: CustomFile) => void;
+  closeImageModal: () => void;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

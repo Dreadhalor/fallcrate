@@ -6,6 +6,7 @@ import { DndProvider } from 'react-dnd';
 import { ContextMenuProvider } from './FileContextMenuProvider';
 import { MilestoneProvider } from 'milestone-components';
 import { ImageModalProvider } from './ImageModalProvider';
+import { ConfigProvider } from 'antd';
 
 type Props = {
   children: React.ReactNode;
@@ -13,16 +14,26 @@ type Props = {
 
 export const FallcrateProviders: React.FC<Props> = ({ children }) => {
   return (
-    <FirebaseProvider>
-      <MilestoneProvider app='fallcrate'>
-        <ImageModalProvider>
-          <FilesystemProvider>
-            <DndProvider backend={HTML5Backend}>
-              <ContextMenuProvider>{children}</ContextMenuProvider>
-            </DndProvider>
-          </FilesystemProvider>
-        </ImageModalProvider>
-      </MilestoneProvider>
-    </FirebaseProvider>
+    <ConfigProvider
+      theme={{
+        components: {
+          Modal: {
+            wireframe: true,
+          },
+        },
+      }}
+    >
+      <FirebaseProvider>
+        <MilestoneProvider app='fallcrate'>
+          <ImageModalProvider>
+            <FilesystemProvider>
+              <DndProvider backend={HTML5Backend}>
+                <ContextMenuProvider>{children}</ContextMenuProvider>
+              </DndProvider>
+            </FilesystemProvider>
+          </ImageModalProvider>
+        </MilestoneProvider>
+      </FirebaseProvider>
+    </ConfigProvider>
   );
 };

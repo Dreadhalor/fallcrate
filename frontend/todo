@@ -12,3 +12,6 @@
 * sometimes uploading a series of files at once doesn't select the files at the end or give the achievement - presumably something goes wrong but we'll find out once we have progress bars
 * when signing out/in, revert to the root directory
 * when deleting an upload's parent folder after upload but before clearing the completed task, the parent shows up as 'All Files' - not a big deal, but maybe a lil odd
+* fix naming conflict checking, just too tired to do it now
+* re-up on the duplication logic
+* oh yeah fix achievements for uploads

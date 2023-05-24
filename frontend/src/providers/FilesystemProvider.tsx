@@ -11,12 +11,12 @@ import { CustomFile, CustomFileFields } from '@src/types';
 import { useAchievements, useAuth } from 'milestone-components';
 import { message } from 'antd';
 import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrFolders';
-import { useImageModal } from '@providers/ImageModalProvider';
 import { FilesystemContext } from '@src/contexts/FilesystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
 import { useFileUpload } from '@hooks/fileserver/useFileUpload';
 import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
+import { useImageModal } from './ImageModalProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -33,7 +33,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
   // why did I need to make a context for imageModal shenanigans again??
-  const { openImageModal } = useImageModal();
   const {
     promptUploadFiles,
     promptUploadFolder,
@@ -55,6 +54,7 @@ export const FilesystemProvider = ({ children }: Props) => {
     selectFilesExclusively,
     massToggleSelectFiles,
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
+  const { openImageModal, closeImageModal, modal } = useImageModal();
 
   // Helper functions
   const handleOperationError = (text: string) => {
@@ -227,7 +227,6 @@ export const FilesystemProvider = ({ children }: Props) => {
         promptUploadFolder,
         uploadQueue,
         dequeueCompletedUpload,
-        openImageModal,
         getParent,
         getFile,
         nestedSelectedFiles,
@@ -241,9 +240,12 @@ export const FilesystemProvider = ({ children }: Props) => {
         processDragNDrop,
         progressRefs,
         getUploadStatus,
+        openImageModal,
+        closeImageModal,
       }}
     >
       {children}
+      {modal}
     </FilesystemContext.Provider>
   );
 };
