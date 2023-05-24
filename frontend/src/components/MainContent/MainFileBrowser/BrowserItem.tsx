@@ -5,6 +5,8 @@ import prettyBytes from 'pretty-bytes';
 import { useDrag, useDrop } from 'react-dnd';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { useFileContextMenu } from '@providers/FileContextMenuProvider';
+import { Image } from 'antd';
+import { useEffect, useState } from 'react';
 
 type Props = {
   file: CustomFile;
@@ -13,7 +15,8 @@ type Props = {
 const ITEM_TYPE = 'file';
 
 const BrowserItem = ({ file }: Props) => {
-  const { moveFiles, selectedFiles, selectFile, openFile } = useFilesystem();
+  const { moveFiles, selectedFiles, selectFile, openFile, getFileUrl } =
+    useFilesystem();
 
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;
@@ -69,19 +72,44 @@ const BrowserItem = ({ file }: Props) => {
   };
 
   const { showFileContextMenu } = useFileContextMenu();
+  const [preview, setPreview] = useState(false);
+  const [url, setUrl] = useState('');
+  useEffect(() => {
+    getFileUrl(file.id ?? '').then((url) => setUrl(url));
+  }, [file.id]);
+
+  const handleClick = () => {
+    if (file.type === 'file' && !file.name.endsWith('.pdf'))
+      return setPreview(true);
+    openFile(file.id);
+  };
 
   return (
     <div
       className={`group flex w-full flex-row items-center ${background}`}
       ref={dragDropRef}
     >
+      <Image
+        style={{ display: 'none' }}
+        src={url}
+        preview={{
+          visible: preview,
+          scaleStep: 0.5,
+          src: url,
+          onVisibleChange: (value) => {
+            setPreview(value);
+          },
+        }}
+      />
       <div className='p-[10px]'>
         <div
-          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${some_selected && 'border'
-            } ${is_selected
+          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
+            some_selected && 'border'
+          } ${
+            is_selected
               ? 'bg-black text-white'
               : 'bg-white text-black hover:bg-gray-200'
-            }`}
+          }`}
           onClick={() => selectFile(file.id)}
         >
           {is_selected && <FaCheck />}
@@ -89,7 +117,7 @@ const BrowserItem = ({ file }: Props) => {
       </div>
       <div
         className={`flex h-full min-w-0 flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}
-        onClick={() => openFile(file.id)}
+        onClick={handleClick}
         onContextMenu={(e) => showFileContextMenu(e, file, true)}
       >
         {file.type === 'directory' ? (

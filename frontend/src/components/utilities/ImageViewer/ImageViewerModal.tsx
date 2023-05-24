@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
 import { useImageModal } from '@providers/ImageModalProvider';
+import { Modal } from 'antd';
 
-const ImageModal = () => {
+const ImageViewerModal = () => {
   const { open, setOpen, file, setFile, pdf } = useImageModal();
   const { getFileUrl } = useFilesystem();
-
-  if (pdf) return null;
 
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -132,13 +131,19 @@ const ImageModal = () => {
     );
 
   return (
-    <div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'
-      onClick={closeModal}
+    <Modal
+      open={open && !pdf}
+      onCancel={closeModal}
+      bodyStyle={{ marginInline: -1, padding: 0 }} // remove padding
+      footer={null} // no footer
+      closable={false} // no close button
+      destroyOnClose // destroy popovers when modal closes
     >
-      {isLoading ? loadingContent : modalContent}
-    </div>
+      <div className='fixed inset-0 flex flex-col items-center justify-center'>
+        {isLoading ? loadingContent : modalContent}
+      </div>
+    </Modal>
   );
 };
 
-export default ImageModal;
+export default ImageViewerModal;
