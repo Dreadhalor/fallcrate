@@ -37,7 +37,7 @@ export const PDFViewerContent = ({
 
   return (
     <div
-      className='flex flex-1 overflow-auto bg-[#000000aa]'
+      className='flex flex-1 overflow-auto'
       style={{ padding: `${padding}px` }}
       onClick={handleBackgroundClick}
       ref={backgroundRef}

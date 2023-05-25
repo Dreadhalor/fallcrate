@@ -60,7 +60,7 @@ export const PDFViewer = () => {
   }, [open, file]);
 
   return (
-    <div className='fixed inset-0 flex flex-col' id='pdf-container'>
+    <div className='flex h-full w-full flex-col' id='pdf-container'>
       <PDFViewerToolbar
         pageNumber={pageNumber}
         numPages={numPages}
