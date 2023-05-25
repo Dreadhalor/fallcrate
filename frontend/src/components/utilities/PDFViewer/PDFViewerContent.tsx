@@ -1,11 +1,15 @@
+import { useFilesystem } from '@hooks/useFilesystem';
 import { Spin } from 'antd';
+import { useRef } from 'react';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
 type Props = {
   padding: number;
   url: string;
   onDocumentLoadSuccess: (args: any) => void;
   pageNumber: number;
-  pdfWidth: number;
+  containOrFill: 'contain' | 'fill';
+  pdfFillWidth: number;
+  pdfContainHeight: number;
   scale: number;
 };
 
@@ -14,21 +18,38 @@ export const PDFViewerContent = ({
   url,
   onDocumentLoadSuccess,
   pageNumber,
-  pdfWidth,
+  containOrFill,
+  pdfFillWidth,
+  pdfContainHeight,
   scale,
 }: Props) => {
+  const { closeImageModal } = useFilesystem();
+  const dimensionStyle =
+    containOrFill === 'contain'
+      ? { height: pdfContainHeight * scale }
+      : { width: pdfFillWidth * scale };
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  const handleBackgroundClick = (e: any) => {
+    if (e.target === backgroundRef.current) {
+      closeImageModal();
+    }
+  };
+
   return (
     <div
-      className='flex-1 overflow-auto bg-[#a0a0a0]'
+      className='flex flex-1 overflow-auto bg-[#000000aa]'
       style={{ padding: `${padding}px` }}
+      onClick={handleBackgroundClick}
+      ref={backgroundRef}
     >
-      <div className='overflow-hidden rounded-lg'>
+      <div className='m-auto overflow-hidden rounded-lg'>
         <Document
           file={url}
           onLoadSuccess={onDocumentLoadSuccess}
+          className='transition-[width]'
           loading={<Spin size='large' />}
         >
-          <Page pageNumber={pageNumber} width={pdfWidth * scale} />
+          <Page pageNumber={pageNumber} {...dimensionStyle} />
         </Document>
       </div>
     </div>

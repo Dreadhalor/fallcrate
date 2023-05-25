@@ -12,7 +12,11 @@ export const PDFViewer = () => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
-  const [pdfWidth, setPdfWidth] = useState(0);
+  const [pdfFillWidth, setPdfFillWidth] = useState(0);
+  const [pdfContainHeight, setPdfContainHeight] = useState(0);
+  const [containOrFill, setContainOrFill] = useState<'contain' | 'fill'>(
+    'contain'
+  );
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -25,13 +29,20 @@ export const PDFViewer = () => {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
 
   const previousPage = () => changePage(-1);
+  const firstPage = () => setPageNumber(1);
 
   const nextPage = () => changePage(1);
+  const lastPage = () => setPageNumber(numPages);
 
-  const handleResize = () =>
-    setPdfWidth(
-      document.getElementById('pdf-container')?.clientWidth ?? 0 - padding * 2
-    );
+  const handleResize = () => {
+    const container = document.getElementById('pdf-container');
+    const containerHeight = container?.offsetHeight ?? 0;
+    const containerWidth = container?.offsetWidth ?? 0;
+    const toolbar = document.getElementById('pdf-toolbar');
+    const toolbarHeight = toolbar?.offsetHeight ?? 0;
+    setPdfContainHeight(containerHeight - toolbarHeight - padding * 2);
+    setPdfFillWidth(containerWidth - padding * 2);
+  };
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
@@ -55,6 +66,10 @@ export const PDFViewer = () => {
         numPages={numPages}
         previousPage={previousPage}
         nextPage={nextPage}
+        firstPage={firstPage}
+        lastPage={lastPage}
+        containOrFill={containOrFill}
+        setContainOrFill={setContainOrFill}
       />
       <PDFViewerContent
         {...{
@@ -62,7 +77,10 @@ export const PDFViewer = () => {
           url,
           onDocumentLoadSuccess,
           pageNumber,
-          pdfWidth,
+          containOrFill,
+          setContainOrFill,
+          pdfFillWidth,
+          pdfContainHeight,
           scale,
         }}
       />
