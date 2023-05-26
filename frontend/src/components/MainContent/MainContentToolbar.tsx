@@ -14,6 +14,7 @@ type ButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: 'primary' | 'secondary' | 'warning' | 'disabled';
   className?: string;
+  size?: number;
 };
 export const MainContentMenuButton = ({
   title,
@@ -22,6 +23,7 @@ export const MainContentMenuButton = ({
   onClick = () => {},
   type = 'secondary',
   className = '',
+  size = 18,
 }: ButtonProps) => {
   const typeClassMap = {
     secondary: 'border border-gray-300 bg-white hover:bg-gray-100',
@@ -39,7 +41,7 @@ export const MainContentMenuButton = ({
       onClick={onClick}
       disabled={suspense}
     >
-      <SuspenseIcon icon={icon} size={18} suspense={suspense} />
+      <SuspenseIcon icon={icon} size={size} suspense={suspense} />
       {title}
     </button>
   );
@@ -52,6 +54,7 @@ const MainContentToolbar = () => {
     promptNewFolder,
     promptRenameFile,
     duplicateFileOrFolder,
+    duplicateSuspense,
     downloadFilesOrFolders,
     downloadSuspense,
   } = useFilesystem();
@@ -85,6 +88,7 @@ const MainContentToolbar = () => {
               <MainContentMenuButton
                 title='Duplicate'
                 icon={<IoDuplicate size={18} />}
+                suspense={duplicateSuspense}
                 onClick={() => duplicateFileOrFolder(selectedFiles[0])}
               />
             </>

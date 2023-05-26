@@ -27,6 +27,7 @@ interface FilesystemContextValue {
   getFile: (file_id: string) => CustomFile | null;
   nestedSelectedFiles: string[];
   duplicateFileOrFolder: (file_id: string) => Promise<void>;
+  duplicateSuspense: boolean;
   getFileUrl: (file_id: string) => Promise<string>;
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
   downloadSuspense: boolean;

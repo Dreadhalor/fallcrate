@@ -6,8 +6,10 @@ import { useAchievements, useAuth } from 'milestone-components';
 import { useDB } from '@hooks/useDB';
 import { getNestedFilesOnly, orderFilesByDirectory } from '@src/helpers';
 import { useFiles } from './useFiles';
+import { useState } from 'react';
 
 export const useDuplicateFileOrFolder = () => {
+  const [suspense, setSuspense] = useState(false);
 
   const { uid } = useAuth();
   const storage = useStorage();
@@ -17,23 +19,33 @@ export const useDuplicateFileOrFolder = () => {
   const { files } = useFiles();
 
   const duplicateFileOrFolder = async (file_id: string) => {
-    const file = files.find((file) => file.id === file_id);
-    if (!file) return;
-    const parent = file.parent;
-    const directoryFiles = files.filter((file) => file.parent === parent);
-    const new_name = getValidDuplicatedName(file.name, directoryFiles);
-    if (file.type === 'directory') {
-      duplicateFolderWithName(file, new_name);
-      unlockAchievementById('duplicate_folder');
-    } else {
-      duplicateSingleFileWithName(file, new_name);
-      unlockAchievementById('duplicate_file');
+    if (suspense) return;
+    console.log('suspense is true');
+    setSuspense(true); // start suspense
+    try {
+      const file = files.find((file) => file.id === file_id);
+      if (!file) return;
+      const parent = file.parent;
+      const directoryFiles = files.filter((file) => file.parent === parent);
+      const new_name = getValidDuplicatedName(file.name, directoryFiles);
+      if (file.type === 'directory') {
+        await duplicateFolderWithName(file, new_name);
+        unlockAchievementById('duplicate_folder');
+      } else {
+        await duplicateSingleFileWithName(file, new_name);
+        unlockAchievementById('duplicate_file');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSuspense(false); // end suspense
+      console.log('suspense is false');
     }
   };
 
   const duplicateBlob = async (
     old_file_id: string,
-    duplicated_file: CustomFile
+    duplicated_file: CustomFileFields
   ) => {
     if (duplicated_file.type !== 'file') return;
     const blob = await storage
@@ -48,9 +60,9 @@ export const useDuplicateFileOrFolder = () => {
     new_file: CustomFileFields
   ) => {
     if (!new_file || new_file.type !== 'file') return;
-    await db
-      .createFile(new_file)
-      .then((created_file) => duplicateBlob(old_id, created_file));
+    await duplicateBlob(old_id, new_file).then(() => {
+      db.createFile(new_file);
+    });
   };
 
   const duplicateSingleFileWithName = async (
@@ -59,7 +71,7 @@ export const useDuplicateFileOrFolder = () => {
   ) => {
     if (!file || file.type !== 'file') return;
     const new_file = { ...file, name: new_name, id: uuidv4() };
-    saveDuplicatedFile(file.id, new_file);
+    await saveDuplicatedFile(file.id, new_file);
   };
 
   const duplicateFolderWithName = async (
@@ -92,7 +104,7 @@ export const useDuplicateFileOrFolder = () => {
       Array.from(duplication_map.values())
     );
 
-    await Promise.all(
+    return await Promise.all(
       orderedFiles.map((file) => {
         if (file.type === 'directory') return db.createFile(file);
         else {
@@ -103,5 +115,5 @@ export const useDuplicateFileOrFolder = () => {
     );
   };
 
-  return { duplicateFileOrFolder };
-}
+  return { duplicateFileOrFolder, suspense };
+};

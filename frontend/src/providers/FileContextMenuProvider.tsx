@@ -44,6 +44,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     promptRenameFile,
     deleteFiles,
     duplicateFileOrFolder,
+    duplicateSuspense,
     downloadFilesOrFolders,
     downloadSuspense,
   } = useFilesystem();
@@ -106,9 +107,19 @@ export const ContextMenuProvider = ({ children }: Props) => {
           <Item onClick={handleItemClick} id='rename'>
             <FileContextMenuItem icon={<BiEdit size={16} />} title='Rename' />
           </Item>
-          <Item onClick={handleItemClick} id='duplicate'>
+          <Item
+            onClick={handleItemClick}
+            id='duplicate'
+            disabled={duplicateSuspense}
+          >
             <FileContextMenuItem
-              icon={<BiDuplicate size={16} />}
+              icon={
+                <SuspenseIcon
+                  icon={<BiDuplicate size={16} />}
+                  size={16}
+                  suspense={duplicateSuspense}
+                />
+              }
               title='Duplicate'
             />
           </Item>

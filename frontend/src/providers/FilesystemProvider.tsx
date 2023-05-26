@@ -46,7 +46,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     progressRefs,
     getUploadStatus,
   } = useFileUpload(currentDirectory, currentDirectoryFiles);
-  const { duplicateFileOrFolder } = useDuplicateFileOrFolder();
+  const { duplicateFileOrFolder, suspense: duplicateSuspense } =
+    useDuplicateFileOrFolder();
   const {
     selectedFiles,
     nestedSelectedFiles,
@@ -231,6 +232,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         getFile,
         nestedSelectedFiles,
         duplicateFileOrFolder,
+        duplicateSuspense,
         getFileUrl,
         downloadFilesOrFolders,
         downloadSuspense,
