@@ -6,6 +6,8 @@ import { BiDuplicate, BiEdit } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useAchievements } from 'milestone-components';
 import { useImageModal } from '@providers/ImageModalProvider';
+import { HiDownload } from 'react-icons/hi';
+import { SuspenseIcon } from '@components/utilities/SuspenseIcon';
 
 type FileContextMenuItemProps = {
   icon: React.ReactNode;
@@ -42,6 +44,8 @@ export const ContextMenuProvider = ({ children }: Props) => {
     promptRenameFile,
     deleteFiles,
     duplicateFileOrFolder,
+    downloadFilesOrFolders,
+    downloadSuspense,
   } = useFilesystem();
   const { open } = useImageModal();
   const { unlockAchievementById } = useAchievements();
@@ -72,6 +76,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     if (!file) {
       return;
     }
+    if (id === 'download') downloadFilesOrFolders([file.id]);
     if (id === 'rename') promptRenameFile(file.id);
     if (id === 'duplicate') duplicateFileOrFolder(file.id);
     if (id === 'delete') deleteFiles([file.id]);
@@ -82,6 +87,22 @@ export const ContextMenuProvider = ({ children }: Props) => {
       {children}
       {!open && (
         <Menu id='file-context-menu'>
+          <Item
+            onClick={handleItemClick}
+            id='download'
+            disabled={downloadSuspense}
+          >
+            <FileContextMenuItem
+              icon={
+                <SuspenseIcon
+                  icon={<HiDownload size={16} />}
+                  size={16}
+                  suspense={downloadSuspense}
+                />
+              }
+              title='Download'
+            />
+          </Item>
           <Item onClick={handleItemClick} id='rename'>
             <FileContextMenuItem icon={<BiEdit size={16} />} title='Rename' />
           </Item>

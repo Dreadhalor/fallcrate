@@ -5,18 +5,21 @@ import { MdDelete } from 'react-icons/md';
 import { RiEditBoxFill } from 'react-icons/ri';
 import UploadButton from './UploadButton';
 import { HiDownload } from 'react-icons/hi';
+import { SuspenseIcon } from '@components/utilities/SuspenseIcon';
 
 type ButtonProps = {
   title: React.ReactNode;
   icon: React.ReactNode;
+  suspense?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  type?: 'primary' | 'secondary' | 'warning';
+  type?: 'primary' | 'secondary' | 'warning' | 'disabled';
   className?: string;
 };
 export const MainContentMenuButton = ({
   title,
   icon,
-  onClick = () => { },
+  suspense,
+  onClick = () => {},
   type = 'secondary',
   className = '',
 }: ButtonProps) => {
@@ -24,16 +27,19 @@ export const MainContentMenuButton = ({
     secondary: 'border border-gray-300 bg-white hover:bg-gray-100',
     warning: 'border border-gray-300 bg-white hover:bg-red-100',
     primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+    disabled: 'border bg-white-300 border-gray-100 text-gray-400',
   };
 
-  const typeClasses = typeClassMap[type];
+  const possiblyDisabledType = suspense ? 'disabled' : type;
+  const typeClasses = typeClassMap[possiblyDisabledType];
 
   return (
     <button
       className={`flex items-center justify-center gap-[8px] whitespace-nowrap rounded-sm py-[5px] px-[15px] ${typeClasses} ${className}`}
       onClick={onClick}
+      disabled={suspense}
     >
-      <span className='flex-shrink-0'>{icon}</span>
+      <SuspenseIcon icon={icon} size={18} suspense={suspense} />
       {title}
     </button>
   );
@@ -47,6 +53,7 @@ const MainContentToolbar = () => {
     promptRenameFile,
     duplicateFileOrFolder,
     downloadFilesOrFolders,
+    downloadSuspense,
   } = useFilesystem();
 
   return (
@@ -65,6 +72,7 @@ const MainContentToolbar = () => {
           <MainContentMenuButton
             title='Download'
             icon={<HiDownload size={18} />}
+            suspense={downloadSuspense}
             onClick={() => downloadFilesOrFolders(selectedFiles)}
           />
           {selectedFiles.length === 1 && (

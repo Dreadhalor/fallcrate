@@ -29,6 +29,7 @@ interface FilesystemContextValue {
   duplicateFileOrFolder: (file_id: string) => Promise<void>;
   getFileUrl: (file_id: string) => Promise<string>;
   downloadFilesOrFolders: (file_ids: string[]) => Promise<void>;
+  downloadSuspense: boolean;
   uploadQueue: FileUploadData[];
   dequeueCompletedUpload: (id: string) => void;
   showUploadModal: boolean;

@@ -1,14 +1,16 @@
-import { useStorage } from "@hooks/useStorage";
-import { CustomFile } from "@src/types";
-import JSZip from "jszip";
-import { useFiles } from "./useFiles";
-import { useAchievements } from "milestone-components";
-import { getUnionFileTree } from "@src/helpers";
+import { useStorage } from '@hooks/useStorage';
+import { CustomFile } from '@src/types';
+import JSZip from 'jszip';
+import { useFiles } from './useFiles';
+import { useAchievements } from 'milestone-components';
+import { getUnionFileTree } from '@src/helpers';
+import { useState } from 'react';
 
 export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
   const storage = useStorage();
   const { files } = useFiles();
   const { unlockAchievementById, isUnlockable } = useAchievements();
+  const [suspense, setSuspense] = useState(false);
 
   const startDownload = async (fileBlob: Blob, filename: string) => {
     const blobUrl = URL.createObjectURL(fileBlob);
@@ -19,18 +21,28 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(blobUrl);
-  }
+  };
   const unlockAchievements = (file_ids: string[]) => {
     const tree = getUnionFileTree(file_ids, files);
-    if (isUnlockable('download_file') && tree.some(file => file.type === 'file'))
+    if (
+      isUnlockable('download_file') &&
+      tree.some((file) => file.type === 'file')
+    )
       unlockAchievementById('download_file');
-    if (isUnlockable('download_folder') && tree.some(file => file.type === 'directory'))
+    if (
+      isUnlockable('download_folder') &&
+      tree.some((file) => file.type === 'directory')
+    )
       unlockAchievementById('download_folder');
     if (isUnlockable('download_multiple_items') && file_ids.length > 1)
       unlockAchievementById('download_multiple_items');
-    if (isUnlockable('all_folders') && tree.length > 1 && tree.every(file => file.type === 'directory'))
+    if (
+      isUnlockable('all_folders') &&
+      tree.length > 1 &&
+      tree.every((file) => file.type === 'directory')
+    )
       unlockAchievementById('all_folders');
-  }
+  };
 
   const addFileToZip = async (file: CustomFile, parentZip: JSZip) => {
     const url = await storage.getDownloadURL(`uploads/${file.id}`);
@@ -52,34 +64,47 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
     }
   };
   const downloadFilesOrFolders = async (file_ids: string[]) => {
-    unlockAchievements(file_ids);
-    if (file_ids.length === 1) {
-      const fileBlob = await downloadFileOrFolder(file_ids[0]);
-      const fileOrFolder = files.find((file) => file.id === file_ids[0]);
+    if (suspense) return;
+    setSuspense(true); // start suspense
 
-      if (fileBlob && fileOrFolder) {
-        const filename = `${fileOrFolder.name}${fileOrFolder.type === 'file' ? '' : '.zip'}`;
-        startDownload(fileBlob, filename);
-      }
-    } else {
-      const zip = new JSZip();
+    try {
+      unlockAchievements(file_ids);
+      if (file_ids.length === 1) {
+        const fileBlob = await downloadFileOrFolder(file_ids[0]);
+        const fileOrFolder = files.find((file) => file.id === file_ids[0]);
 
-      for (const file_id of file_ids) {
-        const fileOrFolder = files.find((file) => file.id === file_id);
-        if (fileOrFolder?.type === 'file') {
-          const fileBlob = await downloadFileOrFolder(file_id);
-          if (fileBlob) {
-            zip.file(fileOrFolder.name, fileBlob);
-          }
-        } else if (fileOrFolder?.type === 'directory') {
-          await addDirectoryToZip(fileOrFolder, zip);
+        if (fileBlob && fileOrFolder) {
+          const filename = `${fileOrFolder.name}${
+            fileOrFolder.type === 'file' ? '' : '.zip'
+          }`;
+          startDownload(fileBlob, filename);
         }
-      }
+      } else {
+        const zip = new JSZip();
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const currentDirectoryName = files.find((file) => file.id === currentDirectory)?.name ?? 'Fallcrate';
-      const filename = `${currentDirectoryName}.zip`;
-      startDownload(zipBlob, filename);
+        for (const file_id of file_ids) {
+          const fileOrFolder = files.find((file) => file.id === file_id);
+          if (fileOrFolder?.type === 'file') {
+            const fileBlob = await downloadFileOrFolder(file_id);
+            if (fileBlob) {
+              zip.file(fileOrFolder.name, fileBlob);
+            }
+          } else if (fileOrFolder?.type === 'directory') {
+            await addDirectoryToZip(fileOrFolder, zip);
+          }
+        }
+
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const currentDirectoryName =
+          files.find((file) => file.id === currentDirectory)?.name ??
+          'Fallcrate';
+        const filename = `${currentDirectoryName}.zip`;
+        startDownload(zipBlob, filename);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSuspense(false); // end suspense
     }
   };
 
@@ -94,7 +119,10 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
 
     return blob;
   };
-  const downloadDirectory = async (directory_id: string, returnZipBlob = false) => {
+  const downloadDirectory = async (
+    directory_id: string,
+    returnZipBlob = false
+  ) => {
     const directory = files.find((file) => file.id === directory_id);
     if (directory?.type !== 'directory') return;
 
@@ -112,5 +140,5 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
     }
   };
 
-  return { downloadFilesOrFolders };
-}
+  return { downloadFilesOrFolders, suspense };
+};

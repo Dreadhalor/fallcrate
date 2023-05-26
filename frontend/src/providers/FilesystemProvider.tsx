@@ -29,7 +29,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { files } = useFiles();
   const { currentDirectory, currentDirectoryFiles, openDirectory } =
     useCurrentDirectory();
-  const { downloadFilesOrFolders } =
+  const { downloadFilesOrFolders, suspense: downloadSuspense } =
     useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
   // why did I need to make a context for imageModal shenanigans again??
@@ -233,6 +233,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         duplicateFileOrFolder,
         getFileUrl,
         downloadFilesOrFolders,
+        downloadSuspense,
         showUploadModal,
         setShowUploadModal,
         removeUploadModal,
