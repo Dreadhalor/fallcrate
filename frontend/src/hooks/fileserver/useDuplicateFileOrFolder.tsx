@@ -20,7 +20,6 @@ export const useDuplicateFileOrFolder = () => {
 
   const duplicateFileOrFolder = async (file_id: string) => {
     if (suspense) return;
-    console.log('suspense is true');
     setSuspense(true); // start suspense
     try {
       const file = files.find((file) => file.id === file_id);
@@ -39,7 +38,6 @@ export const useDuplicateFileOrFolder = () => {
       console.error(e);
     } finally {
       setSuspense(false); // end suspense
-      console.log('suspense is false');
     }
   };
 
