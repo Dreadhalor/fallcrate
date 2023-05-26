@@ -29,6 +29,7 @@ export const ImageModalProvider = ({ children }: Props) => {
     setOpen(true);
   };
   const closeImageModal = () => {
+    setFile(() => null);
     setOpen(false);
   };
 

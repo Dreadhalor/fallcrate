@@ -1,5 +1,6 @@
 import { useFilesystem } from '@hooks/useFilesystem';
 import { Button } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import {
   HiChevronDoubleLeft,
@@ -12,6 +13,7 @@ import {
 
 type Props = {
   pageNumber: number;
+  setPageNumber: (page: number) => void;
   numPages: number;
   previousPage: () => void;
   nextPage: () => void;
@@ -23,6 +25,7 @@ type Props = {
 
 export const PDFViewerToolbar = ({
   pageNumber,
+  setPageNumber,
   numPages,
   previousPage,
   nextPage,
@@ -35,14 +38,44 @@ export const PDFViewerToolbar = ({
   const iconSize = 24;
   const enabledClasses = 'text-blue-500 hover:text-blue-700';
   const disabledClasses = 'text-gray-300';
+
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handlePageNumberChange = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pageNumberInput = parseInt(e.target.value);
+    if (!isNaN(pageNumberInput)) {
+      setPageNumber(Math.max(1, Math.min(pageNumberInput, numPages)));
+    }
+    setIsEditing(false);
+  };
+
+  const handlePageNumberSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const pageNumberInput = parseInt(
+      (e.currentTarget.elements[0] as HTMLInputElement).value
+    );
+    if (!isNaN(pageNumberInput)) {
+      setPageNumber(Math.max(1, Math.min(pageNumberInput, numPages)));
+    }
+    setIsEditing(false);
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
+
   return (
     <div
       id='pdf-toolbar'
       className='flex w-full items-center justify-between border-b-[1px] border-b-faded_border bg-white p-[10px]'
     >
-      <Button onClick={closeImageModal}>
+      <button onClick={closeImageModal} className={enabledClasses}>
         <FaTimes />
-      </Button>
+      </button>
       <span className='mx-auto flex items-center gap-[5px]'>
         <button
           disabled={pageNumber <= 1}
@@ -59,7 +92,24 @@ export const PDFViewerToolbar = ({
           <HiChevronLeft size={iconSize} />
         </button>
         <span className='flex w-[80px] justify-center text-[15px]'>
-          {pageNumber} / {numPages}
+          {isEditing ? (
+            <form onSubmit={handlePageNumberSubmit}>
+              <input
+                ref={inputRef}
+                defaultValue={pageNumber}
+                onBlur={handlePageNumberChange}
+                style={{ width: '30px' }}
+              />
+            </form>
+          ) : (
+            <button
+              className='cursor-pointer'
+              onClick={() => setIsEditing(true)}
+            >
+              {pageNumber}
+            </button>
+          )}
+          &nbsp;/&nbsp;{numPages || '?'}
         </span>
         <button
           disabled={pageNumber >= numPages}

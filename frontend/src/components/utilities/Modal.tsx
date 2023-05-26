@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-
 type Props = {
   children: React.ReactNode;
   open: boolean;
@@ -14,15 +12,13 @@ export const Modal = ({ children, open, onClose }: Props) => {
   const contentClasses = open ? 'opacity-100' : 'opacity-0 scale-0';
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === bgRef.current && onClose) {
+    if (e.target === e.currentTarget && onClose) {
       onClose();
     }
   };
 
-  const bgRef = useRef<HTMLDivElement>(null);
   return (
     <div
-      ref={bgRef}
       className={`fixed inset-0 z-20 bg-[rgb(0,0,0,0.7)] duration-300 ${backdropClasses}`}
       style={{ transitionProperty: 'opacity' }}
       onClick={handleBackdropClick}

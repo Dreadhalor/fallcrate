@@ -5,7 +5,7 @@ import { PDFViewerToolbar } from './PDFViewerToolbar';
 import { PDFViewerContent } from './PDFViewerContent';
 
 export const PDFViewer = () => {
-  const { file, open } = useImageModal();
+  const { file } = useImageModal();
   const { getFileUrl } = useFilesystem();
   const [url, setUrl] = useState('');
 
@@ -22,6 +22,12 @@ export const PDFViewer = () => {
     setNumPages(numPages);
     setScale(1);
   };
+
+  useEffect(() => {
+    setScale(1);
+    setNumPages(0);
+    setPageNumber(1);
+  }, [file, open]);
 
   const padding = 10;
 
@@ -56,13 +62,16 @@ export const PDFViewer = () => {
       getFileUrl(file?.id ?? '').then(async (url) => {
         setUrl(url);
       });
+    } else {
+      setUrl('');
     }
-  }, [open, file]);
+  }, [file]);
 
   return (
     <div className='flex h-full w-full flex-col' id='pdf-container'>
       <PDFViewerToolbar
         pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
         numPages={numPages}
         previousPage={previousPage}
         nextPage={nextPage}

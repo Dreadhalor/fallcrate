@@ -2,6 +2,7 @@ import { useFilesystem } from '@hooks/useFilesystem';
 import { Spin } from 'antd';
 import { useRef } from 'react';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
+
 type Props = {
   padding: number;
   url: string;
@@ -43,14 +44,17 @@ export const PDFViewerContent = ({
       ref={backgroundRef}
     >
       <div className='m-auto overflow-hidden rounded-lg'>
-        <Document
-          file={url}
-          onLoadSuccess={onDocumentLoadSuccess}
-          className='transition-[width]'
-          loading={<Spin size='large' />}
-        >
-          <Page pageNumber={pageNumber} {...dimensionStyle} />
-        </Document>
+        {url && (
+          <Document
+            file={url}
+            error=''
+            onLoadSuccess={onDocumentLoadSuccess}
+            className='transition-[width]'
+            loading={<Spin size='large' />}
+          >
+            <Page pageNumber={pageNumber} {...dimensionStyle} />
+          </Document>
+        )}
       </div>
     </div>
   );
