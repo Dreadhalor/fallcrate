@@ -10,7 +10,7 @@ export const useStorageManager = () => {
   const { files = [] } = useFiles();
 
   const [storageUsed, setStorageUsed] = useState(0);
-  const maxStorage = 1000 * 1000 * 1000; // 10GB
+  const maxStorage = 1000 * 1000 * 1000; // 1GB
 
   useEffect(() => {
     const fetchStorageUsage = async () => {
