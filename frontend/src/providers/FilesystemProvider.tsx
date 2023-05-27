@@ -36,7 +36,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const {
     promptUploadFiles: _promptUploadFiles,
     promptUploadFolder: _promptUploadFolder,
-    processDragNDrop,
+    processDragNDrop: _processDragNDrop,
     uploadQueue,
     dequeueCompletedUpload,
     showUploadModal,
@@ -217,6 +217,11 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
   const promptUploadFolder = async () => {
     _promptUploadFolder().catch((error) => {
+      handleOperationError(error.message);
+    });
+  };
+  const processDragNDrop = async (files: DataTransferItemList) => {
+    _processDragNDrop(files).catch((error) => {
       handleOperationError(error.message);
     });
   };

@@ -198,14 +198,21 @@ export const useFileUploader = (
       return Promise.resolve([]);
     });
 
-    Promise.all(itemPromises)
+    return Promise.all(itemPromises)
       .then((uploadDataPlural: FileUploadData[][]) => {
         const nonEmptyFiles = uploadDataPlural
           .flat()
           .filter((file) => file && file.id !== null);
         return nonEmptyFiles;
       })
-      .then((uploadDataPlural) => processOutDirectories(uploadDataPlural))
+      .then((uploadDataPlural) => {
+        if (!hasEnoughSpace(uploadDataPlural)) {
+          throw new Error(
+            "You don't have enough storage space for this upload."
+          );
+        }
+        return processOutDirectories(uploadDataPlural);
+      })
       .then((uploadDataPlural) => {
         uploadDataPlural.forEach(addToUploadQueue);
       });
