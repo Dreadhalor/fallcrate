@@ -75,9 +75,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (!file) return;
     if (file.type === 'directory') return openDirectory(file_id);
     if (file.type === 'file') {
-      // this shows nothing if the file isn't an image but whatever for now
-      openImageModal(file);
-      unlockAchievementById('preview_image');
+      if (file.mimeType === 'application/pdf') {
+        openImageModal(file);
+        unlockAchievementById('preview_image');
+      }
     }
   };
 

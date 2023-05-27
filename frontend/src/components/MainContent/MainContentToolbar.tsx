@@ -59,6 +59,11 @@ const MainContentToolbar = () => {
     downloadSuspense,
   } = useFilesystem();
 
+  const showDownload = selectedFiles.length > 0 || downloadSuspense;
+  const showRename = selectedFiles.length === 1;
+  const showDuplicate = selectedFiles.length === 1 || duplicateSuspense;
+  const showDelete = selectedFiles.length > 0;
+
   return (
     <div
       id='content-toolbar'
@@ -70,37 +75,37 @@ const MainContentToolbar = () => {
         icon={<FaFolderPlus />}
         onClick={promptNewFolder}
       />
-      {selectedFiles.length > 0 && (
-        <>
-          <MainContentMenuButton
-            title='Download'
-            icon={<HiDownload size={18} />}
-            suspense={downloadSuspense}
-            onClick={() => downloadFilesOrFolders(selectedFiles)}
-          />
-          {selectedFiles.length === 1 && (
-            <>
-              <MainContentMenuButton
-                title='Rename'
-                icon={<RiEditBoxFill size={18} />}
-                onClick={() => promptRenameFile(selectedFiles[0])}
-              />
-              <MainContentMenuButton
-                title='Duplicate'
-                icon={<IoDuplicate size={18} />}
-                suspense={duplicateSuspense}
-                onClick={() => duplicateFileOrFolder(selectedFiles[0])}
-              />
-            </>
-          )}
-          <MainContentMenuButton
-            title='Delete'
-            icon={<MdDelete size={20} />}
-            onClick={() => deleteFiles(selectedFiles)}
-            type='warning'
-            className='ml-auto'
-          />
-        </>
+      {showDownload && (
+        <MainContentMenuButton
+          title={downloadSuspense ? 'Preparing Download...' : 'Download'}
+          icon={<HiDownload size={18} />}
+          suspense={downloadSuspense}
+          onClick={() => downloadFilesOrFolders(selectedFiles)}
+        />
+      )}
+      {showRename && (
+        <MainContentMenuButton
+          title='Rename'
+          icon={<RiEditBoxFill size={18} />}
+          onClick={() => promptRenameFile(selectedFiles[0])}
+        />
+      )}
+      {showDuplicate && (
+        <MainContentMenuButton
+          title={duplicateSuspense ? 'Duplicating...' : 'Duplicate'}
+          icon={<IoDuplicate size={18} />}
+          suspense={duplicateSuspense}
+          onClick={() => duplicateFileOrFolder(selectedFiles[0])}
+        />
+      )}
+      {showDelete && (
+        <MainContentMenuButton
+          title='Delete'
+          icon={<MdDelete size={20} />}
+          onClick={() => deleteFiles(selectedFiles)}
+          type='warning'
+          className='ml-auto'
+        />
       )}
     </div>
   );

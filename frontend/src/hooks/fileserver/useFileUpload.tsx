@@ -270,13 +270,13 @@ export const useFileUpload = (
   return {
     promptUploadFiles,
     promptUploadFolder,
+    processDragNDrop,
     uploadQueue,
     dequeueCompletedUpload,
     showUploadModal,
     setShowUploadModal,
     removeUploadModal,
     toggleUploadModal,
-    processDragNDrop,
     progressRefs,
     getUploadStatus,
   };

@@ -101,7 +101,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
                   suspense={downloadSuspense}
                 />
               }
-              title='Download'
+              title={downloadSuspense ? 'Preparing Download...' : 'Download'}
             />
           </Item>
           <Item onClick={handleItemClick} id='rename'>
@@ -120,7 +120,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
                   suspense={duplicateSuspense}
                 />
               }
-              title='Duplicate'
+              title={duplicateSuspense ? 'Duplicating...' : 'Duplicate'}
             />
           </Item>
           <Item onClick={handleItemClick} id='delete'>
