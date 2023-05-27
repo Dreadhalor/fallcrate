@@ -23,4 +23,6 @@
   * storage limits
   * video viewers
   * merge files when logging in (hopefully trivial)
+  * Fix sidebar overflow
   * Then JUST WALK AWAY
+* currently, storage space checks don't take into consideration space taken by queued files - we will not fix this, not worth it

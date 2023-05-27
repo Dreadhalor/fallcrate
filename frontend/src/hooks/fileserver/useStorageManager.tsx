@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDB } from '@hooks/useDB';
 import { useAuth } from 'milestone-components';
 import { useFiles } from '@hooks/fileserver/useFiles';
-import { FileUploadData } from '@src/types';
+import { CustomFileFields } from '@src/types';
 
 export const useStorageManager = () => {
   const { uid } = useAuth();
@@ -21,7 +21,7 @@ export const useStorageManager = () => {
     fetchStorageUsage();
   }, [uid, db, files]);
 
-  const hasEnoughSpace = (filesToUpload: (File | FileUploadData)[]) => {
+  const hasEnoughSpace = (filesToUpload: (File | CustomFileFields)[]) => {
     const sizeNeeded = filesToUpload.reduce(
       (total, file) => total + (file.size ?? 0),
       0
@@ -30,9 +30,22 @@ export const useStorageManager = () => {
     return storageUsed + sizeNeeded <= maxStorage;
   };
 
+  const storageSpaceCheck = (
+    filesToUpload: (File | CustomFileFields)[],
+    message?: string
+  ) => {
+    if (!hasEnoughSpace(filesToUpload)) {
+      throw new Error(
+        message || "You don't have enough storage space for this upload."
+      );
+    }
+    return true;
+  };
+
   return {
     storageUsed,
     maxStorage,
     hasEnoughSpace,
+    storageSpaceCheck,
   };
 };

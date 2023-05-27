@@ -46,8 +46,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     progressRefs,
     getUploadStatus,
   } = useFileUploader(currentDirectory, currentDirectoryFiles);
-  const { duplicateFileOrFolder, suspense: duplicateSuspense } =
-    useDuplicateFileOrFolder();
+  const {
+    duplicateFileOrFolder: _duplicateFileOrFolder,
+    suspense: duplicateSuspense,
+  } = useDuplicateFileOrFolder();
   const {
     selectedFiles,
     nestedSelectedFiles,
@@ -208,6 +210,12 @@ export const FilesystemProvider = ({ children }: Props) => {
     } else {
       return 'https://via.placeholder.com/256';
     }
+  };
+
+  const duplicateFileOrFolder = async (file_id: string) => {
+    _duplicateFileOrFolder(file_id).catch((error) => {
+      handleOperationError(error.message);
+    });
   };
 
   const promptUploadFiles = async () => {

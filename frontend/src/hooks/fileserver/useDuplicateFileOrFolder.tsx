@@ -7,6 +7,7 @@ import { useDB } from '@hooks/useDB';
 import { getNestedFilesOnly, orderFilesByDirectory } from '@src/helpers';
 import { useFiles } from './useFiles';
 import { useState } from 'react';
+import { useStorageManager } from '@hooks/fileserver/useStorageManager';
 
 export const useDuplicateFileOrFolder = () => {
   const [suspense, setSuspense] = useState(false);
@@ -15,6 +16,7 @@ export const useDuplicateFileOrFolder = () => {
   const storage = useStorage();
   const db = useDB(uid);
   const { unlockAchievementById } = useAchievements();
+  const { storageSpaceCheck } = useStorageManager();
   // ugh the pain but let's not think about how we're creating a new instance of useFiles here
   const { files } = useFiles();
 
@@ -28,14 +30,22 @@ export const useDuplicateFileOrFolder = () => {
       const directoryFiles = files.filter((file) => file.parent === parent);
       const new_name = getValidDuplicatedName(file.name, directoryFiles);
       if (file.type === 'directory') {
+        const nestedFiles = getNestedFilesOnly(file.id, files);
+        // Include the parent directory in the storage check.
+        storageSpaceCheck(
+          [file, ...nestedFiles],
+          "You don't have enough storage space to duplicate this folder."
+        );
         await duplicateFolderWithName(file, new_name);
         unlockAchievementById('duplicate_folder');
       } else {
+        storageSpaceCheck(
+          [file],
+          "You don't have enough storage space to duplicate this file."
+        );
         await duplicateSingleFileWithName(file, new_name);
         unlockAchievementById('duplicate_file');
       }
-    } catch (e) {
-      console.error(e);
     } finally {
       setSuspense(false); // end suspense
     }

@@ -33,7 +33,7 @@ export const useFileUploader = (
     toggleUploadModal,
   } = useUploadModal();
 
-  const { hasEnoughSpace } = useStorageManager();
+  const { storageSpaceCheck } = useStorageManager();
 
   useEffect(() => {
     const processQueue = async () => {
@@ -126,11 +126,7 @@ export const useFileUploader = (
         } else {
           try {
             const files = Array.from(input.files);
-            if (!hasEnoughSpace(files)) {
-              throw new Error(
-                "You don't have enough storage space for this upload."
-              );
-            }
+            storageSpaceCheck(files);
             const result = await callback(files);
             resolve(result);
           } catch (error) {
@@ -206,11 +202,7 @@ export const useFileUploader = (
         return nonEmptyFiles;
       })
       .then((uploadDataPlural) => {
-        if (!hasEnoughSpace(uploadDataPlural)) {
-          throw new Error(
-            "You don't have enough storage space for this upload."
-          );
-        }
+        storageSpaceCheck(uploadDataPlural);
         return processOutDirectories(uploadDataPlural);
       })
       .then((uploadDataPlural) => {
