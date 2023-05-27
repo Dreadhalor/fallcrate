@@ -7,6 +7,7 @@ import TruncatedText from '@components/utilities/TruncatedText';
 import { useFileContextMenu } from '@providers/FileContextMenuProvider';
 import { Image } from 'antd';
 import { useEffect, useState } from 'react';
+import { useAchievements } from 'milestone-components';
 
 type Props = {
   file: CustomFile;
@@ -15,8 +16,16 @@ type Props = {
 const ITEM_TYPE = 'file';
 
 const BrowserItem = ({ file }: Props) => {
-  const { moveFiles, selectedFiles, selectFile, openFile, getFileUrl } =
-    useFilesystem();
+  const {
+    moveFiles,
+    selectedFiles,
+    selectFile,
+    openFile,
+    getFileUrl,
+    selectFilesExclusively,
+  } = useFilesystem();
+
+  const { unlockAchievementById } = useAchievements();
 
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;
@@ -24,7 +33,10 @@ const BrowserItem = ({ file }: Props) => {
   // Drag related logic
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ITEM_TYPE,
-    item: { id: file.id },
+    item: () => {
+      selectFilesExclusively([file.id]);
+      return { id: file.id };
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -79,8 +91,10 @@ const BrowserItem = ({ file }: Props) => {
   }, [file.id]);
 
   const handleClick = () => {
-    if (file.type === 'file' && file.mimeType?.startsWith('image'))
+    if (file.type === 'file' && file.mimeType?.startsWith('image')) {
+      unlockAchievementById('preview_image');
       return setPreview(true);
+    }
     openFile(file.id);
   };
 
@@ -98,6 +112,9 @@ const BrowserItem = ({ file }: Props) => {
           src: url,
           onVisibleChange: (value) => {
             setPreview(value);
+          },
+          wrapStyle: {
+            zIndex: 1000, // so it's below the achievement notification
           },
         }}
       />

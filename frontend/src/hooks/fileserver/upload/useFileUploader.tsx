@@ -1,24 +1,16 @@
-import { useDB } from '@hooks/useDB';
 import { useStorage } from '@hooks/useStorage';
-import { v4 as uuidv4 } from 'uuid';
+import { useUploadModal } from './useUploadModal';
+import { useUploadQueue } from './useUploadQueue';
+import { useAuth } from 'milestone-components';
+import { useDB } from '@hooks/useDB';
 import { CustomFile, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
-import { useAuth } from 'milestone-components';
-// import { getValidDuplicatedName } from './helpers';
+import { v4 as uuidv4 } from 'uuid';
 import { parseFileArray } from '@src/helpers';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useStorageManager } from '@hooks/fileserver/useStorageManager';
 
-import { useRef } from 'react';
-import { TaskState } from 'firebase/storage';
-
-export type UploadProgress = {
-  id: string;
-  progress: number;
-  lastFrame: number;
-  state: TaskState | null;
-};
-
-export const useFileUpload = (
+export const useFileUploader = (
   currentDirectory: string | null,
   currentDirectoryFiles: CustomFile[]
 ) => {
@@ -26,32 +18,22 @@ export const useFileUpload = (
   const db = useDB(uid);
   const storage = useStorage();
 
-  const [uploadQueue, setUploadQueue] = useState([] as FileUploadData[]);
-  const progressRefs = useRef(new Map<string, UploadProgress>());
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [removeUploadModal, setRemoveUploadModal] = useState(true);
-  const addToUploadQueue = (file: FileUploadData) => {
-    setUploadQueue((prev) => [file, ...prev]);
-  };
-  const dequeueCompletedUpload = (id: string) => {
-    setUploadQueue((prev) => prev.filter((uploadData) => uploadData.id !== id));
-  };
+  const {
+    addToUploadQueue,
+    dequeueCompletedUpload,
+    getUploadStatus,
+    progressRefs,
+    uploadQueue,
+  } = useUploadQueue();
 
-  const toggleUploadModal = (show: boolean) => {
-    if (show) {
-      setShowUploadModal(true);
-      setRemoveUploadModal(false);
-    } else {
-      setShowUploadModal(false);
-      setRemoveUploadModal(true);
-    }
-  };
+  const {
+    showUploadModal,
+    setShowUploadModal,
+    removeUploadModal,
+    toggleUploadModal,
+  } = useUploadModal();
 
-  const getUploadStatus = (id: string) => {
-    const progressRef = progressRefs.current.get(id);
-    if (progressRef) return progressRef.state;
-    return null;
-  };
+  const { hasEnoughSpace } = useStorageManager();
 
   useEffect(() => {
     const processQueue = async () => {
@@ -93,7 +75,6 @@ export const useFileUpload = (
               }
             },
             (error) => {
-              console.log(`Error (${file.name}:`, error);
               reject(error);
             },
             async () => {
@@ -106,7 +87,6 @@ export const useFileUpload = (
             }
           );
         } catch (error) {
-          console.log('Upload error:', error);
           reject(error);
         }
       }
@@ -146,6 +126,11 @@ export const useFileUpload = (
         } else {
           try {
             const files = Array.from(input.files);
+            if (!hasEnoughSpace(files)) {
+              throw new Error(
+                "You don't have enough storage space for this upload."
+              );
+            }
             const result = await callback(files);
             resolve(result);
           } catch (error) {
@@ -161,7 +146,7 @@ export const useFileUpload = (
   };
 
   const promptUploadFiles = async (): Promise<void> => {
-    promptUpload(false, (files) => {
+    return promptUpload(false, (files) => {
       const result = files.map((file) => parseFile(file, currentDirectory));
       return Promise.resolve(result);
     }).then((uploadDataPlural) => {
@@ -170,7 +155,7 @@ export const useFileUpload = (
   };
 
   const promptUploadFolder = async (): Promise<void> => {
-    promptUpload(true, parseFileArray)
+    return promptUpload(true, parseFileArray)
       .then((uploadDataPlural: FileUploadData[]) =>
         processOutDirectories(uploadDataPlural)
       )

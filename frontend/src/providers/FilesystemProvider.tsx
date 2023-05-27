@@ -14,9 +14,9 @@ import { useDownloadFilesOrFolders } from '@hooks/fileserver/useDownloadFilesOrF
 import { FilesystemContext } from '@src/contexts/FilesystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
-import { useFileUpload } from '@hooks/fileserver/useFileUpload';
 import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
 import { useImageModal } from './ImageModalProvider';
+import { useFileUploader } from '@hooks/fileserver/upload/useFileUploader';
 
 type Props = {
   children: React.ReactNode;
@@ -34,18 +34,18 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { unlockAchievementById, isUnlockable } = useAchievements();
   // why did I need to make a context for imageModal shenanigans again??
   const {
-    promptUploadFiles,
-    promptUploadFolder,
+    promptUploadFiles: _promptUploadFiles,
+    promptUploadFolder: _promptUploadFolder,
+    processDragNDrop,
     uploadQueue,
     dequeueCompletedUpload,
     showUploadModal,
     setShowUploadModal,
     removeUploadModal,
     toggleUploadModal,
-    processDragNDrop,
     progressRefs,
     getUploadStatus,
-  } = useFileUpload(currentDirectory, currentDirectoryFiles);
+  } = useFileUploader(currentDirectory, currentDirectoryFiles);
   const { duplicateFileOrFolder, suspense: duplicateSuspense } =
     useDuplicateFileOrFolder();
   const {
@@ -57,9 +57,11 @@ export const FilesystemProvider = ({ children }: Props) => {
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
   const { openImageModal, closeImageModal, modal } = useImageModal();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   // Helper functions
   const handleOperationError = (text: string) => {
-    message.error(text);
+    messageApi.error(text);
   };
 
   const getParent = (file: CustomFileFields) => {
@@ -78,7 +80,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       if (file.mimeType === 'application/pdf') {
         openImageModal(file);
         unlockAchievementById('preview_image');
-      }
+      } else handleOperationError(`Cannot preview ${file.mimeType} files!`);
     }
   };
 
@@ -208,6 +210,17 @@ export const FilesystemProvider = ({ children }: Props) => {
     }
   };
 
+  const promptUploadFiles = async () => {
+    _promptUploadFiles().catch((error) => {
+      handleOperationError(error.message);
+    });
+  };
+  const promptUploadFolder = async () => {
+    _promptUploadFolder().catch((error) => {
+      handleOperationError(error.message);
+    });
+  };
+
   return (
     <FilesystemContext.Provider
       value={{
@@ -248,6 +261,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         closeImageModal,
       }}
     >
+      {contextHolder}
       {children}
       {modal}
     </FilesystemContext.Provider>

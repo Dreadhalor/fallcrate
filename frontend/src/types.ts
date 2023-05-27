@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import { TaskState } from 'firebase/storage';
 
 export interface CustomFileFields {
   id: string;
@@ -15,6 +16,13 @@ export interface CustomFile extends CustomFileFields {
 export interface FileUploadData extends CustomFileFields {
   file?: File;
 }
+
+export type UploadProgress = {
+  id: string;
+  progress: number;
+  lastFrame: number;
+  state: TaskState | null;
+};
 
 export interface DraggedItem {
   id: string;

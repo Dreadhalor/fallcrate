@@ -1,11 +1,8 @@
-import { useFilesystem } from '@hooks/useFilesystem';
+import { useStorageManager } from '@hooks/fileserver/useStorageManager';
 import prettyBytes from 'pretty-bytes';
 
 export const StorageUsedBar = () => {
-  const { files } = useFilesystem();
-  const storageUsed = files.reduce((acc, file) => {
-    return acc + (file.size ?? 0);
-  }, 0);
+  const { storageUsed } = useStorageManager();
   return (
     <div className='flex flex-col gap-[10px] p-[15px]'>
       <div className='flex flex-row items-center justify-between'>
