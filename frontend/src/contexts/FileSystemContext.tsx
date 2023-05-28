@@ -1,5 +1,9 @@
-import { UploadProgress } from '@hooks/fileserver/useFileUpload';
-import { CustomFile, CustomFileFields, FileUploadData } from '@src/types';
+import {
+  CustomFile,
+  CustomFileFields,
+  FileUploadData,
+  UploadProgress,
+} from '@src/types';
 import { TaskState } from 'firebase/storage';
 import { MutableRefObject, createContext } from 'react';
 
