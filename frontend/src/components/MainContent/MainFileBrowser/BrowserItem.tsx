@@ -84,7 +84,7 @@ const BrowserItem = ({ file }: Props) => {
   };
 
   const { showFileContextMenu } = useFileContextMenu();
-  const [preview, setPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [url, setUrl] = useState('');
   useEffect(() => {
     getFileUrl(file.id ?? '').then((url) => setUrl(url));
@@ -93,7 +93,7 @@ const BrowserItem = ({ file }: Props) => {
   const handleClick = () => {
     if (file.type === 'file' && file.mimeType?.startsWith('image')) {
       unlockAchievementById('preview_image');
-      return setPreview(true);
+      return setShowPreview(true);
     }
     openFile(file.id);
   };
@@ -107,11 +107,11 @@ const BrowserItem = ({ file }: Props) => {
         style={{ display: 'none' }}
         src={url}
         preview={{
-          visible: preview,
+          visible: showPreview,
           scaleStep: 0.5,
           src: url,
           onVisibleChange: (value) => {
-            setPreview(value);
+            setShowPreview(value);
           },
           wrapStyle: {
             zIndex: 1000, // so it's below the achievement notification
