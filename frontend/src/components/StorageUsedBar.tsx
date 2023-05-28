@@ -5,7 +5,7 @@ export const StorageUsedBar = () => {
   const { storageUsed, maxStorage } = useStorageManager();
   const barColor = storageUsed > maxStorage ? 'bg-red-400' : 'bg-blue-500';
   return (
-    <div className='flex flex-col gap-[10px] p-[15px]'>
+    <div className='flex flex-col gap-[10px] overflow-hidden p-[15px]'>
       <div className='flex flex-row items-center justify-between'>
         <div className='text-sm font-bold'>Storage Used</div>
         <div className='text-sm font-bold'>
