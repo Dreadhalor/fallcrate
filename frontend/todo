@@ -20,9 +20,7 @@
 * duplication is REALLY slow
 * the bundle size is probably very big, maybe figure that out later?
 * Look, we have to wrap this up sometime. Implement:
-  * storage limits
   * video viewers
   * merge files when logging in (hopefully trivial)
-  * Fix sidebar overflow
   * Then JUST WALK AWAY
 * currently, storage space checks don't take into consideration space taken by queued files - we will not fix this, not worth it
