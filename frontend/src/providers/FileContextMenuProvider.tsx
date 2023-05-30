@@ -5,7 +5,7 @@ import { CustomFile } from '@src/types';
 import { BiDuplicate, BiEdit } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useAchievements } from 'milestone-components';
-import { useImageModal } from '@providers/ImageModalProvider';
+import { useFileViewer } from '@providers/FileViewerProvider';
 import { HiDownload } from 'react-icons/hi';
 import { SuspenseIcon } from '@components/utilities/SuspenseIcon';
 
@@ -48,7 +48,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     downloadFilesOrFolders,
     downloadSuspense,
   } = useFilesystem();
-  const { open } = useImageModal();
+  const { open } = useFileViewer();
   const { unlockAchievementById } = useAchievements();
 
   const { show } = useContextMenu({

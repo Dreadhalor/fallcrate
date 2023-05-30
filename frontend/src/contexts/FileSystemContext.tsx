@@ -44,8 +44,8 @@ interface FilesystemContextValue {
   processDragNDrop: (items: DataTransferItemList) => Promise<void>;
   progressRefs: MutableRefObject<Map<string, UploadProgress>>;
   getUploadStatus: (id: string) => TaskState | null;
-  openImageModal: (file: CustomFile) => void;
-  closeImageModal: () => void;
+  openFileViewer: (file: CustomFile) => void;
+  closeFileViewer: () => void;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

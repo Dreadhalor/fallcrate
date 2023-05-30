@@ -5,8 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { ContextMenuProvider } from './FileContextMenuProvider';
 import { MilestoneProvider } from 'milestone-components';
-import { ImageModalProvider } from './ImageModalProvider';
-import { ConfigProvider } from 'antd';
+import { FileViewerProvider } from './FileViewerProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -14,26 +13,16 @@ type Props = {
 
 export const FallcrateProviders: React.FC<Props> = ({ children }) => {
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Modal: {
-            wireframe: true,
-          },
-        },
-      }}
-    >
-      <FirebaseProvider>
-        <MilestoneProvider app='fallcrate'>
-          <ImageModalProvider>
-            <FilesystemProvider>
-              <DndProvider backend={HTML5Backend}>
-                <ContextMenuProvider>{children}</ContextMenuProvider>
-              </DndProvider>
-            </FilesystemProvider>
-          </ImageModalProvider>
-        </MilestoneProvider>
-      </FirebaseProvider>
-    </ConfigProvider>
+    <FirebaseProvider>
+      <MilestoneProvider app='fallcrate'>
+        <FileViewerProvider>
+          <FilesystemProvider>
+            <DndProvider backend={HTML5Backend}>
+              <ContextMenuProvider>{children}</ContextMenuProvider>
+            </DndProvider>
+          </FilesystemProvider>
+        </FileViewerProvider>
+      </MilestoneProvider>
+    </FirebaseProvider>
   );
 };

@@ -98,6 +98,7 @@ export const useFileUploader = (
     parent: string | null = currentDirectory
   ): FileUploadData => {
     const id = uuidv4();
+    console.log('file', file);
     const fields: FileUploadData = {
       id,
       name: file.name,

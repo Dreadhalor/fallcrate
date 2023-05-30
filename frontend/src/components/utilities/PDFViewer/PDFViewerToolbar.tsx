@@ -33,7 +33,7 @@ export const PDFViewerToolbar = ({
   containOrFill,
   setContainOrFill,
 }: Props) => {
-  const { closeImageModal } = useFilesystem();
+  const { closeFileViewer } = useFilesystem();
   const iconSize = 24;
   const enabledClasses = 'text-blue-500 hover:text-blue-700';
   const disabledClasses = 'text-gray-300';
@@ -72,7 +72,7 @@ export const PDFViewerToolbar = ({
       id='pdf-toolbar'
       className='flex w-full items-center justify-between border-b-[1px] border-b-faded_border bg-white p-[10px]'
     >
-      <button onClick={closeImageModal} className={enabledClasses}>
+      <button onClick={closeFileViewer} className={enabledClasses}>
         <FaTimes />
       </button>
       <span className='mx-auto flex items-center gap-[5px]'>

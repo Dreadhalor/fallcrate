@@ -92,7 +92,7 @@ export const MoreStorageModalContent = () => {
   );
 
   return (
-    <div className='flex flex-col items-center gap-[20px] p-[5px]'>
+    <div className='flex flex-col items-center gap-[25px] p-[20px]'>
       {loadingMessageIndex < n ? loadingContent : 'Lol, no'}
     </div>
   );

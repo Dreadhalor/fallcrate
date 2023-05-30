@@ -15,7 +15,7 @@ import { FilesystemContext } from '@src/contexts/FilesystemContext';
 import { useCurrentDirectory } from '@hooks/fileserver/useCurrentDirectory';
 import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFolder';
 import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
-import { useImageModal } from './ImageModalProvider';
+import { useFileViewer } from './FileViewerProvider';
 import { useFileUploader } from '@hooks/fileserver/upload/useFileUploader';
 
 type Props = {
@@ -32,7 +32,7 @@ export const FilesystemProvider = ({ children }: Props) => {
   const { downloadFilesOrFolders, suspense: downloadSuspense } =
     useDownloadFilesOrFolders(currentDirectory);
   const { unlockAchievementById, isUnlockable } = useAchievements();
-  // why did I need to make a context for imageModal shenanigans again??
+  // why did I need to make a context for fileViewer shenanigans again??
   const {
     promptUploadFiles: _promptUploadFiles,
     promptUploadFolder: _promptUploadFolder,
@@ -57,7 +57,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     selectFilesExclusively,
     massToggleSelectFiles,
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
-  const { openImageModal, closeImageModal, modal } = useImageModal();
+  const { openFileViewer, closeFileViewer, pdfViewer, videoViewer } =
+    useFileViewer();
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -78,11 +79,21 @@ export const FilesystemProvider = ({ children }: Props) => {
     const file = files.find((file) => file.id === file_id);
     if (!file) return;
     if (file.type === 'directory') return openDirectory(file_id);
+    // check for pdf, then check for video
     if (file.type === 'file') {
-      if (file.mimeType === 'application/pdf') {
-        openImageModal(file);
+      const file_type = file.mimeType ?? '';
+      if (file_type === 'application/pdf') {
+        openFileViewer(file);
         unlockAchievementById('preview_image');
-      } else handleOperationError(`Cannot preview ${file.mimeType} files!`);
+      } else if (file_type.includes('video')) {
+        openFileViewer(file);
+        // unlockAchievementById('preview_video');
+      } else
+        handleOperationError(
+          file_type
+            ? `Cannot preview ${file_type} files!`
+            : 'Cannot preview this type of file!'
+        );
     }
   };
 
@@ -270,13 +281,14 @@ export const FilesystemProvider = ({ children }: Props) => {
         processDragNDrop,
         progressRefs,
         getUploadStatus,
-        openImageModal,
-        closeImageModal,
+        openFileViewer,
+        closeFileViewer,
       }}
     >
       {contextHolder}
       {children}
-      {modal}
+      {pdfViewer}
+      {videoViewer}
     </FilesystemContext.Provider>
   );
 };

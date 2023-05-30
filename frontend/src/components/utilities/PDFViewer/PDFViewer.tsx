@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useImageModal } from '@providers/ImageModalProvider';
+import { useFileViewer } from '@providers/FileViewerProvider';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { PDFViewerToolbar } from './PDFViewerToolbar';
 import { PDFViewerContent } from './PDFViewerContent';
 
 export const PDFViewer = () => {
-  const { file } = useImageModal();
+  const { file } = useFileViewer();
   const { getFileUrl } = useFilesystem();
   const [url, setUrl] = useState('');
 

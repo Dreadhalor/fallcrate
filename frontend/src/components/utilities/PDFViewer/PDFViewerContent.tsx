@@ -24,7 +24,7 @@ export const PDFViewerContent = ({
   pdfContainHeight,
   scale,
 }: Props) => {
-  const { closeImageModal } = useFilesystem();
+  const { closeFileViewer } = useFilesystem();
   const dimensionStyle =
     containOrFill === 'contain'
       ? { height: pdfContainHeight * scale }
@@ -32,7 +32,7 @@ export const PDFViewerContent = ({
   const backgroundRef = useRef<HTMLDivElement>(null);
   const handleBackgroundClick = (e: any) => {
     if (e.target === backgroundRef.current) {
-      closeImageModal();
+      closeFileViewer();
     }
   };
 

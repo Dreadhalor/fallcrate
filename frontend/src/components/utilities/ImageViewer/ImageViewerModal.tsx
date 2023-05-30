@@ -2,11 +2,11 @@ import { useFilesystem } from '@hooks/useFilesystem';
 import { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { IoClose } from 'react-icons/io5';
-import { useImageModal } from '@providers/ImageModalProvider';
+import { useFileViewer } from '@providers/FileViewerProvider';
 import { Modal } from 'antd';
 
 const ImageViewerModal = () => {
-  const { open, setOpen, file, setFile } = useImageModal();
+  const { open, setOpen, file, setFile } = useFileViewer();
   const { getFileUrl } = useFilesystem();
 
   const [imageDimensions, setImageDimensions] = useState({
