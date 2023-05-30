@@ -42,7 +42,11 @@ export const VideoViewer = () => {
             <FaTimes className='text-2xl text-white' />
           </button>
 
-          <video className='m-auto' src={url} controls autoPlay />
+          <video
+            className='m-auto max-h-full max-w-full object-contain'
+            src={url}
+            controls
+          />
         </div>
       </Modal>
     </div>
