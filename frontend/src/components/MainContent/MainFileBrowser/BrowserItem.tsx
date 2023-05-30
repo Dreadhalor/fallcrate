@@ -149,7 +149,6 @@ const BrowserItem = ({ file }: Props) => {
           },
         }}
       />
-      {/*  */}
       <div className='p-[10px]'>
         <div
           className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
