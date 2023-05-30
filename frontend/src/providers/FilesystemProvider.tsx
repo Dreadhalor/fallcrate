@@ -119,15 +119,10 @@ export const FilesystemProvider = ({ children }: Props) => {
     const delete_tree = getUnionFileDeleteTreeIDs(file_ids, files);
     //get the blob ids before deleting the files from the database
     const blob_ids = filterBlobStorageIds(files, delete_tree);
-    // optimistically remove the files from the selected files array to avoid an awkward delay
-    // setSelectedFiles((prev) => prev.filter((id) => !file_ids.includes(id)));
+    await storage.deleteFiles(blob_ids).catch((error) => {
+      console.error(error);
+    });
     const deleted_ids = await db.deleteFiles(delete_tree);
-    // only delete the files from storage if they were successfully deleted from the database
-    await storage
-      .deleteFiles(deleted_ids.filter((id) => blob_ids.includes(id)))
-      .catch((error) => {
-        console.error(error);
-      });
 
     if (deleted_ids.length > 0) {
       unlockAchievementById('delete_file');
