@@ -1,4 +1,4 @@
-import { DraggedItem } from '@src/types';
+import { DraggedItems } from '@src/types';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { useDrop } from 'react-dnd';
 import { MouseEvent } from 'react';
@@ -18,8 +18,8 @@ const AllFilesBreadcrumb = ({ onMouseEnter, onMouseLeave }: Props) => {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ITEM_TYPE,
-      drop: (item: DraggedItem) => {
-        if (item.id) moveFiles([item.id], null);
+      drop: (items: DraggedItems) => {
+        if (items.ids.length > 0) moveFiles(items.ids, null);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),

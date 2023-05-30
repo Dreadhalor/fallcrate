@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CustomFile, CustomFileFields, FileUploadData } from './types';
 import { Timestamp } from 'firebase/firestore';
+import { DragSourceMonitor } from 'react-dnd';
 
 export const buildNewFolder = ({
   name,
@@ -103,27 +104,6 @@ export const getUnionFileTree = (
   const list = file_ids.flatMap((file_id) => getFileTree(file_id, files));
   const result = deduplicateByProperty(list, 'id');
   return result;
-};
-
-export const createDragImage = (name: string) => {
-  const dragImage = document.createElement('div');
-  dragImage.style.position = 'absolute';
-  dragImage.style.top = '-9999px';
-  dragImage.style.left = '-9999px';
-  dragImage.style.padding = '8px';
-  dragImage.style.borderRadius = '4px';
-  dragImage.style.backgroundColor = 'rgba(0, 97, 254, 0.16)';
-  dragImage.style.color = 'black';
-  dragImage.style.fontFamily = 'Arial, sans-serif';
-  dragImage.style.fontSize = '12px';
-  dragImage.style.fontWeight = 'bold';
-  dragImage.style.whiteSpace = 'nowrap';
-  dragImage.classList.add('drag-image');
-  dragImage.innerText = name;
-
-  document.body.appendChild(dragImage);
-
-  return dragImage;
 };
 
 export const checkForCircularReference = (
@@ -268,3 +248,18 @@ export function parseFileArray(files: File[]): Promise<FileUploadData[]> {
     }
   });
 }
+
+export const calculateDragOffset = (monitor: DragSourceMonitor) => {
+  const clientOffset = monitor.getInitialClientOffset() ?? {
+    x: 0,
+    y: 0,
+  };
+  const sourceOffset = monitor.getInitialSourceClientOffset() ?? {
+    x: 0,
+    y: 0,
+  };
+  return {
+    x: clientOffset?.x - sourceOffset?.x,
+    y: clientOffset?.y - sourceOffset?.y,
+  };
+};

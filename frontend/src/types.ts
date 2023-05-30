@@ -24,6 +24,6 @@ export type UploadProgress = {
   state: TaskState | null;
 };
 
-export interface DraggedItem {
-  id: string;
+export interface DraggedItems {
+  ids: string[];
 }

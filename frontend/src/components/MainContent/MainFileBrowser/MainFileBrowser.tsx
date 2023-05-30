@@ -3,7 +3,7 @@ import BrowserItem from './BrowserItem';
 import { useFilesystem } from '@hooks/useFilesystem';
 import FileDropzone from '../FileDropzone';
 import { useDrop } from 'react-dnd';
-import { DraggedItem } from '@src/types';
+import { DraggedItems } from '@src/types';
 
 const MainFileBrowser = () => {
   const { currentDirectoryFiles, currentDirectory, moveFiles } =
@@ -13,9 +13,9 @@ const MainFileBrowser = () => {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: 'file',
-      drop: (item: DraggedItem, monitor) => {
-        if (monitor.isOver({ shallow: true }) && item.id)
-          moveFiles([item.id], currentDirectory);
+      drop: (items: DraggedItems, monitor) => {
+        if (monitor.isOver({ shallow: true }) && items.ids.length > 0)
+          moveFiles(items.ids, currentDirectory);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),

@@ -1,7 +1,10 @@
-import { CustomFile, DraggedItem } from '@src/types';
+import { CustomFile, DraggedItems } from '@src/types';
 import { useFilesystem } from '@hooks/useFilesystem';
 import { useDrag, useDrop } from 'react-dnd';
 import { useAchievements } from 'milestone-components';
+import { useEffect, useRef, useState } from 'react';
+import { createDragPreview } from '@src/createDragPreview';
+import { calculateDragOffset } from '@src/helpers';
 
 type Props = {
   file: CustomFile | null;
@@ -21,24 +24,50 @@ const Breadcrumb = ({ file }: Props) => {
     : 'hover:underline hover:text-black';
 
   // Drag related logic
-  const [{ }, drag] = useDrag(() => ({
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [{}, drag, preview] = useDrag(() => ({
     type: ITEM_TYPE,
-    item: { id: file_id },
+    item: (monitor) => {
+      setDragOffset(calculateDragOffset(monitor));
+      return { ids: [file_id] };
+    },
     canDrag: !!file_id,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
+  // Create a ref for the preview Image
+  const previewImageRef = useRef<HTMLImageElement | null>(null);
+
+  // Load the preview image and assign to the preview ref
+  useEffect(() => {
+    createDragPreview(file?.name ?? '', true, 1).then((img) => {
+      if (img) {
+        previewImageRef.current = img;
+        previewImageRef.current.onload = () => {
+          if (previewImageRef.current) {
+            preview(previewImageRef.current, {
+              offsetX: -dragOffset.x,
+              offsetY: -dragOffset.y,
+            });
+          }
+        };
+      }
+    });
+  }, [file?.name, file?.type, preview]);
 
   // Drop related logic
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ITEM_TYPE,
-      drop: (item: DraggedItem) => {
-        if (item.id) moveFiles([item.id], file_id);
+      drop: (items: DraggedItems) => {
+        if (items.ids.length > 0) moveFiles(items.ids, file_id);
       },
       collect: (monitor) => ({
-        isOver: monitor.isOver() && monitor.getItem().id !== file_id,
+        isOver:
+          file_id &&
+          monitor.isOver() &&
+          monitor.getItem().ids.includes(file_id),
       }),
     }),
     [file_id, moveFiles]

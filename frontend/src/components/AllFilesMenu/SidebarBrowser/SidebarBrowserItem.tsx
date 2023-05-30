@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaChevronRight, FaFolder } from 'react-icons/fa';
 import { BsDot } from 'react-icons/bs';
 import { Collapse } from 'react-collapse';
 import { Tooltip } from 'react-tooltip';
 import { useFilesystem } from '@hooks/useFilesystem';
 import TruncatedText from '@components/utilities/TruncatedText';
-import { CustomFile, DraggedItem } from '@src/types';
+import { CustomFile, DraggedItems } from '@src/types';
 import { useDrag, useDrop } from 'react-dnd';
 import { useAchievements } from 'milestone-components';
+import { calculateDragOffset } from '@src/helpers';
+import { createDragPreview } from '@src/createDragPreview';
 
 type Props = {
   file: CustomFile;
@@ -39,20 +41,44 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const isCurrentDirectory = currentDirectory === file.id;
 
   // Drag related logic
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ITEM_TYPE,
-    item: { id: file.id },
+    item: (monitor) => {
+      setDragOffset(calculateDragOffset(monitor));
+      return { ids: [file.id] };
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
 
+  // Create a ref for the preview Image
+  const previewImageRef = useRef<HTMLImageElement | null>(null);
+
+  // Load the preview image and assign to the preview ref
+  useEffect(() => {
+    createDragPreview(file.name, true, 1).then((img) => {
+      if (img) {
+        previewImageRef.current = img;
+        previewImageRef.current.onload = () => {
+          if (previewImageRef.current) {
+            preview(previewImageRef.current, {
+              offsetX: -dragOffset.x,
+              offsetY: -dragOffset.y,
+            });
+          }
+        };
+      }
+    });
+  }, [file.name, file.type, preview]);
+
   // Drop related logic
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ITEM_TYPE,
-      drop: (item: DraggedItem) => {
-        if (item.id) moveFiles([item.id], file.id);
+      drop: (items: DraggedItems) => {
+        if (items.ids.length > 0) moveFiles(items.ids, file.id);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
@@ -95,8 +121,9 @@ const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
       >
         {childFolders.length > 0 ? (
           <div
-            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
-              }`}
+            className={`rounded-sm p-[5px] transition-colors duration-200 hover:bg-gray-300 ${
+              isCurrentDirectory ? 'group-hover:bg-[#c0c6ce]' : ''
+            }`}
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen((prev) => !prev);

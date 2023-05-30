@@ -1,13 +1,14 @@
 import { FaCheck, FaFile, FaFolder } from 'react-icons/fa';
-import { CustomFile, DraggedItem } from '@src/types';
+import { CustomFile, DraggedItems } from '@src/types';
 import { useFilesystem } from '@hooks/useFilesystem';
 import prettyBytes from 'pretty-bytes';
 import { useDrag, useDrop } from 'react-dnd';
 import TruncatedText from '@components/utilities/TruncatedText';
 import { useFileContextMenu } from '@providers/FileContextMenuProvider';
-import { Image } from 'antd';
+import { Image as AntdImage } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAchievements } from 'milestone-components';
+import { createDragPreview } from '@src/createDragPreview';
 
 type Props = {
   file: CustomFile;
@@ -31,26 +32,41 @@ const BrowserItem = ({ file }: Props) => {
   const some_selected = selectedFiles.length > 0;
 
   // Drag related logic
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ITEM_TYPE,
-    item: () => {
-      selectFilesExclusively([file.id]);
-      return { id: file.id };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+  const [previewImage, setPreviewImage] = useState<HTMLImageElement | null>(
+    null
+  );
+
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: ITEM_TYPE,
+      item: () => {
+        // this just doesn't work so let's comment it out
+        // if (selectedFiles.includes(file.id)) {
+        //   return { ids: selectedFiles };
+        // }
+        selectFilesExclusively([file.id]);
+        return { ids: [file.id] };
+      },
+
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-  }));
+    [file.id, selectedFiles, selectFilesExclusively]
+  );
 
   // Drop related logic
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ITEM_TYPE,
-      drop: (item: DraggedItem) => {
-        if (item.id) moveFiles([item.id], file.id);
+      drop: (items: DraggedItems) => {
+        if (file.type === 'directory' && items.ids.length > 0) {
+          moveFiles(items.ids, file.id);
+        }
       },
+      canDrop: () => file.type === 'directory',
       collect: (monitor) => ({
-        isOver: monitor.isOver(),
+        isOver: file.type === 'directory' && monitor.isOver(),
       }),
     }),
     [file.id, moveFiles]
@@ -63,6 +79,21 @@ const BrowserItem = ({ file }: Props) => {
       drop(el);
     }
   };
+
+  // Load the preview image in advance when selectedFiles changes
+  useEffect(() => {
+    createDragPreview(file.name, file.type === 'directory', 1).then((img) => {
+      img.onload = () => setPreviewImage(img);
+    });
+  }, [file.name, file.type, preview]);
+
+  // Set the preview image as the drag preview
+  useEffect(() => {
+    preview(previewImage, {
+      offsetX: 0,
+      offsetY: 0,
+    });
+  }, [previewImage]);
 
   const background = isOver && !isDragging ? 'bg-[rgba(0,97,254,0.16)]' : '';
 
@@ -103,7 +134,7 @@ const BrowserItem = ({ file }: Props) => {
       className={`group flex w-full flex-row items-center ${background}`}
       ref={dragDropRef}
     >
-      <Image
+      <AntdImage
         style={{ display: 'none' }}
         src={url}
         preview={{
