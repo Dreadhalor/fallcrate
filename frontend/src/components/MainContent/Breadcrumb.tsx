@@ -65,9 +65,8 @@ const Breadcrumb = ({ file }: Props) => {
       },
       collect: (monitor) => ({
         isOver:
-          file_id &&
           monitor.isOver() &&
-          monitor.getItem().ids.includes(file_id),
+          (!file_id || !monitor.getItem().ids.includes(file_id)),
       }),
     }),
     [file_id, moveFiles]
