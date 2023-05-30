@@ -14,16 +14,17 @@ const BrowserHeader = () => {
   };
 
   return (
-    <div className='group pointer-events-none sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
+    <div className='group sticky top-0 z-10 flex w-full flex-row items-center bg-white font-semibold'>
       <div className='p-[10px]'>
-        <div
-          className={`pointer-events-auto flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${some_files_selected && 'border'
-            } ${getFileSelectionClass()}`}
+        <button
+          className={`flex h-[25px] w-[25px] items-center justify-center rounded-sm border-gray-500 group-hover:border ${
+            some_files_selected && 'border'
+          } ${getFileSelectionClass()}`}
           onClick={massToggleSelectFiles}
         >
           {all_files_selected && <FaCheck />}
           {some_files_selected && <FaMinus />}
-        </div>
+        </button>
       </div>
       <div className='flex h-full flex-1 flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] px-[10px] align-baseline'>
         <span className='flex-1'>Name</span>

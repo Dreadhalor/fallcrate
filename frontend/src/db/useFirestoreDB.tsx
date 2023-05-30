@@ -20,6 +20,22 @@ const useFirestoreDB = (uid: string): Database => {
   const firestore = getFirestore();
   const filesCollection = collection(firestore, 'files');
 
+  const transferFiles = async (localUid: string, remoteUid: string) => {
+    const filesQuery = query(
+      filesCollection,
+      where('uploadedBy', '==', localUid)
+    );
+    const snapshot = await getDocs(filesQuery);
+    const batch = writeBatch(firestore);
+
+    snapshot.docs.forEach((document) => {
+      const fileRef = doc(firestore, 'files', document.id);
+      batch.update(fileRef, { uploadedBy: remoteUid });
+    });
+
+    await batch.commit();
+  };
+
   const verifyOwner = async (file_id: string) => {
     const fileRef = doc(firestore, 'files', file_id);
     const docSnapshot = await getDoc(fileRef);
@@ -142,6 +158,7 @@ const useFirestoreDB = (uid: string): Database => {
     deleteFiles,
     createFolder,
     subscribeToFiles,
+    transferFiles,
   };
 };
 

@@ -17,6 +17,7 @@ import { useDuplicateFileOrFolder } from '@hooks/fileserver/useDuplicateFileOrFo
 import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
 import { useFileViewer } from './FileViewerProvider';
 import { useFileUploader } from '@hooks/fileserver/upload/useFileUploader';
+import { useMergeAccounts } from '@hooks/fileserver/useMergeAccounts';
 
 type Props = {
   children: React.ReactNode;
@@ -61,6 +62,8 @@ export const FilesystemProvider = ({ children }: Props) => {
     useFileViewer();
 
   const [messageApi, contextHolder] = message.useMessage();
+
+  useMergeAccounts();
 
   // Helper functions
   const handleOperationError = (text: string) => {

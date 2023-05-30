@@ -80,6 +80,8 @@ const useJsonServerDB = (uid: string): Database => {
   const subscribeToFiles =
     (callback: (files: CustomFile[]) => void) => () => {};
 
+  const transferFiles = async (localUid: string, remoteUid: string) => {};
+
   return {
     fetchFiles,
     createFile,
@@ -88,6 +90,7 @@ const useJsonServerDB = (uid: string): Database => {
     deleteFiles,
     createFolder,
     subscribeToFiles,
+    transferFiles,
   };
 };
 

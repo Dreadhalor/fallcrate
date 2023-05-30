@@ -150,8 +150,8 @@ const BrowserItem = ({ file }: Props) => {
         }}
       />
       <div className='p-[10px]'>
-        <div
-          className={`flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-sm border-gray-500 group-hover:border ${
+        <button
+          className={`flex h-[25px] w-[25px] items-center justify-center rounded-sm border-gray-500 group-hover:border ${
             some_selected && 'border'
           } ${
             is_selected
@@ -161,7 +161,7 @@ const BrowserItem = ({ file }: Props) => {
           onClick={() => selectFile(file.id)}
         >
           {is_selected && <FaCheck />}
-        </div>
+        </button>
       </div>
       <div
         className={`flex h-full min-w-0 flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}

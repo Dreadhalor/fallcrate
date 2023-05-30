@@ -13,4 +13,6 @@ export interface Database {
   ) => Promise<CustomFile>;
 
   subscribeToFiles: (callback: (files: CustomFile[]) => void) => () => void;
+
+  transferFiles: (localUid: string, remoteUid: string) => Promise<void>;
 }
