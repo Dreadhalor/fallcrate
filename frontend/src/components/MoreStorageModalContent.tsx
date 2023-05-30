@@ -74,8 +74,6 @@ export const MoreStorageModalContent = () => {
 
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
-  console.log(randomMessagesRef.current);
-
   useEffect(() => {
     if (loadingMessageIndex >= n) return;
     const timeout = setTimeout(() => {
