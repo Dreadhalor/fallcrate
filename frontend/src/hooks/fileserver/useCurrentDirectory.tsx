@@ -2,7 +2,7 @@ import { sortFiles } from '@src/helpers';
 import { CustomFile } from '@src/types';
 import { useState, useEffect } from 'react';
 import { useFiles } from './useFiles';
-import { useAuth } from 'milestone-components';
+import { useAchievements, useAuth } from 'milestone-components';
 
 // okay pretty sure the only reason stuff like this is kosher as a hook instead of a context is because it's
 // only instantiated once thru FilesystemProvider & then that instance is passed to every other component that needs it
@@ -16,6 +16,7 @@ export const useCurrentDirectory = () => {
   // FOR NOW
   const { files } = useFiles();
   const { uid } = useAuth();
+  const { unlockAchievementById, isUnlockable } = useAchievements();
 
   useEffect(() => {
     openDirectory(currentDirectory);
@@ -24,6 +25,15 @@ export const useCurrentDirectory = () => {
   useEffect(() => openDirectory(null), [uid]);
 
   const openDirectory = (directory_id: string | null) => {
+    if (isUnlockable('navigation_depth')) {
+      let level = 0;
+      let file = files.find((_file) => _file.id === directory_id);
+      while (file && level < 7) {
+        level++;
+        file = files.find((_file) => _file.id === file?.parent);
+      }
+      if (level >= 7) unlockAchievementById('navigation_depth');
+    }
     setCurrentDirectory(directory_id);
     const newCurrentDirectoryFiles = files
       .filter((file) => file.parent === directory_id)

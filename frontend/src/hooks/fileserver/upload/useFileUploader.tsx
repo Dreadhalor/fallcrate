@@ -1,7 +1,7 @@
 import { useStorage } from '@hooks/useStorage';
 import { useUploadModal } from './useUploadModal';
 import { useUploadQueue } from './useUploadQueue';
-import { useAuth } from 'milestone-components';
+import { useAchievements, useAuth } from 'milestone-components';
 import { useDB } from '@hooks/useDB';
 import { CustomFile, FileUploadData } from '@src/types';
 import { Timestamp } from 'firebase/firestore';
@@ -18,6 +18,7 @@ export const useFileUploader = (
   const { uid } = useAuth();
   const db = useDB(uid);
   const storage = useStorage();
+  const { unlockAchievementById } = useAchievements();
 
   const {
     addToUploadQueue,
@@ -48,6 +49,22 @@ export const useFileUploader = (
     };
     processQueue();
   }, [uploadQueue]);
+
+  const unlockTopLevelAchievements = (topLevelFiles: FileUploadData[]) => {
+    const has_file = topLevelFiles.some((file) => file.type === 'file');
+    const has_folder = topLevelFiles.some((file) => file.type === 'directory');
+    if (has_file) {
+      unlockAchievementById('upload_file');
+      unlockAchievementById('upload_file_drag');
+    }
+    if (has_folder) {
+      unlockAchievementById('upload_folder');
+      unlockAchievementById('upload_folder_drag');
+    }
+    if (has_file && has_folder) {
+      unlockAchievementById('upload_files_and_folders');
+    }
+  };
 
   const startUpload = (uploadData: FileUploadData) => {
     return new Promise(async (resolve, reject) => {
@@ -151,6 +168,7 @@ export const useFileUploader = (
       );
       return Promise.resolve(deduplicatedFiles);
     }).then((uploadDataPlural) => {
+      unlockAchievementById('upload_file');
       uploadDataPlural.forEach(addToUploadQueue);
     });
   };
@@ -165,6 +183,7 @@ export const useFileUploader = (
             currentDirectoryFiles
           );
           topLevelDirectory.name = validName;
+          unlockAchievementById('upload_folder');
         }
         return processOutDirectories(uploadDataPlural);
       })
@@ -230,6 +249,7 @@ export const useFileUploader = (
           );
           if (file) file.name = dedupedFile.name;
         }
+        unlockTopLevelAchievements(topLevelFiles);
         return processOutDirectories(uploadDataPlural);
       })
       .then((uploadDataPlural) => {

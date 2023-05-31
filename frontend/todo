@@ -11,7 +11,6 @@
 * fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
 * when signing out/in, revert to the root directory
 * when deleting an upload's parent folder after upload but before clearing the completed task, the parent shows up as 'All Files' - not a big deal, but maybe a lil odd
-* re-up on the duplication logic
 * oh yeah fix achievements for uploads
 * quizás add file icons to the sidebar (but prolly not)
 * duplication is REALLY slow

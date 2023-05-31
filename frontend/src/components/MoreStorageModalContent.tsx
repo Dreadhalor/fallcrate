@@ -1,7 +1,10 @@
 import { Spin } from 'antd';
+import { useAchievements } from 'milestone-components';
 import { useEffect, useRef, useState } from 'react';
 
 export const MoreStorageModalContent = () => {
+  const { unlockAchievementById } = useAchievements();
+
   const loadingMessages = [
     'Entangling qubits',
     'Compressing space-time continuum',
@@ -75,7 +78,10 @@ export const MoreStorageModalContent = () => {
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
   useEffect(() => {
-    if (loadingMessageIndex >= n) return;
+    if (loadingMessageIndex >= n) {
+      unlockAchievementById('request_more_storage');
+      return;
+    }
     const timeout = setTimeout(() => {
       setLoadingMessageIndex((prev) => prev + 1);
     }, 1000);
