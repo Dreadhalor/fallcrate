@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useFiles } from './useFiles';
-import { checkDirectoryForNameConflict } from '@src/helpers';
 import { CustomFile } from '@src/types';
 import { useDB } from '@hooks/useDB';
-import { useAuth } from 'milestone-components';
+import { useAchievements, useAuth } from 'milestone-components';
+import { getValidDuplicatedName } from './helpers';
 
 export const useRenamingFile = () => {
   const [renamingFileId, setRenamingFileId] = useState<string | null>(null);
@@ -12,28 +12,27 @@ export const useRenamingFile = () => {
   const { uid } = useAuth();
   const { files } = useFiles();
   const db = useDB(uid);
+  const { unlockAchievementById } = useAchievements();
 
   useEffect(() => {
     setFile(files.find((_file) => _file.id === renamingFileId) ?? null);
   }, [files, renamingFileId]);
 
   const requestRename = async (name: string) => {
-    if (!renamingFileId || !name || name === file?.name)
+    if (!renamingFileId || !name || name === file?.name || !file)
       return setRenamingFileId(null);
 
-    if (
-      checkDirectoryForNameConflict(
-        name,
-        renamingFileId,
-        file?.parent || null,
-        files
-      )
-    ) {
-      setRenamingFileId(null);
-      throw `A file with the name "${name}" already exists in the current directory!`;
+    const siblingFiles = files.filter(
+      (_file) => _file.parent === file.parent && _file.id !== file.id
+    );
+    const validName = getValidDuplicatedName(name, siblingFiles);
+    if (validName !== name) {
+      unlockAchievementById('filename_conflict');
     }
-    await db.renameFile(renamingFileId, name);
+
     setRenamingFileId(null);
+
+    await db.renameFile(renamingFileId, validName);
   };
 
   return {
