@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { parseFileArray } from '@src/helpers';
 import { useEffect } from 'react';
 import { useStorageManager } from '@hooks/fileserver/useStorageManager';
+import { deduplicateFilenames, getValidDuplicatedName } from '../helpers';
 
 export const useFileUploader = (
   currentDirectory: string | null,
@@ -144,7 +145,11 @@ export const useFileUploader = (
   const promptUploadFiles = async (): Promise<void> => {
     return promptUpload(false, (files) => {
       const result = files.map((file) => parseFile(file, currentDirectory));
-      return Promise.resolve(result);
+      const deduplicatedFiles = deduplicateFilenames(
+        result,
+        currentDirectoryFiles
+      );
+      return Promise.resolve(deduplicatedFiles);
     }).then((uploadDataPlural) => {
       uploadDataPlural.forEach(addToUploadQueue);
     });
@@ -152,9 +157,17 @@ export const useFileUploader = (
 
   const promptUploadFolder = async (): Promise<void> => {
     return promptUpload(true, parseFileArray)
-      .then((uploadDataPlural: FileUploadData[]) =>
-        processOutDirectories(uploadDataPlural)
-      )
+      .then((uploadDataPlural: FileUploadData[]) => {
+        const topLevelDirectory = uploadDataPlural.find((file) => !file.parent);
+        if (topLevelDirectory) {
+          const validName = getValidDuplicatedName(
+            topLevelDirectory.name,
+            currentDirectoryFiles
+          );
+          topLevelDirectory.name = validName;
+        }
+        return processOutDirectories(uploadDataPlural);
+      })
       .then((uploadDataPlural) => {
         uploadDataPlural.forEach(addToUploadQueue);
       });
@@ -203,6 +216,20 @@ export const useFileUploader = (
       })
       .then((uploadDataPlural) => {
         storageSpaceCheck(uploadDataPlural);
+        // feels kinda hacky but I've stopped caring
+        const topLevelFiles = uploadDataPlural.filter(
+          (file) => !file.parent || file.parent === currentDirectory
+        );
+        const deduplicatedFilenames = deduplicateFilenames(
+          topLevelFiles,
+          currentDirectoryFiles
+        );
+        for (const dedupedFile of deduplicatedFilenames) {
+          const file = uploadDataPlural.find(
+            (_file) => _file.id === dedupedFile.id
+          );
+          if (file) file.name = dedupedFile.name;
+        }
         return processOutDirectories(uploadDataPlural);
       })
       .then((uploadDataPlural) => {

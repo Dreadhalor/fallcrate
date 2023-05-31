@@ -181,7 +181,7 @@ const BrowserItem = ({ file }: Props) => {
         onContextMenu={(e) => showFileContextMenu(e, file, true)}
         style={{ opacity: isDragging ? 0.6 : 1 }}
       >
-        <div className='flex w-[20px] items-center justify-center'>
+        <div className='flex w-[20px] flex-shrink-0 items-center justify-center'>
           {getIcon()}
         </div>
 

@@ -149,7 +149,7 @@ export const checkDirectoryForNameConflict = (
 };
 export const checkFilesForNameConflict = (
   name: string,
-  files: CustomFile[]
+  files: CustomFileFields[]
 ) => {
   return files.some((file) => file.name === name);
 };

@@ -1,5 +1,5 @@
-import { checkFilesForNameConflict } from "@src/helpers";
-import { CustomFile } from "@src/types";
+import { checkFilesForNameConflict } from '@src/helpers';
+import { CustomFile, CustomFileFields } from '@src/types';
 
 export const clearSelfParents = (files: CustomFile[]) => {
   const filesCopy = [...files];
@@ -54,7 +54,10 @@ const checkForCircularBranch = (
   return [];
 };
 
-export const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
+export const getValidDuplicatedName = (
+  name: string,
+  files: CustomFileFields[]
+) => {
   let new_name = name;
   let i = 1;
   while (checkFilesForNameConflict(new_name, files) && i < 100) {
@@ -66,4 +69,18 @@ export const getValidDuplicatedName = (name: string, files: CustomFile[]) => {
     i++;
   }
   return new_name;
+};
+
+export const deduplicateFilenames = (
+  srcFiles: CustomFileFields[],
+  destFiles: CustomFileFields[]
+) => {
+  const srcFilesCopy = [...srcFiles];
+  const destFilesCopy = [...destFiles];
+  for (const srcFile of srcFilesCopy) {
+    const validName = getValidDuplicatedName(srcFile.name, destFilesCopy);
+    if (validName !== srcFile.name) srcFile.name = validName;
+    destFilesCopy.push(srcFile);
+  }
+  return srcFilesCopy;
 };
