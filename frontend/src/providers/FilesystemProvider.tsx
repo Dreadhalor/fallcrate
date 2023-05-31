@@ -18,6 +18,7 @@ import { useSelectFiles } from '@hooks/fileserver/useSelectFiles';
 import { useFileViewer } from './FileViewerProvider';
 import { useFileUploader } from '@hooks/fileserver/upload/useFileUploader';
 import { useMergeAccounts } from '@hooks/fileserver/useMergeAccounts';
+import { useRenamingFile } from '@hooks/fileserver/useRenamingFile';
 
 type Props = {
   children: React.ReactNode;
@@ -60,6 +61,8 @@ export const FilesystemProvider = ({ children }: Props) => {
   } = useSelectFiles(currentDirectory, currentDirectoryFiles);
   const { openFileViewer, closeFileViewer, pdfViewer, videoViewer } =
     useFileViewer();
+  const { renamingFileId, setRenamingFileId, requestRename } =
+    useRenamingFile();
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -143,24 +146,25 @@ export const FilesystemProvider = ({ children }: Props) => {
   };
 
   const promptRenameFile = (file_id: string) => {
-    const file = files.find((file) => file.id === file_id);
-    const name = prompt('Enter a new file name', file?.name);
+    setRenamingFileId(file_id);
+    // const file = files.find((file) => file.id === file_id);
+    // const name = prompt('Enter a new file name', file?.name);
 
-    if (!name || name === file?.name) return;
+    // if (!name || name === file?.name) return;
 
-    if (
-      checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
-    ) {
-      handleOperationError(
-        `A file with the name "${name}" already exists in the current directory!`
-      );
-      unlockAchievementById('filename_conflict');
-      return;
-    }
+    // if (
+    //   checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
+    // ) {
+    //   handleOperationError(
+    //     `A file with the name "${name}" already exists in the current directory!`
+    //   );
+    //   unlockAchievementById('filename_conflict');
+    //   return;
+    // }
 
-    db.renameFile(file_id, name).then((_) => {
-      unlockAchievementById('rename_file');
-    });
+    // db.renameFile(file_id, name).then((_) => {
+    //   unlockAchievementById('rename_file');
+    // });
   };
 
   const moveFiles = (
@@ -281,6 +285,9 @@ export const FilesystemProvider = ({ children }: Props) => {
         getUploadStatus,
         openFileViewer,
         closeFileViewer,
+        renamingFileId,
+        setRenamingFileId,
+        requestRename,
       }}
     >
       {contextHolder}

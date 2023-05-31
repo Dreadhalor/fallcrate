@@ -3,12 +3,13 @@ import { CustomFile, DraggedItems } from '@src/types';
 import { useFilesystem } from '@hooks/useFilesystem';
 import prettyBytes from 'pretty-bytes';
 import { useDrag, useDrop } from 'react-dnd';
-import TruncatedText from '@components/utilities/TruncatedText';
 import { useFileContextMenu } from '@providers/FileContextMenuProvider';
 import { Image as AntdImage } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAchievements } from 'milestone-components';
 import { createDragPreview } from '@src/createDragPreview';
+import { FcImageFile } from 'react-icons/fc';
+import BrowserItemName from './BrowserItemName';
 
 type Props = {
   file: CustomFile;
@@ -129,6 +130,16 @@ const BrowserItem = ({ file }: Props) => {
     openFile(file.id);
   };
 
+  const getIcon = () => {
+    if (file.type === 'directory')
+      return <FaFolder className='flex-shrink-0' />;
+    if (file.mimeType?.startsWith('image'))
+      return <FcImageFile size={18} className='flex-shrink-0' />;
+    // if (file.mimeType?.startsWith('video'))
+    //   return <BsFileImage className='flex-shrink-0 text-blue-400' />;
+    return <FaFile className='flex-shrink-0' />;
+  };
+
   return (
     <div
       className={`group flex w-full flex-row items-center ${background}`}
@@ -168,12 +179,11 @@ const BrowserItem = ({ file }: Props) => {
         onClick={handleClick}
         onContextMenu={(e) => showFileContextMenu(e, file, true)}
       >
-        {file.type === 'directory' ? (
-          <FaFolder className='flex-shrink-0' />
-        ) : (
-          <FaFile className='flex-shrink-0' />
-        )}
-        <TruncatedText text={file.name} />
+        <div className='flex w-[20px] items-center justify-center'>
+          {getIcon()}
+        </div>
+
+        <BrowserItemName file={file} />
 
         <div className='ml-auto flex w-[100px] items-center justify-center'>
           {file.type === 'file' && prettyBytes(file.size ?? 0)}

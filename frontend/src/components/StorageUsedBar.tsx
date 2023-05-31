@@ -45,7 +45,7 @@ export const StorageUsedBar = () => {
             )}
           </div>
           <button
-            className='self-end text-xs text-blue-400'
+            className='self-end text-xs text-blue-400 hover:text-blue-500'
             onClick={showModal}
           >
             Get more storage

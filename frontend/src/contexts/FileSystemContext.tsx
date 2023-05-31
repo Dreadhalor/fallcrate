@@ -46,6 +46,9 @@ interface FilesystemContextValue {
   getUploadStatus: (id: string) => TaskState | null;
   openFileViewer: (file: CustomFile) => void;
   closeFileViewer: () => void;
+  renamingFileId: string | null;
+  setRenamingFileId: (id: string | null) => void;
+  requestRename: (name: string) => void;
 }
 
 export const FilesystemContext = createContext<FilesystemContextValue>(

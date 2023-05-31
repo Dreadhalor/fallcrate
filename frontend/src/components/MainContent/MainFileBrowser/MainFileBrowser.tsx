@@ -1,5 +1,5 @@
 import BrowserHeader from './BrowserHeader';
-import BrowserItem from './BrowserItem';
+import BrowserItem from './BrowserItem/BrowserItem';
 import { useFilesystem } from '@hooks/useFilesystem';
 import FileDropzone from '../FileDropzone';
 import { useDrop } from 'react-dnd';
