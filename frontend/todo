@@ -11,9 +11,13 @@
 * fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
 * when signing out/in, revert to the root directory
 * when deleting an upload's parent folder after upload but before clearing the completed task, the parent shows up as 'All Files' - not a big deal, but maybe a lil odd
-* oh yeah fix achievements for uploads
 * quizás add file icons to the sidebar (but prolly not)
 * duplication is REALLY slow
 * the bundle size is probably very big, maybe figure that out later?
 * currently, storage space checks don't take into consideration space taken by queued files - we will not fix this, not worth it
 * drag images are flaky as hell & I want to die, now they break when you change a filename
+* achievement: zoom into an image
+* achievements for opening each modal type
+* continue refining achievements for uploads
+* HOW DO WE DO THE TUTORIAL
+  * fuck it, cloud functions ftw - just dupe it if the user has no achievements
