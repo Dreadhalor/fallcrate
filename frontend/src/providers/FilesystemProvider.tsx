@@ -145,28 +145,6 @@ export const FilesystemProvider = ({ children }: Props) => {
     if (name) createFolder(name);
   };
 
-  const promptRenameFile = (file_id: string) => {
-    setRenamingFileId(file_id);
-    // const file = files.find((file) => file.id === file_id);
-    // const name = prompt('Enter a new file name', file?.name);
-
-    // if (!name || name === file?.name) return;
-
-    // if (
-    //   checkDirectoryForNameConflict(name, file_id, file?.parent || null, files)
-    // ) {
-    //   handleOperationError(
-    //     `A file with the name "${name}" already exists in the current directory!`
-    //   );
-    //   unlockAchievementById('filename_conflict');
-    //   return;
-    // }
-
-    // db.renameFile(file_id, name).then((_) => {
-    //   unlockAchievementById('rename_file');
-    // });
-  };
-
   const moveFiles = (
     file_ids_to_move: string[],
     parent_id: string | null,
@@ -262,7 +240,6 @@ export const FilesystemProvider = ({ children }: Props) => {
         createFolder,
         deleteFiles,
         promptNewFolder,
-        promptRenameFile,
         moveFiles,
         promptUploadFiles,
         promptUploadFolder,

@@ -41,12 +41,12 @@ type Props = {
 export const ContextMenuProvider = ({ children }: Props) => {
   const {
     selectFilesExclusively,
-    promptRenameFile,
     deleteFiles,
     duplicateFileOrFolder,
     duplicateSuspense,
     downloadFilesOrFolders,
     downloadSuspense,
+    setRenamingFileId,
   } = useFilesystem();
   const { open } = useFileViewer();
   const { unlockAchievementById } = useAchievements();
@@ -78,7 +78,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
       return;
     }
     if (id === 'download') downloadFilesOrFolders([file.id]);
-    if (id === 'rename') promptRenameFile(file.id);
+    if (id === 'rename') setRenamingFileId(file.id);
     if (id === 'duplicate') duplicateFileOrFolder(file.id);
     if (id === 'delete') deleteFiles([file.id]);
   }

@@ -23,7 +23,6 @@ interface FilesystemContextValue {
   createFolder: (name: string) => void;
   deleteFiles: (file_ids: string[]) => void;
   promptNewFolder: () => void;
-  promptRenameFile: (file_id: string) => void;
   moveFiles: (file_ids_to_move: string[], parent_id: string | null) => void;
   promptUploadFiles: () => Promise<void>;
   promptUploadFolder: () => Promise<void>;

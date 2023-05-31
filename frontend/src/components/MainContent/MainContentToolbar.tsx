@@ -52,11 +52,11 @@ const MainContentToolbar = () => {
     selectedFiles,
     deleteFiles,
     promptNewFolder,
-    promptRenameFile,
     duplicateFileOrFolder,
     duplicateSuspense,
     downloadFilesOrFolders,
     downloadSuspense,
+    setRenamingFileId,
   } = useFilesystem();
 
   const showDownload = selectedFiles.length > 0 || downloadSuspense;
@@ -87,7 +87,7 @@ const MainContentToolbar = () => {
         <MainContentMenuButton
           title='Rename'
           icon={<RiEditBoxFill size={18} />}
-          onClick={() => promptRenameFile(selectedFiles[0])}
+          onClick={() => setRenamingFileId(selectedFiles[0])}
         />
       )}
       {showDuplicate && (

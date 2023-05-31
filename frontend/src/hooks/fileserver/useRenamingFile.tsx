@@ -19,7 +19,7 @@ export const useRenamingFile = () => {
   }, [files, renamingFileId]);
 
   const requestRename = async (name: string) => {
-    if (!renamingFileId || !name || name === file?.name || !file)
+    if (!renamingFileId || !name || !file || name === file.name)
       return setRenamingFileId(null);
 
     const siblingFiles = files.filter(
@@ -28,7 +28,7 @@ export const useRenamingFile = () => {
     const validName = getValidDuplicatedName(name, siblingFiles);
     if (validName !== name) {
       unlockAchievementById('filename_conflict');
-    }
+    } else unlockAchievementById('rename_file');
 
     setRenamingFileId(null);
 
