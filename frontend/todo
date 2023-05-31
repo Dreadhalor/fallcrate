@@ -19,3 +19,4 @@
 * duplication is REALLY slow
 * the bundle size is probably very big, maybe figure that out later?
 * currently, storage space checks don't take into consideration space taken by queued files - we will not fix this, not worth it
+* drag images are flaky as hell & I want to die, now they break when you change a filename

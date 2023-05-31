@@ -25,6 +25,7 @@ const BrowserItem = ({ file }: Props) => {
     openFile,
     getFileUrl,
     selectFilesExclusively,
+    setRenamingFileId,
   } = useFilesystem();
 
   const { unlockAchievementById } = useAchievements();
@@ -45,6 +46,7 @@ const BrowserItem = ({ file }: Props) => {
         // if (selectedFiles.includes(file.id)) {
         //   return { ids: selectedFiles };
         // }
+        setRenamingFileId(null);
         selectFilesExclusively([file.id]);
         return { ids: [file.id] };
       },
@@ -81,7 +83,6 @@ const BrowserItem = ({ file }: Props) => {
     }
   };
 
-  // Load the preview image in advance when selectedFiles changes
   useEffect(() => {
     createDragPreview(file.name, file.type === 'directory', 1).then((img) => {
       img.onload = () => setPreviewImage(img);
@@ -178,6 +179,7 @@ const BrowserItem = ({ file }: Props) => {
         className={`flex h-full min-w-0 flex-1 cursor-pointer flex-row items-center gap-[10px] border-b border-[rgba(167,146,114,0.2)] border-l-[rgb(0,97,254)] py-[4px] pr-[10px] ${getItemClass()} ${getBackgroundClass()}`}
         onClick={handleClick}
         onContextMenu={(e) => showFileContextMenu(e, file, true)}
+        style={{ opacity: isDragging ? 0.6 : 1 }}
       >
         <div className='flex w-[20px] items-center justify-center'>
           {getIcon()}
