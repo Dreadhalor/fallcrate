@@ -47,10 +47,6 @@
     "description": "Duplicate a folder",
     "title": "Duplicate Folder"
   },
-  "expand_all": {
-    "description": "Click the \"Expand All\" button in the sidebar",
-    "title": "To Infinity & Beyond"
-  },
   "expand_folder": {
     "description": "Expand a folder in the sidebar",
     "title": "Is That a Folder in Your Sidebar or Are You Just Happy to See Me?"
@@ -72,16 +68,12 @@
     "title": "Inception"
   },
   "mass_delete": {
-    "description": "Delete 5 or more files or folders at once",
+    "description": "Delete 5 or more selected files or folders at once",
     "title": "The Marie Condo"
   },
   "mass_select": {
     "description": "Select all files in the current directory at once using the header checkbox",
     "title": "You're ALL My Favorite"
-  },
-  "mass_undelete": {
-    "description": "Undelete 5 or more files or folders at once",
-    "title": "The Marie Condon't"
   },
   "navigation_depth": {
     "description": "Navigate to a folder 7 levels deep",
@@ -107,6 +99,10 @@
     "description": "Rename a file or folder",
     "title": "The Rename-aissance"
   },
+  "request_more_storage": {
+    "description": "Try & fail to request more storage space",
+    "title": "What Am I, Made of Money?"
+  },
   "resize_sidebar": {
     "description": "Resize the sidebar",
     "title": "Resize Me Like One of Your French Sidebars"
@@ -123,9 +119,21 @@
     "description": "Upload a file",
     "title": "Let There Be Bytes"
   },
+  "upload_file_drag": {
+    "description": "Upload a file by dragging it into the upload dropzone",
+    "title": "What a Drag"
+  },
+  "upload_files_and_folders": {
+    "description": "Upload files & folders at the same time",
+    "title": "Stress Test"
+  },
   "upload_folder": {
-    "description": "Lol you have no idea how hard this was",
+    "description": "Upload a folder",
     "title": "Upload Folder"
+  },
+  "upload_folder_drag": {
+    "description": "Upload a folder by dragging it into the upload dropzone",
+    "title": "What a Drag (Folder)"
   },
   "zoom_into_preview": {
     "description": "Zoom into a previewed image",
