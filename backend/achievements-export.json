@@ -1,142 +1,434 @@
 {
-  "all_folders": {
-    "description": "Download a folder with nothing in it but more nested folders",
-    "title": "Oops! All Folders"
+  "fallcrate": {
+    "all_folders": {
+      "description": "Download a folder with nothing in it but more nested folders",
+      "title": "Oops! All Folders"
+    },
+    "breadcrumb_navigation": {
+      "description": "Navigate back using the breadcrumb",
+      "title": "Birds of a Feather"
+    },
+    "collapse_sidebar": {
+      "description": "Collapse the sidebar",
+      "title": "Sidebar? We Don't Need No Stinkin' Sidebar!"
+    },
+    "collapse_sidebar_by_dragging": {
+      "description": "Collapse the sidebar by dragging the resize handle until it snaps closed",
+      "title": "Collapse Sidebar by Dragging"
+    },
+    "context_menu": {
+      "description": "Open the file context menu",
+      "title": "In Context"
+    },
+    "create_folder": {
+      "description": "Create a folder",
+      "title": "Folder? I Hardly Know 'er!"
+    },
+    "delete_file": {
+      "description": "Delete a file or folder",
+      "title": "It's Not Me, It's You"
+    },
+    "download_file": {
+      "description": "Download a file",
+      "title": "I'll Be Taking That Now"
+    },
+    "download_folder": {
+      "description": "Download a folder",
+      "title": "Download Folder"
+    },
+    "download_multiple_items": {
+      "description": "Download multiple files or folders at once",
+      "title": "Download Multiple Items"
+    },
+    "duplicate_file": {
+      "description": "Duplicate a file",
+      "title": "Dupliciticitous"
+    },
+    "duplicate_folder": {
+      "description": "Duplicate a folder",
+      "title": "Duplicate Folder"
+    },
+    "expand_folder": {
+      "description": "Expand a folder in the sidebar",
+      "title": "Is That a Folder in Your Sidebar or Are You Just Happy to See Me?"
+    },
+    "file_into_file": {
+      "description": "Attempt to move a folder or file into a file",
+      "title": "Hey, I Don't Work Here"
+    },
+    "filename_conflict": {
+      "description": "Attempt to name a file the same name as another file",
+      "title": "I'm Spartacus! (1)"
+    },
+    "find_in_search": {
+      "description": "Use the searchbar to find a file",
+      "title": "There You Are!"
+    },
+    "folder_into_folder": {
+      "description": "Move a folder into a folder",
+      "title": "Inception"
+    },
+    "mass_delete": {
+      "description": "Delete 5 or more selected files or folders at once",
+      "title": "The Marie Condo"
+    },
+    "mass_select": {
+      "description": "Select all files in the current directory at once using the header checkbox",
+      "title": "You're ALL My Favorite"
+    },
+    "navigation_depth": {
+      "description": "Navigate to a folder 7 levels deep",
+      "title": "We Need to Go Deeper"
+    },
+    "nested_delete": {
+      "description": "Delete a folder with a file in it",
+      "title": "Baby with the Bathwater"
+    },
+    "open_sidebar": {
+      "description": "Unhide the sidebar",
+      "title": "Show Me the Sidebar!"
+    },
+    "parent_into_child": {
+      "description": "Attempt to move a folder into its own subfolder",
+      "title": "I'm My Own Grandpa"
+    },
+    "preview_image": {
+      "description": "Preview an image",
+      "title": "The Oracle"
+    },
+    "rename_file": {
+      "description": "Rename a file or folder",
+      "title": "The Rename-aissance"
+    },
+    "request_more_storage": {
+      "description": "Try & fail to request more storage space",
+      "title": "What Am I, Made of Money?"
+    },
+    "resize_sidebar": {
+      "description": "Resize the sidebar",
+      "title": "Resize Me Like One of Your French Sidebars"
+    },
+    "select_file": {
+      "description": "Use the checkbox to select one file or folder",
+      "title": "Random File, I Choose You!"
+    },
+    "sidebar_pixel_perfect": {
+      "description": "Drop the sidebar resize handle perfectly balanced between open & closed",
+      "title": "It's Not a Bug, It's an Achievement!"
+    },
+    "upload_file": {
+      "description": "Upload a file",
+      "title": "Let There Be Bytes"
+    },
+    "upload_file_drag": {
+      "description": "Upload a file by dragging it into the upload dropzone",
+      "title": "What a Drag"
+    },
+    "upload_files_and_folders": {
+      "description": "Upload files & folders at the same time",
+      "title": "Stress Test"
+    },
+    "upload_folder": {
+      "description": "Upload a folder",
+      "title": "Upload Folder"
+    },
+    "upload_folder_drag": {
+      "description": "Upload a folder by dragging it into the upload dropzone",
+      "title": "What a Drag (Folder)"
+    },
+    "zoom_into_preview": {
+      "description": "Zoom into a previewed image",
+      "title": "Enhance!"
+    }
   },
-  "breadcrumb_navigation": {
-    "description": "Navigate back using the breadcrumb",
-    "title": "Birds of a Feather"
+  "gifster": {
+    "copy_gif_url": {
+      "title": "Copy That",
+      "description": "Copy a gif's URL to the clipboard"
+    },
+    "external_source": {
+      "title": "Gif Me More",
+      "description": "Follow a gif's external source link"
+    },
+    "no_results": {
+      "title": "No Gifs, No Glory",
+      "description": "Search for a gif with no results"
+    },
+    "open_gif": {
+      "title": "The Gif That Keeps on Giffing",
+      "description": "Open a gif"
+    },
+    "poster_profile": {
+      "title": "Gif Credit Where Gif Credit is Due",
+      "description": "Visit a gif's poster's profile"
+    },
+    "search_gif": {
+      "title": "Gif Me a Break",
+      "description": "Search for a (non-trending) gif"
+    },
+    "trending_search": {
+      "title": "All the Cool Kids Are Doing It",
+      "description": "Click on a trending search"
+    }
   },
-  "collapse_sidebar": {
-    "description": "Collapse the sidebar",
-    "title": "Sidebar? We Don't Need No Stinkin' Sidebar!"
+  "minesweeper": {
+    "beat_beginner": {
+      "description": "Win a game of beginner minesweeper",
+      "title": "Beginner's Luck"
+    },
+    "beat_expert": {
+      "description": "Win a game of expert minesweeper",
+      "title": "Expertly Done"
+    },
+    "beat_intermediate": {
+      "description": "Win a game of intermediate minesweeper",
+      "title": "Heating Up"
+    },
+    "click_icon": {
+      "description": "Click the minesweeper icon",
+      "title": "Iconic"
+    },
+    "click_smiley": {
+      "description": "Click the smiley face",
+      "title": "Face the Music"
+    },
+    "click_start": {
+      "description": "That's not a real button, what are you doing?",
+      "title": "False Start"
+    },
+    "close_window": {
+      "description": "Close a window",
+      "title": "I'm Just Window Shopping"
+    },
+    "five_windows": {
+      "description": "Open five minesweeper windows at once",
+      "title": "OCD"
+    },
+    "flag_cell": {
+      "description": "Flag a tile as a mine",
+      "title": "Flag on the Play"
+    },
+    "lose_game": {
+      "description": "Lose at minesweeper",
+      "title": "You Blew It"
+    },
+    "lose_second_click": {
+      "description": "Lose at minesweeper on the second click",
+      "title": "Haha, What an Idiot"
+    },
+    "marquee_selection": {
+      "description": "Select the minesweeper icon with the marquee tool",
+      "title": "Marquee? I Hardly Know Ye!"
+    },
+    "minimize_window": {
+      "description": "Minimize a window",
+      "title": "Honey, I Shrunk the Window"
+    },
+    "open_window": {
+      "description": "Open a new minesweeper window",
+      "title": "When God Closes a Door, He Opens a Window"
+    },
+    "question_cell": {
+      "description": "Flag a tile with a question mark",
+      "title": "Lmao idk"
+    },
+    "two_windows": {
+      "description": "Open two minesweeper windows at once",
+      "title": "ADHD"
+    }
   },
-  "collapse_sidebar_by_dragging": {
-    "description": "Collapse the sidebar by dragging the resize handle until it snaps closed",
-    "title": "Collapse Sidebar by Dragging"
+  "pathfinder": {
+    "clear_walls": {
+      "description": "Clear away all walls from a maze",
+      "title": "Tabula Rasa"
+    },
+    "draw_wall": {
+      "description": "Draw a wall in the maze",
+      "title": "Wall-E"
+    },
+    "erase_wall": {
+      "description": "Erase a wall in the maze",
+      "title": "Mr. Gorbachev, Tear Down This Wall!"
+    },
+    "generate_ellers": {
+      "description": "Generate a maze using Eller's algorithm",
+      "title": "Old Eller"
+    },
+    "generate_hunt_and_kill": {
+      "description": "Generate a maze using the Hunt & Kill algorithm",
+      "title": "The Most Dangerous, uh... Maze"
+    },
+    "generate_kruskals": {
+      "description": "Generate a maze using Kruskal's algorithm",
+      "title": "By the Power of Kruskal!"
+    },
+    "generate_prims": {
+      "description": "Generate a maze using Prim's algorithm",
+      "title": "Prim & Proper"
+    },
+    "generate_recursive_backtracking": {
+      "description": "Generate a maze using the recursive backtracking algorithm",
+      "title": "I'm Not Lost, Honey, I'm Procedurally Generating"
+    },
+    "generate_recursive_division": {
+      "description": "Generate a maze using recursive division",
+      "title": "Just Keep Dividing, Just Keep Dividing..."
+    },
+    "move_end": {
+      "description": "Move the end of the maze",
+      "title": "The End of the Line"
+    },
+    "move_start": {
+      "description": "Move the start of the maze",
+      "title": "The Start of Something New"
+    },
+    "no_solution": {
+      "description": "Attempt to solve a maze with no solution",
+      "title": "No Way Home"
+    },
+    "solve_astar": {
+      "description": "Solve a maze using A* search",
+      "title": "A* Is Born"
+    },
+    "solve_bfs": {
+      "description": "Solve a maze using breadth-first search",
+      "title": "Queue Up!"
+    },
+    "solve_dfs": {
+      "description": "Solve a maze using depth-first search",
+      "title": "Deep Dive"
+    }
   },
-  "context_menu": {
-    "description": "Open the file context menu",
-    "title": "In Context"
+  "shareme": {
+    "add_comment": {
+      "description": "Leave a comment on a pin",
+      "title": "Pinny for your Thoughts"
+    },
+    "create_pin": {
+      "description": "Create a pin",
+      "title": "Pinning for the Fjords"
+    },
+    "delete_pin": {
+      "description": "Delete a pin",
+      "title": "A-Pin-calypse Now"
+    },
+    "download_pin": {
+      "description": "Download a pin",
+      "title": "You Wouldn't Download a Pin"
+    },
+    "filter_category": {
+      "description": "Filter pins by category",
+      "title": "Do You Even Filter, Bro?"
+    },
+    "save_pin": {
+      "description": "Save a pin",
+      "title": "Life's a Pin & Then You Save"
+    },
+    "search_for_pin": {
+      "description": "Search for a pin",
+      "title": "You Must Find Me, Link"
+    },
+    "view_other_profile": {
+      "description": "View another user's profile",
+      "title": "Who's That Pokémon?"
+    },
+    "view_pin": {
+      "description": "View a pin's details",
+      "title": "Tell Me More, Tell Me More"
+    },
+    "view_saved_pins": {
+      "description": "View a user's saved pins",
+      "title": "I C U Pinned"
+    },
+    "view_your_profile": {
+      "description": "View your own profile",
+      "title": "Me, Myself, & I"
+    },
+    "visit_external_source": {
+      "description": "Follow a pin's external source link",
+      "title": "Link in Bio"
+    }
   },
-  "create_folder": {
-    "description": "Create a folder",
-    "title": "Folder? I Hardly Know 'er!"
-  },
-  "delete_file": {
-    "description": "Delete a file or folder",
-    "title": "It's Not Me, It's You"
-  },
-  "download_file": {
-    "description": "Download a file",
-    "title": "I'll Be Taking That Now"
-  },
-  "download_folder": {
-    "description": "Download a folder",
-    "title": "Download Folder"
-  },
-  "download_multiple_items": {
-    "description": "Download multiple files or folders at once",
-    "title": "Download Multiple Items"
-  },
-  "duplicate_file": {
-    "description": "Duplicate a file",
-    "title": "Dupliciticitous"
-  },
-  "duplicate_folder": {
-    "description": "Duplicate a folder",
-    "title": "Duplicate Folder"
-  },
-  "expand_folder": {
-    "description": "Expand a folder in the sidebar",
-    "title": "Is That a Folder in Your Sidebar or Are You Just Happy to See Me?"
-  },
-  "file_into_file": {
-    "description": "Attempt to move a folder or file into a file",
-    "title": "Hey, I Don't Work Here"
-  },
-  "filename_conflict": {
-    "description": "Attempt to name a file the same name as another file",
-    "title": "I'm Spartacus! (1)"
-  },
-  "find_in_search": {
-    "description": "Open a file after finding it in search",
-    "title": "There You Are!"
-  },
-  "folder_into_folder": {
-    "description": "Move a folder into a folder",
-    "title": "Inception"
-  },
-  "mass_delete": {
-    "description": "Delete 5 or more selected files or folders at once",
-    "title": "The Marie Condo"
-  },
-  "mass_select": {
-    "description": "Select all files in the current directory at once using the header checkbox",
-    "title": "You're ALL My Favorite"
-  },
-  "navigation_depth": {
-    "description": "Navigate to a folder 7 levels deep",
-    "title": "We Need to Go Deeper"
-  },
-  "nested_delete": {
-    "description": "Delete a folder with a file in it",
-    "title": "Baby with the Bathwater"
-  },
-  "open_sidebar": {
-    "description": "Unhide the sidebar",
-    "title": "Show Me the Sidebar!"
-  },
-  "parent_into_child": {
-    "description": "Attempt to move a folder into its own subfolder",
-    "title": "I'm My Own Grandpa"
-  },
-  "preview_image": {
-    "description": "Preview an image",
-    "title": "The Oracle"
-  },
-  "rename_file": {
-    "description": "Rename a file or folder",
-    "title": "The Rename-aissance"
-  },
-  "request_more_storage": {
-    "description": "Try & fail to request more storage space",
-    "title": "What Am I, Made of Money?"
-  },
-  "resize_sidebar": {
-    "description": "Resize the sidebar",
-    "title": "Resize Me Like One of Your French Sidebars"
-  },
-  "select_file": {
-    "description": "Use the checkbox to select one file or folder",
-    "title": "Random File, I Choose You!"
-  },
-  "sidebar_pixel_perfect": {
-    "description": "Drop the sidebar resize handle perfectly balanced between open and closed",
-    "title": "It's Not a Bug, It's an Achievement!"
-  },
-  "upload_file": {
-    "description": "Upload a file",
-    "title": "Let There Be Bytes"
-  },
-  "upload_file_drag": {
-    "description": "Upload a file by dragging it into the upload dropzone",
-    "title": "What a Drag"
-  },
-  "upload_files_and_folders": {
-    "description": "Upload files & folders at the same time",
-    "title": "Stress Test"
-  },
-  "upload_folder": {
-    "description": "Upload a folder",
-    "title": "Upload Folder"
-  },
-  "upload_folder_drag": {
-    "description": "Upload a folder by dragging it into the upload dropzone",
-    "title": "What a Drag (Folder)"
-  },
-  "zoom_into_preview": {
-    "description": "Zoom into a previewed image",
-    "title": "Enhance!"
+  "su-done-ku": {
+    "box_line_reduction": {
+      "description": "Use the solver to make a box/line reduction",
+      "title": "It's a Box, It's a Line, It's... a Box/Line Reduction!"
+    },
+    "check_naked_pairs": {
+      "description": "Check naked pairs/triples/quads",
+      "title": "Voyeurism is a Crime!"
+    },
+    "crosshatching": {
+      "description": "Use the solver to crosshatch",
+      "title": "Hatch Me If You Can"
+    },
+    "error_puzzle": {
+      "description": "Fail to solve a sudoku puzzle",
+      "title": "404 Solution Not Found"
+    },
+    "fast_forward": {
+      "description": "Fast forward in a sudoku puzzle",
+      "title": "Back to the Future"
+    },
+    "generate_easy_puzzle": {
+      "description": "Generate an easy sudoku puzzle",
+      "title": "Casual Friday"
+    },
+    "generate_hard_puzzle": {
+      "description": "Generate a hard sudoku puzzle",
+      "title": "Sweating Bullets"
+    },
+    "generate_medium_puzzle": {
+      "description": "Generate a medium sudoku puzzle",
+      "title": "Getting Warmer"
+    },
+    "hidden_pair": {
+      "description": "Use the solver to find a hidden pair",
+      "title": "Hidden in Plain Sight"
+    },
+    "import_puzzle": {
+      "description": "Import a sudoku puzzle",
+      "title": "import { puzzle } from 'internet'"
+    },
+    "manual_entry": {
+      "description": "Manually remove a candidate from a sudoku cell",
+      "title": "Judge, Jury & Executioner"
+    },
+    "manual_puzzle": {
+      "description": "Solve a sudoku puzzle manually (automated crosshatching is allowed)",
+      "title": "Look Ma, No Algorithms!"
+    },
+    "naked_pair": {
+      "description": "Use the solver to find a naked pair",
+      "title": "Naked & Afraid"
+    },
+    "naked_quad": {
+      "description": "Use the solver to find a naked quad",
+      "title": "Naked & Unafraid"
+    },
+    "pointing_set": {
+      "description": "Use the solver to find a pointing pair/triple",
+      "title": "Don't Point That Thing at Me!"
+    },
+    "rewind": {
+      "description": "Rewind in a sudoku puzzle",
+      "title": "Be Kind, Rewind"
+    },
+    "solve_puzzle": {
+      "description": "Solve a sudoku puzzle",
+      "title": "Su-done-ku"
+    },
+    "stump_solver": {
+      "description": "Stump the solver",
+      "title": "You're On Your Own, Kid"
+    },
+    "uncheck_naked_pairs": {
+      "description": "Uncheck naked pairs/triples/quads",
+      "title": "Get a Room!"
+    },
+    "undo_manual_entry": {
+      "description": "Re-add a candidate to a sudoku cell",
+      "title": "My Bad"
+    }
   }
 }

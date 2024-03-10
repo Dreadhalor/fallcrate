@@ -25,18 +25,29 @@ if (process.argv[2] !== '--prod') {
 
 const importData = async () => {
   try {
-    const achievementsCollectionRef = collection(
-      db,
-      'games',
-      'fallcrate',
-      'achievements'
+    const achievementsCollectionRef = collection(db, 'games');
+    const promises = await Promise.all(
+      Object.keys(data).map(async (gameId) => {
+        const gameAchievements = data[gameId];
+        const achievementPromises = Object.keys(gameAchievements).map(
+          async (achievementId) => {
+            const docRef = doc(
+              achievementsCollectionRef,
+              gameId,
+              'achievements',
+              achievementId
+            );
+            const achievementData = data[gameId][achievementId];
+            return await setDoc(docRef, achievementData);
+          }
+        );
+        return await Promise.all(achievementPromises);
+      })
     );
-    const promises = Object.keys(data).map(async (key) => {
-      const docRef = doc(achievementsCollectionRef, key);
-      await setDoc(docRef, data[key]);
+
+    await Promise.all(promises).then(() => {
+      console.log('Data imported successfully!');
     });
-    await Promise.all(promises);
-    console.log('Data imported successfully!');
   } catch (error) {
     console.error('Error importing data:', error);
   } finally {
