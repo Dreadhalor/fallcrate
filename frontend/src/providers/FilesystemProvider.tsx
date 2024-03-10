@@ -94,6 +94,9 @@ export const FilesystemProvider = ({ children }: Props) => {
       } else if (file_type.includes('video')) {
         openFileViewer(file);
         // unlockAchievementById('preview_video');
+      } else if (file_type.includes('image')) {
+        // we're using antd for image viewing, no need for another modal
+        // openFileViewer(file);
       } else
         handleOperationError(
           file_type
