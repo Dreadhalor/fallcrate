@@ -44,7 +44,7 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
       tree.length > 1 &&
       tree.every((file) => file.type === 'directory')
     )
-      unlockAchievementById('all_folders');
+      unlockAchievementById('all_folders', 'fallcrate');
   };
 
   const addFileToZip = async (file: CustomFile, parentZip: JSZip) => {

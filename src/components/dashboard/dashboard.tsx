@@ -40,13 +40,13 @@ const Dashboard = () => {
   const collapseSidebar = () => {
     setWidth(collapsed_width);
     setLastStaticWidth(collapsed_width);
-    unlockAchievementById('collapse_sidebar');
+    unlockAchievementById('collapse_sidebar', 'fallcrate');
   };
 
   const expandSidebar = () => {
     setWidth(default_width);
     setLastStaticWidth(default_width);
-    unlockAchievementById('open_sidebar');
+    unlockAchievementById('open_sidebar', 'fallcrate');
   };
 
   const handleQuickCollapseClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -131,7 +131,7 @@ const Dashboard = () => {
           setWidth(ref.offsetWidth);
         }}
         onResizeStop={() => {
-          if (resizing) unlockAchievementById('resize_sidebar');
+          if (resizing) unlockAchievementById('resize_sidebar', 'fallcrate');
           setResizing(false);
           setMouseDown(false);
           setHandleEmphasis('drag', false);
@@ -139,14 +139,12 @@ const Dashboard = () => {
           // I could fix this but I'll make it an achievement instead
           if (width < schwarzchild_width) {
             collapseSidebar();
-            if (lastStaticWidth > schwarzchild_width)
-              unlockAchievementById('collapse_sidebar_by_dragging');
           } else {
             if (width > schwarzchild_width) {
               if (lastStaticWidth <= schwarzchild_width)
-                unlockAchievementById('open_sidebar');
+                unlockAchievementById('open_sidebar', 'fallcrate');
             } else if (width === schwarzchild_width)
-              unlockAchievementById('sidebar_pixel_perfect');
+              unlockAchievementById('sidebar_pixel_perfect', 'fallcrate');
             setLastStaticWidth(width);
           }
         }}

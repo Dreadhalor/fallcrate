@@ -10,6 +10,7 @@ import { useAchievements } from 'dread-ui';
 import { createDragPreview } from '@fallcrate/create-drag-preview';
 import { FcImageFile } from 'react-icons/fc';
 import { BrowserItemName } from './browser-item-name';
+import { BsCameraVideoFill } from 'react-icons/bs';
 
 type Props = {
   file: CustomFile;
@@ -125,7 +126,7 @@ const BrowserItem = ({ file }: Props) => {
 
   const handleClick = () => {
     if (file.type === 'file' && file.mimeType?.startsWith('image')) {
-      unlockAchievementById('preview_image');
+      unlockAchievementById('preview_image', 'fallcrate');
       return setShowPreview(true);
     }
     openFile(file.id);
@@ -136,8 +137,10 @@ const BrowserItem = ({ file }: Props) => {
       return <FaFolder className='flex-shrink-0' />;
     if (file.mimeType?.startsWith('image'))
       return <FcImageFile size={18} className='flex-shrink-0' />;
-    // if (file.mimeType?.startsWith('video'))
-    //   return <BsFileImage className='flex-shrink-0 text-blue-400' />;
+    if (file.mimeType?.startsWith('video'))
+      return (
+        <BsCameraVideoFill size={18} className='flex-shrink-0 text-blue-400' />
+      );
     return <FaFile className='flex-shrink-0' />;
   };
 

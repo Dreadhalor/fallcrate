@@ -27,8 +27,8 @@ export const useRenamingFile = () => {
     );
     const validName = getValidDuplicatedName(name, siblingFiles);
     if (validName !== name) {
-      unlockAchievementById('filename_conflict');
-    } else unlockAchievementById('rename_file');
+      unlockAchievementById('filename_conflict', 'fallcrate');
+    } else unlockAchievementById('rename_file', 'fallcrate');
 
     setRenamingFileId(null);
 

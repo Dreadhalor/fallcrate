@@ -20,12 +20,14 @@ const ITEM_TYPE = 'file';
 
 const SidebarBrowserItem = ({ file, indentLevel = 0 }: Props) => {
   const { unlockAchievementById } = useAchievements();
+  const [childFolders, setChildFolders] = useState<CustomFile[]>([]);
+  const canExpand = file.type === 'directory' && childFolders.length > 0;
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
-    if (isOpen) unlockAchievementById('expand_folder');
+    if (isOpen && canExpand)
+      unlockAchievementById('expand_folder', 'fallcrate');
   }, [isOpen]);
 
-  const [childFolders, setChildFolders] = useState<CustomFile[]>([]);
   const display_id = `file-${file.id}`;
 
   const { files, currentDirectory, openDirectory, moveFiles } = useFilesystem();

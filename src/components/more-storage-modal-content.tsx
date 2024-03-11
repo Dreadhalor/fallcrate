@@ -79,7 +79,7 @@ export const MoreStorageModalContent = () => {
 
   useEffect(() => {
     if (loadingMessageIndex >= n) {
-      unlockAchievementById('request_more_storage');
+      unlockAchievementById('request_more_storage', 'fallcrate');
       return;
     }
     const timeout = setTimeout(() => {

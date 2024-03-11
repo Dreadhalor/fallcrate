@@ -47,7 +47,7 @@ export const useSelectFiles = (
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
       else {
-        unlockAchievementById('select_file');
+        unlockAchievementById('select_file', 'fallcrate');
         return [...prev, file_id];
       }
     });
@@ -71,7 +71,7 @@ export const useSelectFiles = (
     if (selectedFiles.length > 0) setSelectedFiles([]);
     else {
       setSelectedFiles(currentDirectoryFiles.map((file) => file.id));
-      unlockAchievementById('mass_select');
+      unlockAchievementById('mass_select', 'fallcrate');
     }
   };
   return {

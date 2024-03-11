@@ -31,7 +31,7 @@ const Searchbar = () => {
       openDirectory(getParent(file)?.id ?? null);
       selectFilesExclusively([file.id], true);
       openFile(file.id);
-      unlockAchievementById('find_in_search');
+      unlockAchievementById('find_in_search', 'fallcrate');
     }
     formRef.current?.resetFields();
   };

@@ -90,7 +90,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       const file_type = file.mimeType ?? '';
       if (file_type === 'application/pdf') {
         openFileViewer(file);
-        unlockAchievementById('preview_image');
+        unlockAchievementById('preview_pdf', 'fallcrate');
       } else if (file_type.includes('video')) {
         openFileViewer(file);
         // unlockAchievementById('preview_video');
@@ -115,7 +115,7 @@ export const FilesystemProvider = ({ children }: Props) => {
       return;
     }
     db.createFolder(name, currentDirectory);
-    unlockAchievementById('create_folder');
+    unlockAchievementById('create_folder', 'fallcrate');
   };
 
   const filterBlobStorageIds = (files: CustomFile[], selection: string[]) =>
@@ -134,13 +134,14 @@ export const FilesystemProvider = ({ children }: Props) => {
     const deleted_ids = await db.deleteFiles(delete_tree);
 
     if (deleted_ids.length > 0) {
-      unlockAchievementById('delete_file');
+      unlockAchievementById('delete_file', 'fallcrate');
       if (isUnlockable('nested_delete', 'fallcrate')) {
         const child_files = blob_ids.filter((id) => !file_ids.includes(id));
-        if (child_files.length > 0) unlockAchievementById('nested_delete');
+        if (child_files.length > 0)
+          unlockAchievementById('nested_delete', 'fallcrate');
       }
     }
-    if (file_ids.length >= 5) unlockAchievementById('mass_delete');
+    if (file_ids.length >= 5) unlockAchievementById('mass_delete', 'fallcrate');
   };
 
   const promptNewFolder = () => {
@@ -177,7 +178,8 @@ export const FilesystemProvider = ({ children }: Props) => {
         handleOperationError(
           `Failed to move "${file?.name}" into "${parent?.name}": Cannot move a folder into its own subfolder!`,
         );
-        if (achievementsEnabled) unlockAchievementById('parent_into_child');
+        if (achievementsEnabled)
+          unlockAchievementById('parent_into_child', 'fallcrate');
         return;
       }
 
@@ -191,7 +193,7 @@ export const FilesystemProvider = ({ children }: Props) => {
 
       db.moveFile(file_id, parent_id).then((file) => {
         if (achievementsEnabled && parent_id && file.type === 'directory')
-          unlockAchievementById('folder_into_folder');
+          unlockAchievementById('folder_into_folder', 'fallcrate');
       });
     });
   };

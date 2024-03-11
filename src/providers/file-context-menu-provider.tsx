@@ -61,7 +61,7 @@ export const ContextMenuProvider = ({ children }: Props) => {
     selectFile = false, // this isn't used anymore but let's keep it in case I wanna use it later
   ) => {
     if (selectFile) selectFilesExclusively([file.id]);
-    unlockAchievementById('context_menu');
+    unlockAchievementById('context_menu', 'fallcrate');
     show({
       event,
       props: {

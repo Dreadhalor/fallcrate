@@ -50,19 +50,21 @@ export const useFileUploader = (
     processQueue();
   }, [uploadQueue]);
 
-  const unlockTopLevelAchievements = (topLevelFiles: FileUploadData[]) => {
+  const unlockTopLevelDragAchievements = (topLevelFiles: FileUploadData[]) => {
     const has_file = topLevelFiles.some((file) => file.type === 'file');
     const has_folder = topLevelFiles.some((file) => file.type === 'directory');
+    if (has_file || has_folder) {
+      // using the same achievement for both files and folders
+      unlockAchievementById('upload_file_drag', 'fallcrate');
+    }
     if (has_file) {
-      unlockAchievementById('upload_file');
-      unlockAchievementById('upload_file_drag');
+      unlockAchievementById('upload_file', 'fallcrate');
     }
     if (has_folder) {
-      unlockAchievementById('upload_folder');
-      unlockAchievementById('upload_folder_drag');
+      unlockAchievementById('upload_folder', 'fallcrate');
     }
     if (has_file && has_folder) {
-      unlockAchievementById('upload_files_and_folders');
+      unlockAchievementById('upload_files_and_folders', 'fallcrate');
     }
   };
 
@@ -168,7 +170,7 @@ export const useFileUploader = (
       );
       return Promise.resolve(deduplicatedFiles);
     }).then((uploadDataPlural) => {
-      unlockAchievementById('upload_file');
+      unlockAchievementById('upload_file', 'fallcrate');
       uploadDataPlural.forEach(addToUploadQueue);
     });
   };
@@ -183,7 +185,7 @@ export const useFileUploader = (
             currentDirectoryFiles,
           );
           topLevelDirectory.name = validName;
-          unlockAchievementById('upload_folder');
+          unlockAchievementById('upload_folder', 'fallcrate');
         }
         return processOutDirectories(uploadDataPlural);
       })
@@ -249,7 +251,7 @@ export const useFileUploader = (
           );
           if (file) file.name = dedupedFile.name;
         }
-        unlockTopLevelAchievements(topLevelFiles);
+        unlockTopLevelDragAchievements(topLevelFiles);
         return processOutDirectories(uploadDataPlural);
       })
       .then((uploadDataPlural) => {

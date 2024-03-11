@@ -82,7 +82,7 @@ const Breadcrumb = ({ file }: Props) => {
 
   const handleClick = () => {
     openDirectory(file?.id ?? null);
-    unlockAchievementById('breadcrumb_navigation');
+    unlockAchievementById('breadcrumb_navigation', 'fallcrate');
   };
 
   return (
