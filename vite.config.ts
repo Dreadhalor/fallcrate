@@ -7,4 +7,5 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   // I hate TypeScript sometimes
   plugins: [react(), tsconfigPaths() as any, svgr() as any],
+  base: '/fallcrate/',
 });
