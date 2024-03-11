@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "dotenv -e ../../.env vite",
-    "build": "tsc && dotenv -e ../../.env vite build --emptyOutDir",
+    "build": "tsc && dotenv -e ../../.env vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
