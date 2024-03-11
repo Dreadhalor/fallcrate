@@ -1,0 +1,22 @@
+- maybe fix weird race condition bug with A->B->C where moving C into A sometimes leaves a blank space below C
+- if possible, define styles externally so that we have one source of truth for both tailwind.config.cjs & index.scss
+- fix the flash of loading screen on opening a modal that loads quickly - also, let "loading..." appear on top of the modal for a moment after load, it looks nice
+- you know you're gonna have to do it anyway so just do it - make thumbnails for images
+- Eventually: put in easter eggs for achievements
+- truncate long names in the middle
+- for the breadcrumb:
+  - calculate the longest path that can be displayed without truncating & display it
+  - everything else, compile into an ellipsis in the breadcrumb base with a dropdown menu
+- the dropdown menu for the upload button doesn't go away when opening a context menu, but the UserMenu button does - what's up with that?
+- fun fact: hooks are one way!! You can't use a hook into useFilesystem & then useFilesystem into that hook, I dunno why exactly but just pass dependent values into the hooks for now
+- when signing out/in, revert to the root directory
+- when deleting an upload's parent folder after upload but before clearing the completed task, the parent shows up as 'All Files' - not a big deal, but maybe a lil odd
+- quizás add file icons to the sidebar (but prolly not)
+- duplication is REALLY slow
+- the bundle size is probably very big, maybe figure that out later?
+- currently, storage space checks don't take into consideration space taken by queued files - we will not fix this, not worth it
+- drag images are flaky as hell & I want to die, now they break when you change a filename
+- achievement: zoom into an image
+- achievements for opening each modal type
+- continue refining achievements for uploads
+- If the user hits their upload limit, then logs out, then uploads more, then logs back in - they will go over the upload limit. Literally let's just assume no one will do that.
