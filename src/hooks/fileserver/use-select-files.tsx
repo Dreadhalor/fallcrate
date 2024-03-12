@@ -46,10 +46,7 @@ export const useSelectFiles = (
     setSelectedFiles((prev) => {
       if (prev.includes(file_id))
         return prev.filter((candidate_id) => candidate_id !== file_id);
-      else {
-        unlockAchievementById('select_file', 'fallcrate');
-        return [...prev, file_id];
-      }
+      else return [...prev, file_id];
     });
   };
 

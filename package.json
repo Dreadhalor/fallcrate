@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "antd": "^5.15.2",
     "dread-ui": "workspace:*",
-    "antd": "^5.5.0",
     "jszip": "^3.10.1",
     "pretty-bytes": "^6.1.0",
     "re-resizable": "^6.9.9",

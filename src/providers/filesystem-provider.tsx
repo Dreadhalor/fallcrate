@@ -93,7 +93,7 @@ export const FilesystemProvider = ({ children }: Props) => {
         unlockAchievementById('preview_pdf', 'fallcrate');
       } else if (file_type.includes('video')) {
         openFileViewer(file);
-        // unlockAchievementById('preview_video');
+        unlockAchievementById('preview_video', 'fallcrate');
       } else if (file_type.includes('image')) {
         // we're using antd for image viewing, no need for another modal
         // openFileViewer(file);
@@ -192,8 +192,8 @@ export const FilesystemProvider = ({ children }: Props) => {
       }
 
       db.moveFile(file_id, parent_id).then((file) => {
-        if (achievementsEnabled && parent_id && file.type === 'directory')
-          unlockAchievementById('folder_into_folder', 'fallcrate');
+        if (achievementsEnabled && parent_id)
+          unlockAchievementById('move_into_folder', 'fallcrate');
       });
     });
   };

@@ -46,7 +46,6 @@ const Dashboard = () => {
   const expandSidebar = () => {
     setWidth(default_width);
     setLastStaticWidth(default_width);
-    unlockAchievementById('open_sidebar', 'fallcrate');
   };
 
   const handleQuickCollapseClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -140,10 +139,7 @@ const Dashboard = () => {
           if (width < schwarzchild_width) {
             collapseSidebar();
           } else {
-            if (width > schwarzchild_width) {
-              if (lastStaticWidth <= schwarzchild_width)
-                unlockAchievementById('open_sidebar', 'fallcrate');
-            } else if (width === schwarzchild_width)
+            if (width === schwarzchild_width)
               unlockAchievementById('sidebar_pixel_perfect', 'fallcrate');
             setLastStaticWidth(width);
           }

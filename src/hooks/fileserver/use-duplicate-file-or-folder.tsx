@@ -37,7 +37,8 @@ export const useDuplicateFileOrFolder = () => {
           "You don't have enough storage space to duplicate this folder.",
         );
         await duplicateFolderWithName(file, new_name);
-        unlockAchievementById('duplicate_folder', 'fallcrate');
+        // use the same achievement for both files and folders
+        unlockAchievementById('duplicate_file', 'fallcrate');
       } else {
         storageSpaceCheck(
           [file],

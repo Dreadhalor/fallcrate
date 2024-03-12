@@ -24,16 +24,9 @@ export const useDownloadFilesOrFolders = (currentDirectory: string | null) => {
   };
   const unlockAchievements = (file_ids: string[]) => {
     const tree = getUnionFileTree(file_ids, files);
-    if (
-      isUnlockable('download_file', 'fallcrate') &&
-      tree.some((file) => file.type === 'file')
-    )
+    if (isUnlockable('download_file', 'fallcrate'))
+      // using the same achievement for both files and folders
       unlockAchievementById('download_file', 'fallcrate');
-    if (
-      isUnlockable('download_folder', 'fallcrate') &&
-      tree.some((file) => file.type === 'directory')
-    )
-      unlockAchievementById('download_folder', 'fallcrate');
     if (
       isUnlockable('download_multiple_items', 'fallcrate') &&
       file_ids.length > 1

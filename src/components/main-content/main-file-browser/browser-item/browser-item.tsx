@@ -29,7 +29,7 @@ const BrowserItem = ({ file }: Props) => {
     setRenamingFileId,
   } = useFilesystem();
 
-  const { unlockAchievementById } = useAchievements();
+  const { isUnlockable, unlockAchievementById } = useAchievements();
 
   const is_selected = selectedFiles.includes(file.id);
   const some_selected = selectedFiles.length > 0;
@@ -156,11 +156,14 @@ const BrowserItem = ({ file }: Props) => {
           visible: showPreview,
           scaleStep: 0.5,
           src: url,
-          onVisibleChange: (value) => {
-            setShowPreview(value);
-          },
-          wrapStyle: {
-            zIndex: 1000, // so it's below the achievement notification
+          onVisibleChange: (value) => setShowPreview(value),
+          onTransform: (e) => {
+            const {
+              transform: { scale },
+            } = e;
+            if (scale <= 1) return;
+            if (isUnlockable('zoom_into_preview', 'fallcrate'))
+              unlockAchievementById('zoom_into_preview', 'fallcrate');
           },
         }}
       />
