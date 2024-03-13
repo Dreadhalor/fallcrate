@@ -39,13 +39,13 @@ const Dashboard = () => {
 
   const collapseSidebar = () => {
     setWidth(collapsed_width);
-    setLastStaticWidth(collapsed_width);
+    // setLastStaticWidth(collapsed_width);
     unlockAchievementById('collapse_sidebar', 'fallcrate');
   };
 
   const expandSidebar = () => {
     setWidth(default_width);
-    setLastStaticWidth(default_width);
+    // setLastStaticWidth(default_width);
   };
 
   const handleQuickCollapseClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -59,7 +59,7 @@ const Dashboard = () => {
 
   const [width, setWidth] = useState(default_width);
   // for tracking whether the sidebar is already collapsed
-  const [lastStaticWidth, setLastStaticWidth] = useState(default_width);
+  // const [lastStaticWidth, setLastStaticWidth] = useState(default_width);
 
   const sidebarStyle: React.CSSProperties = {
     opacity: width > schwarzchild_width ? 1 : 0,
@@ -141,7 +141,7 @@ const Dashboard = () => {
           } else {
             if (width === schwarzchild_width)
               unlockAchievementById('sidebar_pixel_perfect', 'fallcrate');
-            setLastStaticWidth(width);
+            // setLastStaticWidth(width);
           }
         }}
       >
